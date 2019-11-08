@@ -5,3 +5,7 @@ export * from './metrics.service';
 export * from './node.service';
 export * from './health.service';
 export * from './info.service';
+export * from './k8s-instance.service';
+export * from './k8s-service-manager.service';
+export * from './k8s-request-factory.service';
+export * from './k8s-deployment-manager.service';

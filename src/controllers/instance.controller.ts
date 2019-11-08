@@ -4,7 +4,7 @@
 
 
 import {del, get, getModelSchemaRef, param, post, requestBody} from '@loopback/openapi-v3';
-import {Instance, InstanceState} from '../models';
+import {Instance, InstanceState, K8sService} from '../models';
 import {inject} from '@loopback/context';
 import {InstanceService} from '../services';
 
@@ -42,7 +42,7 @@ export class InstanceController {
       },
     },
   })
-  create(@requestBody() instance: Instance): Promise<Instance> {
+  create(@requestBody() instance: Instance): Promise<K8sService> {
     return this._instanceservice.create();
   }
 

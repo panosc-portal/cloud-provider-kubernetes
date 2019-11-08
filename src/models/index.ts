@@ -7,3 +7,8 @@ export * from './node.model';
 export * from './metrics.model';
 export * from './info.model';
 export * from './resource-monitor.model';
+export * from './k8s-instance.model';
+export * from './k8s-deployment.model';
+export * from './k8s-service.model';
+export * from './k8s-deployment-request.model';
+export * from './k8s-service-request.model';
