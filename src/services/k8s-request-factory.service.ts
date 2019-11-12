@@ -2,7 +2,7 @@ import {bind, /* inject, */ BindingScope} from '@loopback/core';
 import {K8sDeploymentRequest, K8sServiceRequest} from '../models';
 
 @bind({scope: BindingScope.SINGLETON})
- class K8sRequestFactoryService {
+ export class K8sRequestFactoryService {
   constructor(/* Add @inject to inject parameters */) {
   }
 
@@ -16,4 +16,3 @@ import {K8sDeploymentRequest, K8sServiceRequest} from '../models';
 
 }
 
-export const K8sRequestFactory = new K8sRequestFactoryService();

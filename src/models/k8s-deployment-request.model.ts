@@ -2,6 +2,8 @@ import {Model, model, property} from '@loopback/repository';
 
 @model()
 export class K8sDeploymentRequest extends Model {
+
+
   @property({
     type: 'object',
     required: true,
@@ -11,58 +13,74 @@ export class K8sDeploymentRequest extends Model {
   @property({
     type: 'string',
     required: true,
-  })
-  name: string;
+  }) private _name: string;
+
+  get name(): string {
+    return this._name;
+  }
+
+  set name(value: string) {
+    this._name = value;
+  }
+
+
+  get image(): string {
+    return this._image;
+  }
+
+  set image(value: string) {
+    this._image = value;
+  }
 
   @property({
     type: 'string',
     required: true,
-  })
-  image: string;
+  }) private _image: string;
 
 
   constructor(data?: Partial<K8sDeploymentRequest>) {
     super(data);
     this.modal = {
-      "apiVersion": "apps/v1",
-      "kind": "Deployment",
-      "metadata": {
-        "name": this.name,
-        "labels": {
-          "app": "visa"
-        }
-      },
-      "spec": {
-        "selector": {
-          "matchLabels": {
-            "app": "visa"
-          }
+      'apiVersion': 'apps/v1',
+      'kind': 'Deployment',
+      'metadata': {
+        'name': this._name,
+        'labels': {
+          'app': 'visa',
         },
-        "replicas": 1,
-        "template": {
-          "metadata": {
-            "labels": {
-              "app": "visa"
-            }
+      },
+      'spec': {
+        'selector': {
+          'matchLabels': {
+            'app': 'visa',
           },
-          "spec": {
-            "containers": [
+        },
+        'replicas': 1,
+        'template': {
+          'metadata': {
+            'labels': {
+              'app': 'visa',
+            },
+          },
+          'spec': {
+            'containers': [
               {
-                "name": "visa",
-                "image": this.image,
-                "ports": [
+                'name': 'visa',
+                'image': this._image,
+                'ports': [
                   {
-                    "containerPort": 3389
-                  }
+                    'containerPort': 3389,
+                  },
                 ],
-              }
-            ]
-          }
-        }
-      }
+              },
+            ],
+          },
+        },
+      },
     };
   }
 }
+
 
 export interface K8SDeploymentRequestRelations {
   // describe navigational properties here

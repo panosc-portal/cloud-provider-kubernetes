@@ -1,5 +1,5 @@
 import {bind, /* inject, */ BindingScope} from '@loopback/core';
-import {Instance, InstanceState, K8sService} from '../models';
+import {Instance, InstanceState, K8sInstance} from '../models';
 import { K8sInstanceServiceTest} from './k8s-instance.service';
 
 @bind({scope: BindingScope.SINGLETON})
@@ -26,7 +26,7 @@ export class InstanceService {
     });
   }
 
-  async create(): Promise<K8sService> {
+  async create(): Promise<K8sInstance> {
     return K8sInstanceServiceTest.createK8sInstance()
   }
 

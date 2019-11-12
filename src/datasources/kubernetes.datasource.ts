@@ -6,16 +6,17 @@ import {
 } from '@loopback/core';
 import {juggler} from '@loopback/repository';
 import * as config from './kubernetes.datasource.json';
-import * as Api from 'kubernetes-client';
-import {ApiRoot} from 'kubernetes-client';
+import {K8config} from './kubeconfig';
+import { ApiRoot} from 'kubernetes-client';
+import {KubeConfig} from '@kubernetes/client-node';
+const Request = require('kubernetes-client/backends/request');
+const Client = require('kubernetes-client').Client;
 
 
 @lifeCycleObserver('datasource')
 export class KubernetesDataSource extends juggler.DataSource
   implements LifeCycleObserver {
   static dataSourceName = 'kubernetes';
-  Client = Api.Client1_13;
-  config = Api.config;
   K8sClient: ApiRoot;
 
 
@@ -24,10 +25,10 @@ export class KubernetesDataSource extends juggler.DataSource
       dsConfig: object = config,
   ) {
     super(dsConfig);
-    this.K8sClient = new this.Client({
-      config: this.config.fromKubeconfig('src/datasources/kubeconfig.json'),
-      version: '1.9',
-    });
+    const kubeconfig = new KubeConfig();
+    kubeconfig.loadFromString(JSON.stringify(K8config));
+    const backend = new Request({kubeconfig});
+    this.K8sClient = new Client({backend, version: '1.13'});
   }
 
   /**
