@@ -6,7 +6,8 @@ Images and flavours are managed using  a PostgreSQL database.
 Remote desktop and Jupyter notebook instances are obtained and managed as containers using the kubernetes API on a configured cluster. 
 The kubernetes API is accessed using the go-daddy client library  [kubernetes-client](https://github.com/godaddy/kubernetes-client).
 
-The goal is that this micro service will be contacted by the Cloud Service to  give users access to the differents  instances. For example a user can request the creation of a remote desktop and then access it.
+The goal is that this micro service will be contacted by the Cloud Service to  give users access to the differents  instances. 
+For example a user can request the creation of a remote desktop and then access it.
 Documentation: https://confluence.panosc.eu/display/wp4/Common+Portal+-+Cloud+Provider
 
 ## Installation
