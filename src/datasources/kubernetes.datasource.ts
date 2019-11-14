@@ -17,6 +17,7 @@ const Client = require('kubernetes-client').Client;
 export class KubernetesDataSource extends juggler.DataSource
   implements LifeCycleObserver {
   static dataSourceName = 'kubernetes';
+  defaultNamespace = 'panosc';
   K8sClient: ApiRoot;
 
 

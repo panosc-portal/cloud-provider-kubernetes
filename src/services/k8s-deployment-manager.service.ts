@@ -10,7 +10,7 @@ export class K8sDeploymentManagerService {
 
   async getDeploymentsWithName(name: string) {
     try {
-      const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespace('visa')
+      const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespace(this.dataSource.defaultNamespace)
         .deployments(name)
         .get();
       return new K8sDeployment({k8sResponse: deployment.body});
@@ -27,7 +27,7 @@ export class K8sDeploymentManagerService {
     const deploymentName = deploymentRequest.name;
     const existingDeployment = await this.getDeploymentsWithName(deploymentName);
     if (existingDeployment == null) {
-      const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespaces('visa').deployments.post({body: deploymentRequest.modal});
+      const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespaces(this.dataSource.defaultNamespace).deployments.post({body: deploymentRequest.modal});
       return new K8sDeployment({k8sResponse: deployment.body});
     } else {
       return existingDeployment;

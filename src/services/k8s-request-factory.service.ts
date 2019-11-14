@@ -7,11 +7,11 @@ import {K8sDeploymentRequest, K8sServiceRequest} from '../models';
   }
 
   createK8sServiceRequest(): K8sServiceRequest {
-    return new K8sServiceRequest({name:"visatest1"});
+    return new K8sServiceRequest({name:"panoscTest1"});
   }
 
     createK8sDeploymentRequest(): K8sDeploymentRequest {
-    return new K8sDeploymentRequest({name:"visatest1",image:"danielguerra/ubuntu-xrdp"});
+    return new K8sDeploymentRequest({name:"panoscTest1",image:"danielguerra/ubuntu-xrdp"});
   }
 
 }

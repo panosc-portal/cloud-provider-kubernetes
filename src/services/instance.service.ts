@@ -27,6 +27,7 @@ export class InstanceService {
   }
 
   async create(): Promise<K8sInstance> {
+    // TODO : change for creation of instance object
     return K8sInstanceServiceTest.createK8sInstance()
   }
 

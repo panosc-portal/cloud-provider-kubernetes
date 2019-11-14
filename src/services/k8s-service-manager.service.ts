@@ -11,7 +11,7 @@ export class K8sServiceManagerService {
 
   async getServiceWithName(name: string) {
     try {
-      const service = await this.dataSource.K8sClient.api.v1.namespaces('visa').services(name).get();
+      const service = await this.dataSource.K8sClient.api.v1.namespaces(this.dataSource.defaultNamespace).services(name).get();
       return new K8sService({k8sResponse: service.body});
     } catch (error) {
       if (error.statusCode === 404) {
@@ -26,7 +26,7 @@ export class K8sServiceManagerService {
     const serviceName = serviceRequest.name;
     const existingService = await this.getServiceWithName(serviceName);
     if (existingService == null) {
-      const service = await this.dataSource.K8sClient.api.v1.namespace('visa').services.post({body: serviceRequest.modal});
+      const service = await this.dataSource.K8sClient.api.v1.namespace(this.dataSource.defaultNamespace).services.post({body: serviceRequest.modal});
       return new K8sService({k8sResponse: service.body});
     } else {
       return existingService;
