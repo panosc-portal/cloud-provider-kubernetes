@@ -42,7 +42,7 @@ export class InstanceController {
       },
     },
   })
-  create(@requestBody() instance: Instance): Promise<K8sInstance> {
+  create(@requestBody() instance: Instance): Promise<Instance> {
     return this._instanceservice.create();
   }
 

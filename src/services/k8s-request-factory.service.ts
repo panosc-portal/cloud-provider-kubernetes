@@ -1,4 +1,4 @@
-import {bind, /* inject, */ BindingScope} from '@loopback/core';
+import {bind, BindingScope} from '@loopback/core';
 import {K8sDeploymentRequest, K8sServiceRequest} from '../models';
 
 @bind({scope: BindingScope.SINGLETON})
@@ -7,11 +7,11 @@ import {K8sDeploymentRequest, K8sServiceRequest} from '../models';
   }
 
   createK8sServiceRequest(): K8sServiceRequest {
-    return new K8sServiceRequest({name:"panoscTest1"});
+    return new K8sServiceRequest({name:"panosctest1"});
   }
 
     createK8sDeploymentRequest(): K8sDeploymentRequest {
-    return new K8sDeploymentRequest({name:"panoscTest1",image:"danielguerra/ubuntu-xrdp"});
+    return new K8sDeploymentRequest({name:"panosctest1",image:"danielguerra/ubuntu-xrdp"});
   }
 
 }

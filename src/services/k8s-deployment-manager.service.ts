@@ -1,4 +1,4 @@
-import {bind, /* inject, */ BindingScope, inject} from '@loopback/core';
+import {bind, BindingScope, inject} from '@loopback/core';
 import {K8sDeployment, K8sDeploymentRequest} from '../models';
 import {KubernetesDataSource} from '../datasources';
 

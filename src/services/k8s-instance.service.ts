@@ -1,4 +1,4 @@
-import {bind, /* inject, */ BindingScope, inject} from '@loopback/core';
+import {bind, BindingScope, inject} from '@loopback/core';
 import {K8sServiceManagerService} from './k8s-service-manager.service';
 import {K8sInstance} from '../models';
 import {K8sRequestFactoryService} from './k8s-request-factory.service';

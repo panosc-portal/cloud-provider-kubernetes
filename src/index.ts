@@ -6,6 +6,7 @@ export {CloudproviderApiKubernetesApplication};
 export async function main(options: ApplicationConfig = {}) {
   const app = new CloudproviderApiKubernetesApplication(options);
   await app.boot();
+
   await app.start();
 
   const url = app.restServer.url;

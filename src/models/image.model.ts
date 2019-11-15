@@ -1,6 +1,6 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model()
+@model({settings: {postgresql: {schema: 'cloud-provider-kubernetes'}}})
 export class Image extends Entity {
   @property({
     type: 'number',
@@ -20,7 +20,6 @@ export class Image extends Entity {
     type: 'string',
   })
   description?: string;
-
 
   constructor(data?: Partial<Image>) {
     super(data);

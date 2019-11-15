@@ -1,6 +1,6 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model()
+@model({settings: {postgresql: {schema: 'cloud-provider-kubernetes'}}})
 export class Flavour extends Entity {
   @property({
     type: 'number',
@@ -32,7 +32,6 @@ export class Flavour extends Entity {
     required: true,
   })
   memory: number;
-
 
   constructor(data?: Partial<Flavour>) {
     super(data);

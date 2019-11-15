@@ -1,11 +1,9 @@
-import {Entity, model, property} from '@loopback/repository';
-import {Node} from './node.model';
-import {InstanceState} from './instance-state.model';
+import { Entity, model, property} from '@loopback/repository';
 import {InstanceService} from './instance-service.model';
 import {Flavour} from './flavour.model';
 import {Image} from './image.model';
 
-@model()
+@model({settings: {postgresql: {schema: 'cloud-provider-kubernetes'}}})
 export class Instance extends Entity {
   @property({
     type: 'number',
@@ -27,16 +25,10 @@ export class Instance extends Entity {
   description?: string;
 
   @property()
-  flavour?: Flavour;
+  image_id: Image;
 
   @property()
-  image?: Image;
-
-  @property({
-    type: 'date',
-    required: true,
-  })
-  createdAt: string;
+  flavour_id: Flavour;
 
   @property({
     type: 'string',
@@ -44,15 +36,34 @@ export class Instance extends Entity {
   })
   hostname: string;
 
-  @property.array(InstanceService)
-  services?: InstanceService[];
+  @property({
+    type: 'string',
+    required: true,
+  })
+  state: string;
+
+  @property({
+    type: 'number',
+    required: true,
+  })
+  currentCPU: number;
+
+  @property({
+    type: 'number',
+    required: true,
+  })
+  currentMemory: number;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  createdAt: string;
 
 
-  @property()
-  node?: Node;
 
-  @property()
-  state?: InstanceState;
+
+
 
   constructor(data?: Partial<Instance>) {
     super(data);

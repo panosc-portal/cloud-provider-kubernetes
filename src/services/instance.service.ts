@@ -1,17 +1,16 @@
-import {bind, /* inject, */ BindingScope} from '@loopback/core';
-import {Instance, InstanceState, K8sInstance} from '../models';
+import {bind, BindingScope, inject} from '@loopback/core';
+import { Instance, InstanceState, K8sInstance} from '../models';
 import { K8sInstanceServiceTest} from './k8s-instance.service';
+import { InstanceRepository} from '../repositories';
 
 @bind({scope: BindingScope.SINGLETON})
 export class InstanceService {
-  constructor(/* Add @inject to inject parameters */) {
+  constructor(@inject('instance-repository') private _instanceRepository: InstanceRepository) {
   }
 
   getAll(): Promise<Instance[]> {
-    return new Promise<Instance[]>(function(resolve, reject) {
-      resolve([]);
-    });
-  };
+    return this._instanceRepository.getAll()
+  }
 
 
   getById(id: number): Promise<Instance> {
@@ -26,9 +25,10 @@ export class InstanceService {
     });
   }
 
-  async create(): Promise<K8sInstance> {
-    // TODO : change for creation of instance object
-    return K8sInstanceServiceTest.createK8sInstance()
+  async create(): Promise<Instance> {
+    const kubeInstance:K8sInstance = await K8sInstanceServiceTest.createK8sInstance();
+    const instanceName = kubeInstance.deployment.name;
+    return new Instance({name:instanceName})
   }
 
   getStateById(): Promise<InstanceState> {

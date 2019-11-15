@@ -18,6 +18,7 @@ import {
   MetricsService,
   NodeService,
 } from './services';
+import {FlavourRepository, ImageRepository, InstanceRepository} from './repositories';
 
 
 export class CloudproviderApiKubernetesApplication extends BootMixin(
@@ -45,6 +46,11 @@ export class CloudproviderApiKubernetesApplication extends BootMixin(
     this.bind('metrics-service').toClass(MetricsService);
     this.bind('health-service').toClass(HealthService);
     this.bind('info-service').toClass(InfoService);
+
+    this.bind('image-repository').toClass(ImageRepository);
+    this.bind('flavour-repository').toClass(FlavourRepository);
+    this.bind('instance-repository').toClass(InstanceRepository);
+
 
     this.basePath('/api/v1');
 
