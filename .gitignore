@@ -64,4 +64,5 @@ typings/
 *.tsbuildinfo
 
 .idea
+.vscode
 DEVELOPING.md
