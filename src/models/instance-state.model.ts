@@ -26,6 +26,7 @@ export class InstanceState extends Entity {
   memory: number;
 
 
+
   constructor(data?: Partial<InstanceState>) {
     super(data);
   }

@@ -4,7 +4,7 @@
 
 
 import {del, get, getModelSchemaRef, param, post, requestBody} from '@loopback/openapi-v3';
-import {Instance, InstanceState, K8sInstance} from '../models';
+import {Instance, InstanceState} from '../models';
 import {inject} from '@loopback/context';
 import {InstanceService} from '../services';
 
@@ -89,8 +89,8 @@ export class InstanceController {
       },
     },
   })
-  deleteById(): void {
-    return this._instanceservice.deleteById();
+  deleteById(@param.path.string('id') id: number): Promise<void> {
+    return this._instanceservice.deleteById(id);
   }
 
   @post('/instances/{id}/actions', {

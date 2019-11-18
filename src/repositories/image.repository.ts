@@ -12,7 +12,6 @@ export class ImageRepository extends DefaultCrudRepository<Image,
   constructor(
     @inject('datasources.postgreSQL') dataSource: PostgresDataSource) {
     super(Image, dataSource);
-    //this.instance = this.createBelongsToAccessorFor('instance', instanceRepositoryGetter);
   }
 
   async getAll() {

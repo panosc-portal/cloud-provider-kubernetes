@@ -1,6 +1,6 @@
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property} from '@loopback/repository';
 
-@model()
+@model({settings: {postgresql: {schema: 'cloud-provider-kubernetes',table:'instance_service'}}})
 export class InstanceService extends Entity {
   @property({
     type: 'number',
@@ -21,12 +21,15 @@ export class InstanceService extends Entity {
   })
   port: number;
 
+  @property({
+    type: 'number',
+  })
+  instance_id?: number;
 
   constructor(data?: Partial<InstanceService>) {
     super(data);
   }
 }
-
 export interface InstanceServiceRelations {
   // describe navigational properties here
 }

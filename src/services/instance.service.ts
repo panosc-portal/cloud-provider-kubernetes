@@ -1,5 +1,5 @@
 import {bind, BindingScope, inject} from '@loopback/core';
-import { Instance, InstanceState, K8sInstance} from '../models';
+import {Image, Instance, InstanceState, K8sInstance} from '../models';
 import { K8sInstanceServiceTest} from './k8s-instance.service';
 import { InstanceRepository} from '../repositories';
 
@@ -13,10 +13,8 @@ export class InstanceService {
   }
 
 
-  getById(id: number): Promise<Instance> {
-    return new Promise<Instance>(function(resolve, reject) {
-      resolve();
-    });
+  getById(id:number): Promise<Instance>{
+    return this._instanceRepository.getById(id);
   }
 
   updateById(id: number): Promise<Instance> {
@@ -37,7 +35,8 @@ export class InstanceService {
     });
   }
 
-  deleteById(): void {
+  async deleteById(id:number): Promise<void> {
+    await this._instanceRepository.deleteById(id)
   }
 
   actionById(): void {

@@ -1,7 +1,8 @@
-import { Entity, model, property} from '@loopback/repository';
+import { Entity, model, property, hasMany, belongsTo} from '@loopback/repository';
 import {InstanceService} from './instance-service.model';
 import {Flavour} from './flavour.model';
 import {Image} from './image.model';
+import {InstanceState} from './instance-state.model';
 
 @model({settings: {postgresql: {schema: 'cloud-provider-kubernetes'}}})
 export class Instance extends Entity {
@@ -24,11 +25,6 @@ export class Instance extends Entity {
   })
   description?: string;
 
-  @property()
-  image_id: Image;
-
-  @property()
-  flavour_id: Flavour;
 
   @property({
     type: 'string',
@@ -60,10 +56,14 @@ export class Instance extends Entity {
   })
   createdAt: string;
 
+  @hasMany(() => InstanceService, {keyTo: 'instance_id'})
+  instanceServices: InstanceService[];
 
+  @belongsTo(() => Flavour)
+  flavour_id: number;
 
-
-
+  @belongsTo(() => Image)
+  image_id: number;
 
   constructor(data?: Partial<Instance>) {
     super(data);
