@@ -19,6 +19,7 @@ import {
   NodeService,
 } from './services';
 import {FlavourRepository, ImageRepository, InstanceRepository} from './repositories';
+import {PostgresDataSource} from './datasources';
 
 
 export class CloudproviderApiKubernetesApplication extends BootMixin(
@@ -50,6 +51,7 @@ export class CloudproviderApiKubernetesApplication extends BootMixin(
     this.bind('image-repository').toClass(ImageRepository);
     this.bind('flavour-repository').toClass(FlavourRepository);
     this.bind('instance-repository').toClass(InstanceRepository);
+    this.bind('datasources.postgreSQL').toClass(PostgresDataSource);
 
 
     this.basePath('/api/v1');

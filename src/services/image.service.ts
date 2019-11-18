@@ -11,15 +11,12 @@ export class ImageService {
   }
 
   getById(id:number): Promise<Image>{
-    return new Promise<Image>(function(resolve,reject) {
-      resolve()
-    })
+    return this._imageRepository.getById(id);
   }
 
-  updateById(id:number):Promise<Image>{
-    return new Promise<Image>(function(resolve,reject) {
-      resolve()
-    })
+  async update(id:number,image:Image):Promise<Image>{
+    await this._imageRepository.updateById(id,image);
+    return this._imageRepository.getById(id);
+    }
   }
 
-}

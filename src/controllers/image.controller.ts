@@ -3,13 +3,15 @@
 // import {inject} from '@loopback/context';
 
 
-import {get, getModelSchemaRef, param, put} from '@loopback/openapi-v3';
+import {get, getModelSchemaRef, param, put, requestBody} from '@loopback/openapi-v3';
 import {Image} from '../models';
 import {inject} from '@loopback/context';
 import {ImageService} from '../services';
+import {HttpErrors, Response, RestBindings} from '@loopback/rest';
 
 export class ImageController {
-  constructor(@inject('image-service') private _imageService: ImageService) {
+  constructor(@inject('image-service') private _imageService: ImageService,
+              @inject(RestBindings.Http.RESPONSE) protected response: Response) {
   }
 
   @get('/images', {
@@ -59,8 +61,15 @@ export class ImageController {
       },
     },
   })
-  updateById(@param.path.string('id') id: number): Promise<Image> {
-    return this._imageService.updateById(id);
+  updateById(@param.path.number('id') id: number, @requestBody() image: Image): Promise<Image> {
+    return new Promise<Image>((resolve, reject) => {
+      if (id === image.id) {
+        resolve(this._imageService.update(id, image));
+      } else {
+        reject(new HttpErrors.BadRequest('Id in path is not the same as body id'));
+      }
+    });
+
   }
 
 }

@@ -18,5 +18,10 @@ export class FlavourRepository extends DefaultCrudRepository<Flavour,
     return this.find();
   }
 
+  async getById(id : number){
+    return this.findById(id)
+  }
+
+
 }
 

@@ -19,5 +19,9 @@ export class ImageRepository extends DefaultCrudRepository<Image,
     return this.find();
   }
 
+  async getById(id : number){
+    return this.findById(id)
+  }
+
 
 }
