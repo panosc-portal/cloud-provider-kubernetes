@@ -1,26 +1,11 @@
-import {BelongsToAccessor, DefaultCrudRepository} from '@loopback/repository';
-import {Image, ImageRelations, Instance} from '../models';
+import {Image} from '../models';
 import {inject} from '@loopback/core';
-import { DataSource } from 'loopback-datasource-juggler';
+import { TypeormDataSource } from '../datasources';
+import { BaseRepository } from './base.repository';
 
-export class ImageRepository extends DefaultCrudRepository<Image,
-  typeof Image.prototype.id,
-  ImageRelations> {
+export class ImageRepository extends BaseRepository<Image> {
 
-  public readonly instance: BelongsToAccessor<Instance, typeof Image.prototype.id>;
-
-  constructor(
-    @inject('datasources.postgres') dataSource: DataSource) {
-    super(Image, dataSource);
+  constructor(@inject('datasources.typeorm') dataSource: TypeormDataSource) {
+    super(dataSource, Image);
   }
-
-  async getAll() {
-    return this.find();
-  }
-
-  async getById(id : number){
-    return this.findById(id)
-  }
-
-
 }

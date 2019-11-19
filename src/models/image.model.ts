@@ -1,28 +1,33 @@
-import {Entity, model, property} from '@loopback/repository';
+import {model, property} from '@loopback/repository';
+import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
 
-@model({settings: {postgresql: {schema: 'cloud-provider-kubernetes'}}})
-export class Image extends Entity {
+@Entity()
+@model()
+export class Image {
+
   @property({
     type: 'number',
     id: true,
     required: true,
     generated: true,
   })
+  @PrimaryGeneratedColumn()
   id: number;
 
   @property({
     type: 'string',
     required: true,
   })
+  @Column()
   name: string;
 
   @property({
     type: 'string',
   })
+  @Column()
   description?: string;
 
-  constructor(data?: Partial<Image>) {
-    super(data);
+  constructor() {
   }
 }
 

@@ -6,23 +6,23 @@ import { InstanceServiceRepository } from '../../repositories/instance-service.r
 
 export interface TestApplicationContext {
     flavourRepository: FlavourRepository;
-    imageRepository: ImageRepository;
+    // imageRepository: ImageRepository;
     // instanceRepository: InstanceRepository;
     flavourService: FlavourService;
-    imageService: ImageService;
+    // imageService: ImageService;
     // instanceService: InstanceService;
   }
 
 export function setupTestApplicationContext(): TestApplicationContext {
 
     const flavourRepository: FlavourRepository = new FlavourRepository(testDataSource);
-    const imageRepository: ImageRepository = new ImageRepository(testDataSource);
+    // const imageRepository: ImageRepository = new ImageRepository(testDataSource);
 
     // const instanceRepository: InstanceRepository = new InstanceRepository(testDataSource);
 
     const flavourService: FlavourService = new FlavourService(flavourRepository);
-    const imageService: ImageService = new ImageService(imageRepository);
+    // const imageService: ImageService = new ImageService(imageRepository);
     // const instanceService: InstanceService = new InstanceService(instanceRepository);
 
-    return { flavourRepository, imageRepository, flavourService, imageService }
+    return { flavourRepository, flavourService }
 }

@@ -59,7 +59,10 @@
     "dotenv": "^8.2.0",
     "kubernetes-client": "^8.3.5",
     "loopback-connector-postgresql": "^3.8.0",
-    "loopback-connector-rest": "^3.6.0"
+    "loopback-connector-rest": "^3.6.0",
+    "pg": "^7.12.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.20"
   },
   "devDependencies": {
     "@loopback/build": "^2.0.14",

@@ -1,3 +1,7 @@
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {
@@ -18,9 +22,7 @@ import {
   MetricsService,
   NodeService,
 } from './services';
-import {FlavourRepository, ImageRepository, InstanceRepository} from './repositories';
-import {PostgresDataSource} from './datasources';
-
+import "reflect-metadata";
 
 export class CloudProviderKubernetesApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),

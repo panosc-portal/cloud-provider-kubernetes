@@ -10,7 +10,7 @@ describe('ImageService', () => {
     await buildDataBase();
 
     const context = setupTestApplicationContext();
-    imageService = context.imageService;
+    // imageService = context.imageService;
 
   });
 

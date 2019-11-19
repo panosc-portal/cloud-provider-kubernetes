@@ -1,6 +1,3 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-
 export const  dataConf={
   "name": "postgres",
   "connector": "postgresql",

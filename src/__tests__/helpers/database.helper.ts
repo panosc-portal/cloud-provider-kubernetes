@@ -4,7 +4,7 @@ import * as fs from 'fs';
 
 export async function givenEmptyDatabase() {
   await new FlavourRepository(testDataSource).deleteAll();
-  await new ImageRepository(testDataSource).deleteAll();
+//   await new ImageRepository(testDataSource).deleteAll();
 //   await new InstanceRepository(testDataSource).deleteAll();
 }
 

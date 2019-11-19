@@ -1,6 +1,3 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-
 export const K8config = {
   apiVersion: 'v1',
   clusters: [

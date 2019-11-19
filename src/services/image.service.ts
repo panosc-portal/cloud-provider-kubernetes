@@ -16,8 +16,11 @@ export class ImageService {
   }
 
   async update(id:number,image:Image):Promise<Image>{
-    await this._imageRepository.updateById(id,image);
-    return this._imageRepository.getById(id);
+    return new Promise<Image>((resolve, reject) => {
+      resolve(new Image());
+    });
+    // await this._imageRepository.updateById(id,image);
+    // return this._imageRepository.getById(id);
     }
   }
 

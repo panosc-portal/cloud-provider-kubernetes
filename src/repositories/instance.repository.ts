@@ -20,13 +20,9 @@ export class InstanceRepository extends DefaultCrudRepository<Instance,
 
   public readonly flavour: BelongsToAccessor<Flavour, typeof Instance.prototype.id>;
 
-  public readonly image: BelongsToAccessor<Image, typeof Instance.prototype.id>;
-
   constructor(
-    @inject('datasources.postgres') dataSource: DataSource, @repository.getter('InstanceServiceRepository') protected instanceServiceRepositoryGetter: Getter<InstanceServiceRepository>, @repository.getter('FlavourRepository') protected flavourRepositoryGetter: Getter<FlavourRepository>, @repository.getter('ImageRepository') protected imageRepositoryGetter: Getter<ImageRepository>,) {
+    @inject('datasources.postgres') dataSource: DataSource, @repository.getter('InstanceServiceRepository') protected instanceServiceRepositoryGetter: Getter<InstanceServiceRepository>, @repository.getter('FlavourRepository') protected flavourRepositoryGetter: Getter<FlavourRepository>) {
     super(Instance, dataSource);
-    this.image = this.createBelongsToAccessorFor('image_id', imageRepositoryGetter,);
-    this.registerInclusionResolver('image', this.image.inclusionResolver);
     this.flavour = this.createBelongsToAccessorFor('flavour_id', flavourRepositoryGetter,);
     this.registerInclusionResolver('flavour', this.flavour.inclusionResolver);
     this.instanceServices = this.createHasManyRepositoryFactoryFor('instanceServices', instanceServiceRepositoryGetter,);
@@ -34,7 +30,7 @@ export class InstanceRepository extends DefaultCrudRepository<Instance,
   }
 
   getAll() {
-    return this.find({include:[{relation:'instanceServices'},{relation:'flavour'},{relation:'image'}]});
+    return this.find({include:[{relation:'instanceServices'},{relation:'flavour'}]});
   }
 
   getById(id: number) {

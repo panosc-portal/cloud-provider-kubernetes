@@ -62,9 +62,6 @@ export class Instance extends Entity {
   @belongsTo(() => Flavour)
   flavour_id: number;
 
-  @belongsTo(() => Image)
-  image_id: number;
-
   constructor(data?: Partial<Instance>) {
     super(data);
   }
