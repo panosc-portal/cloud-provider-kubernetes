@@ -1,10 +1,10 @@
-import {CloudproviderApiKubernetesApplication} from './application';
+import {CloudProviderKubernetesApplication} from './application';
 
 export async function migrate(args: string[]) {
   const existingSchema = args.includes('--rebuild') ? 'drop' : 'alter';
   console.log('Migrating schemas (%s existing schema)', existingSchema);
 
-  const app = new CloudproviderApiKubernetesApplication();
+  const app = new CloudProviderKubernetesApplication();
   await app.boot();
   await app.migrateSchema({existingSchema});
 

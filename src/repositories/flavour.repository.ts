@@ -1,7 +1,7 @@
 import {DefaultCrudRepository, BelongsToAccessor} from '@loopback/repository';
 import {Flavour, FlavourRelations, Instance} from '../models';
-import {PostgresDataSource} from '../datasources';
 import {inject} from '@loopback/core';
+import { DataSource } from 'loopback-datasource-juggler';
 
 export class FlavourRepository extends DefaultCrudRepository<Flavour,
   typeof Flavour.prototype.id,
@@ -10,7 +10,7 @@ export class FlavourRepository extends DefaultCrudRepository<Flavour,
   public readonly instance: BelongsToAccessor<Instance, typeof Flavour.prototype.id>;
 
   constructor(
-    @inject('datasources.postgreSQL') dataSource: PostgresDataSource) {
+    @inject('datasources.postgreSQL') dataSource: DataSource) {
     super(Flavour, dataSource);
   }
 

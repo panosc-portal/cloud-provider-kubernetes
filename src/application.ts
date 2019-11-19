@@ -22,7 +22,7 @@ import {FlavourRepository, ImageRepository, InstanceRepository} from './reposito
 import {PostgresDataSource} from './datasources';
 
 
-export class CloudproviderApiKubernetesApplication extends BootMixin(
+export class CloudProviderKubernetesApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {

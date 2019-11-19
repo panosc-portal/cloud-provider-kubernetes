@@ -1,9 +1,9 @@
 import {Client, expect} from '@loopback/testlab';
-import {CloudproviderApiKubernetesApplication} from '../..';
-import {setupApplication} from './test-helper';
+import {CloudProviderKubernetesApplication} from '../../..';
+import {setupApplication} from '../../helpers/application.helper';
 
 describe('PingController', () => {
-  let app: CloudproviderApiKubernetesApplication;
+  let app: CloudProviderKubernetesApplication;
   let client: Client;
 
   before('setupApplication', async () => {
@@ -15,7 +15,7 @@ describe('PingController', () => {
   });
 
   it('invokes GET /ping', async () => {
-    const res = await client.get('/ping?msg=world').expect(200);
+    const res = await client.get('/api/v1/ping?msg=world').expect(200);
     expect(res.body).to.containEql({greeting: 'Hello from LoopBack'});
   });
 });

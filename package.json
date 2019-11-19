@@ -1,7 +1,7 @@
 {
-  "name": "cloudprovider-api-kubernetes",
+  "name": "cloud-provider-kubernetes",
   "version": "1.0.0",
-  "description": "cloudprovider-api-kubernetes",
+  "description": "Kubernetes implementation of the PaNOSC Cloud Provider microservice",
   "keywords": [
     "loopback-application",
     "loopback"
@@ -23,10 +23,10 @@
     "eslint:fix": "npm run eslint -- --fix",
     "pretest": "npm run clean && npm run build",
     "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
-    "posttest": "npm run lint",
+    "posttest": "#npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
-    "docker:build": "docker build -t cloudprovider-api-kubernetes .",
-    "docker:run": "docker run -p 3000:3000 -d cloudprovider-api-kubernetes",
+    "docker:build": "docker build -t cloud-provider-kubernetes .",
+    "docker:run": "docker run -p 3000:3000 -d cloud-provider-kubernetes",
     "migrate": "node ./dist/migrate",
     "prestart": "npm run build",
     "start": "node -r source-map-support/register .",
@@ -64,8 +64,8 @@
   "devDependencies": {
     "@loopback/build": "^2.0.14",
     "source-map-support": "^0.5.13",
-    "@loopback/testlab": "^1.9.2",
-    "@types/node": "^10.14.20",
+    "@loopback/testlab": "^1.9.4",
+    "@types/node": "^10.17.5",
     "@typescript-eslint/parser": "^2.3.3",
     "@typescript-eslint/eslint-plugin": "^2.3.3",
     "@loopback/eslint-config": "^4.1.2",
@@ -73,6 +73,7 @@
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-eslint-plugin": "^2.1.0",
     "eslint-plugin-mocha": "^6.1.1",
+    "macho": "^1.4.0",
     "typescript": "~3.6.3"
   }
 }

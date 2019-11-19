@@ -1,4 +1,4 @@
-import {CloudproviderApiKubernetesApplication} from '../..';
+import {CloudProviderKubernetesApplication} from '../..';
 import {
   createRestAppClient,
   givenHttpServerConfig,
@@ -14,7 +14,7 @@ export async function setupApplication(): Promise<AppWithClient> {
     // port: +process.env.PORT,
   });
 
-  const app = new CloudproviderApiKubernetesApplication({
+  const app = new CloudProviderKubernetesApplication({
     rest: restConfig,
   });
 
@@ -27,6 +27,6 @@ export async function setupApplication(): Promise<AppWithClient> {
 }
 
 export interface AppWithClient {
-  app: CloudproviderApiKubernetesApplication;
+  app: CloudProviderKubernetesApplication;
   client: Client;
 }
