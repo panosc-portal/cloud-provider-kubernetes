@@ -23,7 +23,7 @@ export class InstanceRepository extends DefaultCrudRepository<Instance,
   public readonly image: BelongsToAccessor<Image, typeof Instance.prototype.id>;
 
   constructor(
-    @inject('datasources.postgreSQL') dataSource: DataSource, @repository.getter('InstanceServiceRepository') protected instanceServiceRepositoryGetter: Getter<InstanceServiceRepository>, @repository.getter('FlavourRepository') protected flavourRepositoryGetter: Getter<FlavourRepository>, @repository.getter('ImageRepository') protected imageRepositoryGetter: Getter<ImageRepository>,) {
+    @inject('datasources.postgres') dataSource: DataSource, @repository.getter('InstanceServiceRepository') protected instanceServiceRepositoryGetter: Getter<InstanceServiceRepository>, @repository.getter('FlavourRepository') protected flavourRepositoryGetter: Getter<FlavourRepository>, @repository.getter('ImageRepository') protected imageRepositoryGetter: Getter<ImageRepository>,) {
     super(Instance, dataSource);
     this.image = this.createBelongsToAccessorFor('image_id', imageRepositoryGetter,);
     this.registerInclusionResolver('image', this.image.inclusionResolver);

@@ -1,10 +1,11 @@
 import {bind, BindingScope, inject} from '@loopback/core';
 import {Image} from '../models';
 import {ImageRepository} from '../repositories';
+import { repository } from '@loopback/repository';
 
 @bind({scope: BindingScope.SINGLETON})
 export class ImageService {
-  constructor(@inject('image-repository') private _imageRepository: ImageRepository) {}
+  constructor(@repository(ImageRepository) private _imageRepository: ImageRepository) {}
 
   async getAll(): Promise<Image[]> {
     return this._imageRepository.getAll();

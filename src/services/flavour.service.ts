@@ -1,11 +1,12 @@
 import {bind, BindingScope, inject} from '@loopback/core';
 import {Flavour} from '../models';
 import {FlavourRepository} from '../repositories';
+import { repository } from '@loopback/repository';
 
 
 @bind({scope: BindingScope.SINGLETON})
 export class FlavourService {
-  constructor(@inject('flavour-repository') private _flavourRepository: FlavourRepository) {
+  constructor(@repository(FlavourRepository) private _flavourRepository: FlavourRepository) {
   }
 
 

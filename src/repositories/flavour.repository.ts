@@ -10,7 +10,7 @@ export class FlavourRepository extends DefaultCrudRepository<Flavour,
   public readonly instance: BelongsToAccessor<Instance, typeof Flavour.prototype.id>;
 
   constructor(
-    @inject('datasources.postgreSQL') dataSource: DataSource) {
+    @inject('datasources.postgres') dataSource: DataSource) {
     super(Flavour, dataSource);
   }
 

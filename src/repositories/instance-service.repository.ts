@@ -9,7 +9,7 @@ export class InstanceServiceRepository extends DefaultCrudRepository<
   InstanceServiceRelations
 > {
   constructor(
-    @inject('datasources.postgreSQL') dataSource: PostgresDataSource,
+    @inject('datasources.postgres') dataSource: PostgresDataSource,
   ) {
     super(InstanceService, dataSource);
   }

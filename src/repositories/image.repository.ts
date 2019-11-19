@@ -10,7 +10,7 @@ export class ImageRepository extends DefaultCrudRepository<Image,
   public readonly instance: BelongsToAccessor<Instance, typeof Image.prototype.id>;
 
   constructor(
-    @inject('datasources.postgreSQL') dataSource: DataSource) {
+    @inject('datasources.postgres') dataSource: DataSource) {
     super(Image, dataSource);
   }
 

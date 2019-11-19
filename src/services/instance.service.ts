@@ -2,10 +2,11 @@ import {bind, BindingScope, inject} from '@loopback/core';
 import {Image, Instance, InstanceState, K8sInstance} from '../models';
 import { K8sInstanceServiceTest} from './k8s-instance.service';
 import { InstanceRepository} from '../repositories';
+import { repository } from '@loopback/repository';
 
 @bind({scope: BindingScope.SINGLETON})
 export class InstanceService {
-  constructor(@inject('instance-repository') private _instanceRepository: InstanceRepository) {
+  constructor(@repository(InstanceRepository) private _instanceRepository: InstanceRepository) {
   }
 
   getAll(): Promise<Instance[]> {

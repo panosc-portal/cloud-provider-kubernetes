@@ -48,12 +48,6 @@ export class CloudProviderKubernetesApplication extends BootMixin(
     this.bind('health-service').toClass(HealthService);
     this.bind('info-service').toClass(InfoService);
 
-    this.bind('image-repository').toClass(ImageRepository);
-    this.bind('flavour-repository').toClass(FlavourRepository);
-    this.bind('instance-repository').toClass(InstanceRepository);
-    this.bind('datasources.postgreSQL').toClass(PostgresDataSource);
-
-
     this.basePath('/api/v1');
 
 
