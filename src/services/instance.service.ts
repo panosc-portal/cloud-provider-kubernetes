@@ -10,7 +10,7 @@ export class InstanceService {
   }
 
   getAll(): Promise<Instance[]> {
-    return this._instanceRepository.getAll()
+    return this._instanceRepository.getAllInstances()
   }
 
 

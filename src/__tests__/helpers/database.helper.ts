@@ -9,7 +9,7 @@ export async function givenEmptyDatabase() {
 }
 
 export async function buildDataBase() {
-    const creationScript = fs.readFileSync('./resources/databaseCreation.sql', 'utf8');
+//    const creationScript = fs.readFileSync('./resources/databaseCreation.sql', 'utf8');
 
     const connection = testDataSource.connection;
     if (connection != null) {

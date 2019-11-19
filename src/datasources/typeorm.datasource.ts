@@ -20,7 +20,7 @@ export class TypeormDataSource {
           "dist/models/*.js"
       ],
       synchronize: false,
-      logging: (process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING == "true")
+      logging: (process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING === "true")
     };
   }
 
@@ -38,7 +38,7 @@ export class TypeormDataSource {
       }
 
       return this._connection;
-    
+
     } catch (error) {
       console.error(error);
       process.exit();

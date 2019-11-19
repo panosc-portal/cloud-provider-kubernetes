@@ -1,16 +1,11 @@
-import {DefaultCrudRepository} from '@loopback/repository';
-import {InstanceService, InstanceServiceRelations} from '../models';
-import {PostgresDataSource} from '../datasources';
+import { InstanceService} from '../models';
+import {TypeormDataSource} from '../datasources';
 import {inject} from '@loopback/core';
+import {BaseRepository} from './base.repository';
 
-export class InstanceServiceRepository extends DefaultCrudRepository<
-  InstanceService,
-  typeof InstanceService.prototype.id,
-  InstanceServiceRelations
-> {
-  constructor(
-    @inject('datasources.postgres') dataSource: PostgresDataSource,
-  ) {
-    super(InstanceService, dataSource);
+export class InstanceServiceRepository extends BaseRepository<InstanceService> {
+
+  constructor(@inject('datasources.typeorm') dataSource: TypeormDataSource) {
+    super(dataSource, InstanceService);
   }
 }

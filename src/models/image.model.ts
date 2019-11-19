@@ -27,7 +27,8 @@ export class Image {
   @Column()
   description?: string;
 
-  constructor() {
+  constructor(data?: Partial<Image>) {
+    Object.assign(this, data);
   }
 }
 

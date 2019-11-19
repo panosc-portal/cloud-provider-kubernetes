@@ -1,8 +1,8 @@
 import {FlavourRepository, ImageRepository, InstanceRepository } from '../../repositories';
 import {FlavourService, ImageService, InstanceService } from '../../services';
 import {testDataSource} from '../fixtures/datasources/testdb.datasource';
-import * as fs from 'fs';
-import { InstanceServiceRepository } from '../../repositories/instance-service.repository';
+//import * as fs from 'fs';
+//import { InstanceServiceRepository } from '../../repositories/instance-service.repository';
 
 export interface TestApplicationContext {
     // flavourRepository: FlavourRepository;

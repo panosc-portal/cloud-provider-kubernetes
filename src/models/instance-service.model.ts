@@ -1,33 +1,42 @@
-import { Entity, model, property} from '@loopback/repository';
+import {  model, property} from '@loopback/repository';
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Instance} from './instance.model';
 
-@model({settings: {postgresql: {schema: 'cloud-provider-kubernetes',table:'instance_service'}}})
-export class InstanceService extends Entity {
+
+@Entity()
+@model()
+export class InstanceService  {
   @property({
     type: 'number',
     id: true,
     required: true,
     generated: false,
   })
+  @PrimaryGeneratedColumn()
   id: number;
 
   @property({
     type: 'string',
   })
+  @Column()
   name: string;
 
   @property({
     type: 'number',
     required: true,
   })
+  @Column()
   port: number;
 
   @property({
     type: 'number',
   })
-  instance_id?: number;
+  @ManyToOne(type=>Instance,instance=>instance.instanceServices)
+  @JoinColumn({name:"instance_id"})
+  instance?: Instance;
 
   constructor(data?: Partial<InstanceService>) {
-    super(data);
+    Object.assign(this, data);
   }
 }
 export interface InstanceServiceRelations {
