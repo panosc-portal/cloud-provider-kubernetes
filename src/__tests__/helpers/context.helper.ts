@@ -5,24 +5,24 @@ import * as fs from 'fs';
 import { InstanceServiceRepository } from '../../repositories/instance-service.repository';
 
 export interface TestApplicationContext {
-    flavourRepository: FlavourRepository;
-    // imageRepository: ImageRepository;
+    // flavourRepository: FlavourRepository;
+    imageRepository: ImageRepository;
     // instanceRepository: InstanceRepository;
-    flavourService: FlavourService;
-    // imageService: ImageService;
+    // flavourService: FlavourService;
+    imageService: ImageService;
     // instanceService: InstanceService;
   }
 
 export function setupTestApplicationContext(): TestApplicationContext {
 
-    const flavourRepository: FlavourRepository = new FlavourRepository(testDataSource);
-    // const imageRepository: ImageRepository = new ImageRepository(testDataSource);
+    // const flavourRepository: FlavourRepository = new FlavourRepository(testDataSource);
+    const imageRepository: ImageRepository = new ImageRepository(testDataSource);
 
     // const instanceRepository: InstanceRepository = new InstanceRepository(testDataSource);
 
-    const flavourService: FlavourService = new FlavourService(flavourRepository);
-    // const imageService: ImageService = new ImageService(imageRepository);
+    // const flavourService: FlavourService = new FlavourService(flavourRepository);
+    const imageService: ImageService = new ImageService(imageRepository);
     // const instanceService: InstanceService = new InstanceService(instanceRepository);
 
-    return { flavourRepository, flavourService }
+    return { imageRepository, imageService }
 }

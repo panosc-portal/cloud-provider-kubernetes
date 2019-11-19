@@ -21,7 +21,7 @@ export class BaseRepository<T> {
 
   async getById(id : number): Promise<T> {
     await this.init();
-    const result = await this._repository.findOne(id);
+    const result = await this._repository.findOne(id) || null;
     return result;
   }
 

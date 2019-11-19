@@ -1,6 +1,17 @@
 import {juggler} from '@loopback/repository';
+import { TypeormDataSource } from '../../../datasources';
 
-export const testDataSource: juggler.DataSource = new juggler.DataSource({
-  name: 'db',
-  connector: 'memory',
-});
+export const testDataSource = setupDataSource();
+
+export function setupDataSource(): TypeormDataSource {
+
+  const dataSource = new TypeormDataSource();
+  dataSource.setConfig({
+    type: "sqlite",
+    name: "memory",
+    database: ":memory:",
+    synchronize: true
+  });
+
+  return dataSource;
+}

@@ -12,8 +12,8 @@ export class TypeormDataSource {
       host: process.env.CLOUD_PROVIDER_K8S_DATABASE_HOST,
       port: process.env.CLOUD_PROVIDER_K8S_DATABASE_PORT,
       username: process.env.CLOUD_PROVIDER_K8S_DATABASE_USERNAME,
-      password: process.env.CLOUD_PROVIDER_K8S_DATABASE_NAME,
-      database: process.env.CLOUD_PROVIDER_K8S_DATABASE_DATABASE,
+      password: process.env.CLOUD_PROVIDER_K8S_DATABASE_PASSWORD,
+      database: process.env.CLOUD_PROVIDER_K8S_DATABASE_NAME,
       schema: process.env.CLOUD_PROVIDER_K8S_DATABASE_SCHEMA,
       entities: [
           // __dirname + "models/*.js"
@@ -30,7 +30,7 @@ export class TypeormDataSource {
     })
   }
 
-  private async connection(): Promise<Connection> {
+  async connection(): Promise<Connection> {
     try {
       if (this._connection == null) {
         const connection = await createConnection(this._config);

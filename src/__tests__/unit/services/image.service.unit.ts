@@ -10,7 +10,7 @@ describe('ImageService', () => {
     await buildDataBase();
 
     const context = setupTestApplicationContext();
-    // imageService = context.imageService;
+    imageService = context.imageService;
 
   });
 
@@ -24,6 +24,6 @@ describe('ImageService', () => {
   it('gets an image', async () => {
     const image = await imageService.getById(1);
 
-    expect(image).to.equal(null);
+    expect(image).to.be.null;
   });
 });
