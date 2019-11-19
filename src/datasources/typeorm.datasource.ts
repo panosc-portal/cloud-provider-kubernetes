@@ -1,5 +1,4 @@
 import { Connection, createConnection, EntityManager, ObjectType, Repository } from "typeorm";
-import { resolve } from "dns";
 
 export class TypeormDataSource {
   static dataSourceName = 'typeorm';
@@ -9,40 +8,41 @@ export class TypeormDataSource {
 
   constructor() {
     this._config = {
-      type: "postgres",
-      host: process.env.CLOUD_PROVIDER_K8S_POSTGRES_HOST,
-      port: process.env.CLOUD_PROVIDER_K8S_POSTGRES_PORT,
-      username: process.env.CLOUD_PROVIDER_K8S_POSTGRES_USERNAME,
-      password: process.env.CLOUD_PROVIDER_K8S_POSTGRES_PASSWORD,
-      database: process.env.CLOUD_PROVIDER_K8S_POSTGRES_DATABASE,
-      schema: process.env.CLOUD_PROVIDER_K8S_POSTGRES_SCHEMA,
+      type: process.env.CLOUD_PROVIDER_K8S_DATABASE_TYPE,
+      host: process.env.CLOUD_PROVIDER_K8S_DATABASE_HOST,
+      port: process.env.CLOUD_PROVIDER_K8S_DATABASE_PORT,
+      username: process.env.CLOUD_PROVIDER_K8S_DATABASE_USERNAME,
+      password: process.env.CLOUD_PROVIDER_K8S_DATABASE_NAME,
+      database: process.env.CLOUD_PROVIDER_K8S_DATABASE_DATABASE,
+      schema: process.env.CLOUD_PROVIDER_K8S_DATABASE_SCHEMA,
       entities: [
           // __dirname + "models/*.js"
           "dist/models/*.js"
       ],
       synchronize: false,
-      logging: (process.env.CLOUD_PROVIDER_K8S_POSTGRES_LOGGING == "true")
+      logging: (process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING == "true")
     };
   }
 
-  private connection(): Promise<Connection> {
-    return new Promise((resolve) => {
-      if (this._connection != null) {
-        resolve(this._connection);
+  setConfig(config: any) {
+    Object.keys(config).forEach(key => {
+      this._config[key] = config[key];
+    })
+  }
 
-      } else {
-        createConnection(this._config)
-          .then(connection => {
-            this._connection = connection;
-
-            resolve(this._connection);
-          })
-          .catch(error => {
-            console.error(error);
-            process.exit();
-          })
+  private async connection(): Promise<Connection> {
+    try {
+      if (this._connection == null) {
+        const connection = await createConnection(this._config);
+        this._connection = connection;
       }
-    });
+
+      return this._connection;
+    
+    } catch (error) {
+      console.error(error);
+      process.exit();
+    }
   }
 
   async entityManager(): Promise<EntityManager> {
