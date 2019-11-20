@@ -1,18 +1,18 @@
 import {Instance} from '../models';
-import {TypeormDataSource} from '../datasources';
+import {TypeORMDataSource} from '../datasources';
 import {inject} from '@loopback/core';
 
 import {BaseRepository} from './base.repository';
 
-export class InstanceRepository extends BaseRepository<Instance> {
+export class InstanceRepository extends BaseRepository<Instance, number> {
 
 
-  constructor(@inject('datasources.typeorm') dataSource: TypeormDataSource) {
+  constructor(@inject('datasources.typeorm') dataSource: TypeORMDataSource) {
     super(dataSource, Instance);
   }
 
   async getAllInstances(): Promise<Instance[]> {
-    return this.getAll({ relations: ["image","flavour","instanceServices"] });
+    return this.find(null, { relations: ["image","flavour","instanceServices"] });
   }
 
 }

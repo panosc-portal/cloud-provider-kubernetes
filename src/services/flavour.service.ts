@@ -11,16 +11,16 @@ export class FlavourService {
 
 
   getAll(): Promise<Flavour[]> {
-    return this._flavourRepository.getAll();
+    return this._flavourRepository.find();
   }
 
   getById(id: number): Promise<Flavour> {
-    return this._flavourRepository.getById(id);
+    return this._flavourRepository.findById(id);
   }
 
   async update(id:number,flavour:Flavour):Promise<Flavour>{
     await this._flavourRepository.updateById(id,flavour);
-    return this._flavourRepository.getById(id);
+    return this._flavourRepository.findById(id);
   }
 }
 

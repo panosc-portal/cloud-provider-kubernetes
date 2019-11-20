@@ -15,7 +15,7 @@ export class InstanceService {
 
 
   getById(id:number): Promise<Instance>{
-    return this._instanceRepository.getById(id);
+    return this._instanceRepository.findById(id);
   }
 
   updateById(id: number): Promise<Instance> {

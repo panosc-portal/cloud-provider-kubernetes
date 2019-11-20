@@ -7,20 +7,29 @@ import { repository } from '@loopback/repository';
 export class ImageService {
   constructor(@repository(ImageRepository) private _imageRepository: ImageRepository) {}
 
-  async getAll(): Promise<Image[]> {
-    return this._imageRepository.getAll();
+  getAll(): Promise<Image[]> {
+    return this._imageRepository.find();
   }
 
   getById(id:number): Promise<Image>{
-    return this._imageRepository.getById(id);
+    return this._imageRepository.findById(id);
   }
 
-  async update(id:number,image:Image):Promise<Image>{
-    return new Promise<Image>((resolve, reject) => {
-      resolve(new Image());
-    });
-    // await this._imageRepository.updateById(id,image);
-    // return this._imageRepository.getById(id);
+  save(image: Image): Promise<Image> {
+    if (image.id == null) {
+      return this._imageRepository.save(image);
+
+    } else {
+      return this.update(image);
     }
   }
+
+  delete(image: Image): Promise<boolean> {
+    return this._imageRepository.deleteById(image.id);
+  }
+
+  update(image: Image):Promise<Image> {
+    return this._imageRepository.updateById(image.id, image);
+  }
+}
 

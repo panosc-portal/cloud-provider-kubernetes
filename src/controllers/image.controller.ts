@@ -73,7 +73,7 @@ export class ImageController {
   updateById(@param.path.number('id') id: number, @requestBody() image: Image): Promise<Image> {
     return new Promise<Image>((resolve, reject) => {
       if (id === image.id) {
-        resolve(this._imageService.update(id, image));
+        resolve(this._imageService.update(image));
       } else {
         reject(new HttpErrors.BadRequest('Id in path is not the same as body id'));
       }

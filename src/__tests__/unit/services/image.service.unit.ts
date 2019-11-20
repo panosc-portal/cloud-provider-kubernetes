@@ -1,29 +1,70 @@
 import {expect} from '@loopback/testlab';
-import { buildDataBase } from '../../helpers/database.helper';
-import { setupTestApplicationContext } from '../../helpers/context.helper';
+import { givenInitialisedDatabase } from '../../helpers/database.helper';
+import { getTestApplicationContext } from '../../helpers/context.helper';
 import { ImageService } from '../../../services';
+import { Image } from '../../../models';
 
 describe('ImageService', () => {
   let imageService: ImageService;
 
   before('getImageService', async () => {
-    await buildDataBase();
-
-    const context = setupTestApplicationContext();
-    imageService = context.imageService;
-
+    imageService = getTestApplicationContext().imageService;
   });
 
+  beforeEach('Initialise Database', givenInitialisedDatabase);
 
   it('gets all images', async () => {
     const images = await imageService.getAll();
 
-    expect(images.length).to.equal(0);
+    expect(images.length).to.equal(2);
   });
 
   it('gets an image', async () => {
     const image = await imageService.getById(1);
 
-    expect(image).to.be.null;
+    expect(image).to.not.be.null;
+    expect(image.name).to.equal("image 1");
   });
+
+  it('saves an image', async () => {
+    const images = await imageService.getAll();
+    expect(images.length).to.equal(2);
+
+    const image = new Image({
+      name: 'image 3',
+      description: 'A new image'
+    });
+    await imageService.save(image);
+    expect(image.id).to.not.be.null;
+
+    const persistedImage = await imageService.getById(image.id);
+    expect(persistedImage).to.not.be.null;
+  });
+
+  it('deletes an image', async () => {
+    let images = await imageService.getAll();
+    expect(images.length).to.equal(2);
+
+    const image = images[0];
+
+    await imageService.delete(image);
+
+    images = await imageService.getAll();
+    expect(images.length).to.equal(1);
+  });
+
+
+  it('updates an image', async () => {
+    const images = await imageService.getAll();
+    expect(images.length).to.equal(2);
+
+    const image = images[0];
+    image.name = "A new name";
+
+    const persistedImage = await imageService.save(image);
+    expect(persistedImage).to.not.be.null;
+    expect(persistedImage.id).to.equal(image.id);
+    expect(persistedImage.name).to.equal(image.name);
+  });
+
 });

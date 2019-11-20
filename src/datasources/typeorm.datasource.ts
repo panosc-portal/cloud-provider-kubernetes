@@ -1,6 +1,6 @@
 import { Connection, createConnection, EntityManager, ObjectType, Repository } from "typeorm";
 
-export class TypeormDataSource {
+export class TypeORMDataSource {
   static dataSourceName = 'typeorm';
 
   private _config: any;
@@ -16,7 +16,6 @@ export class TypeormDataSource {
       database: process.env.CLOUD_PROVIDER_K8S_DATABASE_NAME,
       schema: process.env.CLOUD_PROVIDER_K8S_DATABASE_SCHEMA,
       entities: [
-          // __dirname + "models/*.js"
           "dist/models/*.js"
       ],
       synchronize: false,
@@ -24,7 +23,7 @@ export class TypeormDataSource {
     };
   }
 
-  setConfig(config: any) {
+  mergeConfig(config: any) {
     Object.keys(config).forEach(key => {
       this._config[key] = config[key];
     })
