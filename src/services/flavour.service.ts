@@ -7,8 +7,8 @@ import { BaseService } from './base.service';
 @bind({scope: BindingScope.SINGLETON})
 export class FlavourService extends BaseService<Flavour> {
   
-  constructor(@repository(FlavourRepository) respository: FlavourRepository) {
-    super(respository);
+  constructor(@repository(FlavourRepository) repo: FlavourRepository) {
+    super(repo);
   }
 
 }

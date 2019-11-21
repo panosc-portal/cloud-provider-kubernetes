@@ -1,5 +1,5 @@
 import {model, property} from '@loopback/repository';
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
 
 @Entity()
 @model()
@@ -17,20 +17,21 @@ export class Flavour {
     type: 'string',
     required: true,
   })
-  @Column()
+  @Index()
+  @Column({length:250})
   name: string;
 
   @property({
     type: 'string',
   })
-  @Column()
+  @Column({length:2500,nullable:true})
   description?: string;
 
   @property({
     type: 'number',
     required: true,
   })
-  @Column()
+  @Column({type:'float'})
   cpu: number;
 
   @property({

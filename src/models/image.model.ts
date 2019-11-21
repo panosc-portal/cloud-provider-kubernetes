@@ -1,5 +1,5 @@
 import {model, property} from '@loopback/repository';
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, Index} from 'typeorm';
 
 @Entity()
 @model()
@@ -18,13 +18,14 @@ export class Image {
     type: 'string',
     required: true,
   })
-  @Column()
+  @Index()
+  @Column({length: 250})
   name: string;
 
   @property({
     type: 'string',
   })
-  @Column()
+  @Column({length: 2500, nullable: true})
   description?: string;
 
   constructor(data?: Partial<Image>) {

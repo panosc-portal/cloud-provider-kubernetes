@@ -7,8 +7,8 @@ import { BaseService } from './base.service';
 @bind({scope: BindingScope.SINGLETON})
 export class ImageService extends BaseService<Image> {
 
-  constructor(@repository(ImageRepository) repository: ImageRepository) {
-    super(repository);
+  constructor(@repository(ImageRepository) repo: ImageRepository) {
+    super(repo);
   }
 
 }
