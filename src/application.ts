@@ -46,16 +46,7 @@ export class CloudProviderKubernetesApplication extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
-    this.bind('flavour-service').toClass(FlavourService);
-    this.bind('image-service').toClass(ImageService);
-    this.bind('instance-service').toClass(InstanceService);
-    this.bind('node-service').toClass(NodeService);
-    this.bind('metrics-service').toClass(MetricsService);
-    this.bind('health-service').toClass(HealthService);
-    this.bind('info-service').toClass(InfoService);
-
     this.basePath('/api/v1');
-
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here

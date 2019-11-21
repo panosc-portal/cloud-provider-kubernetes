@@ -7,9 +7,10 @@ import {del, get, getModelSchemaRef, param, post, requestBody} from '@loopback/o
 import {Instance, InstanceState} from '../models';
 import {inject} from '@loopback/context';
 import {InstanceService} from '../services';
+import { HttpErrors } from '@loopback/rest';
 
 export class InstanceController {
-  constructor(@inject('instance-service') private _instanceservice: InstanceService) {
+  constructor(@inject('services.InstanceService') private _instanceservice: InstanceService) {
   }
 
   @get('/instances', {
@@ -89,8 +90,18 @@ export class InstanceController {
       },
     },
   })
-  deleteById(@param.path.string('id') id: number): Promise<void> {
-    return this._instanceservice.deleteById(id);
+  deleteById(@param.path.string('id') id: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this._instanceservice.getById(id).then(instance => {
+        if (instance == null) {
+          reject(new HttpErrors.NotFound('Instance with given id does not exist'));
+
+        } else {
+          resolve(this._instanceservice.delete(instance));
+        }
+   
+      })
+    });
   }
 
   @post('/instances/{id}/actions', {

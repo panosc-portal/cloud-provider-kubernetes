@@ -3,19 +3,13 @@ import {Image, Instance, InstanceState, K8sInstance} from '../models';
 import { K8sInstanceServiceTest} from './k8s-instance.service';
 import { InstanceRepository} from '../repositories';
 import { repository } from '@loopback/repository';
+import { BaseService } from './base.service';
 
 @bind({scope: BindingScope.SINGLETON})
-export class InstanceService {
-  constructor(@repository(InstanceRepository) private _instanceRepository: InstanceRepository) {
-  }
-
-  getAll(): Promise<Instance[]> {
-    return this._instanceRepository.getAllInstances()
-  }
-
-
-  getById(id:number): Promise<Instance>{
-    return this._instanceRepository.findById(id);
+export class InstanceService extends BaseService<Instance> {
+  
+  constructor(@repository(InstanceRepository) repository: InstanceRepository) {
+    super(repository)
   }
 
   updateById(id: number): Promise<Instance> {
@@ -34,10 +28,6 @@ export class InstanceService {
     return new Promise<InstanceState>(function(resolve, reject) {
       resolve();
     });
-  }
-
-  async deleteById(id:number): Promise<void> {
-    await this._instanceRepository.deleteById(id)
   }
 
   actionById(): void {

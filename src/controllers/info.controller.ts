@@ -9,7 +9,7 @@ import {inject} from '@loopback/context';
 import {InfoService} from '../services';
 
 export class InfoController {
-  constructor(@inject('node-service') private _infoservice: InfoService) {
+  constructor(@inject('services.InfoService') private _infoservice: InfoService) {
   }
 
   @get('/info', {

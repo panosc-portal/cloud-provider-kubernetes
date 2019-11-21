@@ -9,7 +9,7 @@ import {get, getModelSchemaRef} from '@loopback/openapi-v3';
 import {Metrics} from '../models';
 
 export class MetricsController {
-  constructor(@inject('metrics-service') private _metricservice: MetricsService) {
+  constructor(@inject('services.MetricsService') private _metricservice: MetricsService) {
   }
 
   @get('/metrics', {

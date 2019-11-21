@@ -18,7 +18,7 @@ export class TypeORMDataSource {
       entities: [
           "dist/models/*.js"
       ],
-      synchronize: true,
+      synchronize: false,
       logging: (process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING === "true")
     };
   }

@@ -10,7 +10,7 @@ import {ImageService} from '../services';
 import {HttpErrors, Response, RestBindings} from '@loopback/rest';
 
 export class ImageController {
-  constructor(@inject('image-service') private _imageService: ImageService,
+  constructor(@inject('services.ImageService') private _imageService: ImageService,
               @inject(RestBindings.Http.RESPONSE) protected response: Response) {
   }
 

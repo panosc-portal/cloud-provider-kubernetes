@@ -10,7 +10,7 @@ import {Health} from '../models/Health';
 
 
 export class HealthController {
-  constructor(@inject('health-service') private _healthservice: HealthService) {}
+  constructor(@inject('services.HealthService') private _healthservice: HealthService) {}
 
   @get('/health', {
     responses: {
