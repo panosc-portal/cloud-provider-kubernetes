@@ -33,4 +33,7 @@ export class InstanceService extends BaseService<Instance> {
   actionById(): void {
   }
 
+  getAll(): Promise<Instance[]> {
+    return this._repository.find(null, {leftJoin: ['image', 'flavour', 'protocols']});
+  }
 }

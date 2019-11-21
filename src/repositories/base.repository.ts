@@ -31,7 +31,15 @@ export class BaseRepository<T, ID> {
 
   async find(filter?: Filter, options?: Options): Promise<T[]> {
     await this.init();
-    const queryBuilder = await this.buildQuery(filter);
+    const entityName = this._entityClass.name.toLowerCase();
+
+    let queryBuilder = await this.buildQuery(entityName, filter);
+    if (options != null && options.leftJoin != null) {
+      options.leftJoin.forEach((leftJoin: string) => {
+        queryBuilder = queryBuilder.leftJoinAndSelect(`${entityName}.${leftJoin}`, leftJoin);
+      })
+    }
+
     const result = queryBuilder.getMany();
     return result;
   }
@@ -121,11 +129,10 @@ export class BaseRepository<T, ID> {
    * @param order An array of orders
    */
   private buildOrder(order: string[]) {
-    let orderBy: OrderByCondition = {};
+    const orderBy: OrderByCondition = {};
     for (const o of order) {
       const match = /^([^\s]+)( (ASC|DESC))?$/.exec(o);
       if (!match) continue;
-      const field = match[1];
       const dir = (match[3] || 'ASC') as 'ASC' | 'DESC';
       orderBy[match[1]] = dir;
     }
@@ -136,9 +143,9 @@ export class BaseRepository<T, ID> {
    * Build a TypeORM query from LoopBack Filter
    * @param filter Filter object
    */
-  private async buildQuery(filter?: Filter): Promise<SelectQueryBuilder<T>> {
+  private async buildQuery(name: string, filter?: Filter): Promise<SelectQueryBuilder<T>> {
     await this.init();
-    const queryBuilder = this._repository.createQueryBuilder();
+    const queryBuilder = this._repository.createQueryBuilder(name);
     if (!filter) return queryBuilder;
     queryBuilder.limit(filter.limit).offset(filter.offset);
     if (filter.fields) {

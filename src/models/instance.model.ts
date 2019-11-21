@@ -1,7 +1,7 @@
 import {model, property} from '@loopback/repository';
 import { Protocol} from './protocol.model';
 import {Flavour} from './flavour.model';
-import {Column, Entity, Index, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique} from 'typeorm';
+import {Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, Unique} from 'typeorm';
 import {Image} from './image.model';
 
 
@@ -67,15 +67,21 @@ export class Instance {
   @Column({name: 'created_at', type: 'date'})
   createdAt: string;
 
-  @OneToMany(type => Protocol, protocol => protocol.instance)
+  @OneToMany(type => Protocol, protocol => protocol.instance, {
+    eager: true
+  })
   protocols: Protocol[];
 
-  @OneToOne(type => Flavour)
+  @ManyToOne(type => Flavour, {
+    eager: true
+  })
   @JoinColumn({name: 'flavour_id'})
   @Unique("flavour_id_pkey",["flavour_id"])
   flavour: Flavour;
 
-  @OneToOne(type => Image)
+  @ManyToOne(type => Image, {
+    eager: true
+  })
   @JoinColumn({name: 'image_id'})
   @Unique("image_id_pkey",["image_id"])
   image: Image;
