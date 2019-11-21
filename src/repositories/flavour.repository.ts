@@ -6,7 +6,7 @@ import {TypeORMDataSource} from '../datasources';
 export class FlavourRepository extends BaseRepository<Flavour, number> {
 
   constructor(@inject('datasources.typeorm') dataSource: TypeORMDataSource) {
-    super(dataSource, Image);
+    super(dataSource, Flavour);
   }
 
 }

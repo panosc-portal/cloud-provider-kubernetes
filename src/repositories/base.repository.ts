@@ -2,6 +2,12 @@ import {TypeORMDataSource} from '../datasources';
 import {Repository, ObjectType, OrderByCondition, SelectQueryBuilder} from 'typeorm';
 import {Options, Filter, Where, Command, NamedParameters, PositionalParameters, WhereBuilder, AnyObject, } from '@loopback/repository';
 
+interface ParamterizedClause {
+  clause: string,
+  parameters: any,
+  isComposite: boolean,
+}
+
 /*
  * Some implementation details from https://github.com/raymondfeng/loopback4-extension-repository-typeorm
  */
@@ -142,7 +148,8 @@ export class BaseRepository<T, ID> {
       queryBuilder.orderBy(this.buildOrder(filter.order));
     }
     if (filter.where) {
-      queryBuilder.where(this.buildWhere(filter.where));
+      const whereClause = this.buildWhere(filter.where);
+      queryBuilder.where(whereClause.clause, whereClause.parameters);
     }
     return queryBuilder;
   }
@@ -151,47 +158,112 @@ export class BaseRepository<T, ID> {
    * Convert where object into where clause
    * @param where Where object
    */
-  private buildWhere(where: any): string {
+  buildWhere(where: any, parameters?: any): ParamterizedClause {
+    function getNextParameterName(parameters: any): string {
+      const index = Object.keys(parameters).length + 1;
+      return `p${index}`;
+    }
+
     const clauses: string[] = [];
+    parameters = parameters || {}; 
+    
     if (where.and) {
-      const and = where.and.map((w: any) => `(${this.buildWhere(w)})`).join(' AND ');
+      const andClauses = where.and.map((w: any) => this.buildWhere(w, parameters))
+      const and = andClauses.map((pc: ParamterizedClause) => pc.clause).join(' AND ');
       clauses.push(and);
+      andClauses.forEach((pc: ParamterizedClause) => {
+        Object.assign(parameters, pc.parameters);
+      });
+
     }
     if (where.or) {
-      const or = where.or.map((w: any) => `(${this.buildWhere(w)})`).join(' OR ');
-      clauses.push(or);
+      const orClauses = where.or.map((w: any) => this.buildWhere(w, parameters))
+      const or = orClauses.map((pc: ParamterizedClause) => pc.isComposite ? `(${pc.clause})` : pc.clause).join(' OR ');
+      clauses.push(`(${or})`);
+      orClauses.forEach((pc: ParamterizedClause) => {
+        Object.assign(parameters, pc.parameters);
+      });
     }
-    // FIXME [rfeng]: Build parameterized clauses
+
     for (const key in where) {
-      let clause;
       if (key === 'and' || key === 'or') continue;
+
+      let clause;
       const condition = where[key];
       if (condition.eq) {
-        clause = `${key} = ${condition.eq}`;
+        const parameterName = getNextParameterName(parameters);
+        parameters[parameterName] = condition.eq;
+        clause = `${key} = :${parameterName}`;
+
       } else if (condition.neq) {
-        clause = `${key} != ${condition.neq}`;
+        const parameterName = getNextParameterName(parameters);
+        parameters[parameterName] = condition.neq;
+        clause = `${key} != :${parameterName}`;
+
       } else if (condition.lt) {
-        clause = `${key} < ${condition.lt}`;
+        const parameterName = getNextParameterName(parameters);
+        parameters[parameterName] = condition.lt;
+        clause = `${key} < :${parameterName}`;
+
       } else if (condition.lte) {
-        clause = `${key} <= ${condition.lte}`;
+        const parameterName = getNextParameterName(parameters);
+        parameters[parameterName] = condition.lte;
+        clause = `${key} <= :${parameterName}`;
+
       } else if (condition.gt) {
-        clause = `${key} > ${condition.gt}`;
+        const parameterName = getNextParameterName(parameters);
+        parameters[parameterName] = condition.gt;
+        clause = `${key} > :${parameterName}`;
+
       } else if (condition.gte) {
-        clause = `${key} >= ${condition.gte}`;
+        const parameterName = getNextParameterName(parameters);
+        parameters[parameterName] = condition.gte;
+        clause = `${key} >= :${parameterName}`;
+
       } else if (condition.inq) {
-        const vals = condition.inq.join(', ');
+        let vals = '';
+        for (let i = 0; i < condition.inq.length; i ++) {
+          const parameterValue = condition.inq[i];
+          const parameterName = getNextParameterName(parameters);
+          parameters[parameterName] = parameterValue;
+
+          vals += i > 0 ?  `, :${parameterName}` : `:${parameterName}`;
+        }
+
         clause = `${key} IN (${vals})`;
+
+      } else if (condition.nin) {
+        let vals = '';
+        for (let i = 0; i < condition.nin.length; i ++) {
+          const parameterValue = condition.nin[i];
+          const parameterName = getNextParameterName(parameters);
+          parameters[parameterName] = parameterValue;
+
+          vals += i > 0 ?  `, :${parameterName}` : `:${parameterName}`;
+        }
+
+        clause = `${key} NOT IN (${vals})`;
+
       } else if (condition.between) {
-        const v1 = condition.between[0];
-        const v2 = condition.between[1];
-        clause = `${key} BETWEEN ${v1} AND ${v2}`;
+        const p1Name = getNextParameterName(parameters);
+        parameters[p1Name] = condition.between[0];
+        const p2Name = getNextParameterName(parameters);
+        parameters[p2Name] = condition.between[1];
+        clause = `${key} BETWEEN :${p1Name} AND :${p2Name}`;
+
       } else {
         // Shorthand form: {x:1} => X = 1
-        clause = `${key} = ${condition}`;
+        const parameterName = getNextParameterName(parameters);
+        parameters[parameterName] = condition;
+        clause = `${key} = :${parameterName}`;
       }
       clauses.push(clause);
     }
-    return clauses.join(' AND ');
+    return {
+      clause: clauses.join(' AND '),
+      parameters: parameters,
+      isComposite: (where.and != null) || (where.or != null) || clauses.length > 1,
+    };
   }
 
   /**
@@ -199,13 +271,17 @@ export class BaseRepository<T, ID> {
    * @param dataObject Data object to be updated
    * @param where Where object
    */
-  private async buildUpdate(dataObject: T, where?: Where) {
+  async buildUpdate(dataObject: T, where?: Where) {
     await this.init();
     let queryBuilder = this._repository
       .createQueryBuilder()
       .update(this._entityClass)
       .set(dataObject);
-    if (where) queryBuilder.where(this.buildWhere(where));
+
+    if (where) {
+      const whereClause = this.buildWhere(where);
+      queryBuilder.where(whereClause.clause, whereClause.parameters);
+    }
     return queryBuilder;
   }
 
@@ -213,13 +289,17 @@ export class BaseRepository<T, ID> {
    * Build a `delete` statement from LoopBack-style parameters
    * @param where Where object
    */
-  private async buildDelete(where?: Where) {
+  async buildDelete(where?: Where) {
     await this.init();
     let queryBuilder = this._repository
       .createQueryBuilder()
       .delete()
       .from(this._entityClass);
-    if (where) queryBuilder.where(this.buildWhere(where));
+
+    if (where) {
+      const whereClause = this.buildWhere(where);
+      queryBuilder.where(whereClause.clause, whereClause.parameters);
+    }
     return queryBuilder;
   }
 
