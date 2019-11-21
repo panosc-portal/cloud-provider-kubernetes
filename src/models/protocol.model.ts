@@ -1,11 +1,11 @@
 import {model, property} from '@loopback/repository';
-import {Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique} from 'typeorm';
 import {Instance} from './instance.model';
 
 
 @Entity()
 @model()
-export class InstanceService {
+export class Protocol {
   @property({
     type: 'number',
     id: true,
@@ -18,7 +18,7 @@ export class InstanceService {
   @property({
     type: 'string',
   })
-  @Index()
+  @Index('protocol_name_index')
   @Column({length: 250})
   name: string;
 
@@ -32,17 +32,17 @@ export class InstanceService {
   @property({
     type: 'number',
   })
-  @ManyToOne(type => Instance, instance => instance.instanceServices)
+  @ManyToOne(type => Instance, instance => instance.protocols)
   @JoinColumn({name: 'instance_id'})
   instance?: Instance;
 
-  constructor(data?: Partial<InstanceService>) {
+  constructor(data?: Partial<Protocol>) {
     Object.assign(this, data);
   }
 }
 
-export interface InstanceServiceRelations {
+export interface ProtocolRelations {
   // describe navigational properties here
 }
 
-export type InstanceServiceWithRelations = InstanceService & InstanceServiceRelations;
+export type InstanceServiceWithRelations = Protocol & ProtocolRelations;

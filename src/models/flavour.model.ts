@@ -17,7 +17,7 @@ export class Flavour {
     type: 'string',
     required: true,
   })
-  @Index()
+  @Index('flavour_name_index')
   @Column({length:250})
   name: string;
 

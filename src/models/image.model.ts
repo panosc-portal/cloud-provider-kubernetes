@@ -18,7 +18,7 @@ export class Image {
     type: 'string',
     required: true,
   })
-  @Index()
+  @Index('image_name_index')
   @Column({length: 250})
   name: string;
 
