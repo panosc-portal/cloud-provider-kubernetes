@@ -1,7 +1,7 @@
 import {bind, BindingScope, inject} from '@loopback/core';
 import { Instance, InstanceState, K8sInstance} from '../models';
 import { K8sInstanceServiceTest} from './k8s-instance.service';
-import { InstanceRepository} from '../repositories';
+import { InstanceRepository, QueryOptions} from '../repositories';
 import { repository } from '@loopback/repository';
 import { BaseService } from './base.service';
 
@@ -34,6 +34,6 @@ export class InstanceService extends BaseService<Instance> {
   }
 
   getAll(): Promise<Instance[]> {
-    return this._repository.find(null, {leftJoin: ['image', 'flavour', 'protocols']});
+    return this._repository.find(null, {leftJoins: ['image', 'flavour', 'protocols']} as QueryOptions);
   }
 }

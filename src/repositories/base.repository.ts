@@ -8,6 +8,10 @@ interface ParamterizedClause {
   isComposite: boolean,
 }
 
+export interface QueryOptions {
+  leftJoins?: string[] 
+}
+
 /*
  * Some implementation details from https://github.com/raymondfeng/loopback4-extension-repository-typeorm
  */
@@ -23,20 +27,20 @@ export class BaseRepository<T, ID> {
     }
   }
 
-  async save(entity: T, options?: Options): Promise<T> {
+  async save(entity: T): Promise<T> {
     await this.init();
     const result = this._repository.save(entity);
     return result;
   }
 
-  async find(filter?: Filter, options?: Options): Promise<T[]> {
+  async find(filter?: Filter, options?: QueryOptions): Promise<T[]> {
     await this.init();
     const entityName = this._entityClass.name.toLowerCase();
 
     let queryBuilder = await this.buildQuery(entityName, filter);
-    if (options != null && options.leftJoin != null) {
-      options.leftJoin.forEach((leftJoin: string) => {
-        queryBuilder = queryBuilder.leftJoinAndSelect(`${entityName}.${leftJoin}`, leftJoin);
+    if (options != null && options.leftJoins != null) {
+      options.leftJoins.forEach((relation: string) => {
+        queryBuilder = queryBuilder.leftJoinAndSelect(`${entityName}.${relation}`, relation);
       })
     }
 
@@ -44,7 +48,7 @@ export class BaseRepository<T, ID> {
     return result;
   }
 
-  async findById(id: ID, filter?: Filter, options?: Options): Promise<T> {
+  async findById(id: ID): Promise<T> {
     await this.init();
     const result = await this._repository.findOne(id);
     if (result == null) {
@@ -53,7 +57,7 @@ export class BaseRepository<T, ID> {
     return result;
   }
 
-  async deleteById(id: ID, options?: Options): Promise<boolean> {
+  async deleteById(id: ID): Promise<boolean> {
     await this.init();
 
     const whereClause = new WhereBuilder().eq('id', id).build();
@@ -81,7 +85,7 @@ export class BaseRepository<T, ID> {
     }
   }
 
-  async updateAll(data: T, where?: Where, options?: Options): Promise<boolean> {
+  async updateAll(data: T, where?: Where): Promise<boolean> {
     await this.init();
     const queryBuilder = await this.buildUpdate(data, where);
     try {
@@ -93,7 +97,7 @@ export class BaseRepository<T, ID> {
     }
   }
 
-  async deleteAll(where?: Where, options?: Options): Promise<boolean>  {
+  async deleteAll(where?: Where): Promise<boolean>  {
     await this.init();
     const queryBuilder = await this.buildDelete(where);
     
@@ -106,19 +110,19 @@ export class BaseRepository<T, ID> {
     }
   }
 
-  async count(where?: Where, options?: Options): Promise<number> {
+  async count(where?: Where): Promise<number> {
     await this.init();
     const result = await this._repository.count(<Partial<T>>where);
     return result;
   }
 
-  async exists(id: ID, options?: Options): Promise<boolean> {
+  async exists(id: ID): Promise<boolean> {
     await this.init();
     const result = await this._repository.findOne(id);
     return result != null;
   }
 
-  async execute(command: Command, parameters: NamedParameters | PositionalParameters, options?: Options): Promise<AnyObject> {
+  async execute(command: Command, parameters: NamedParameters | PositionalParameters): Promise<AnyObject> {
     await this.init();
     const result = await this._repository.query(<string>command, <any[]>parameters);
     return result;
