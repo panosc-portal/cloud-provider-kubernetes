@@ -1,6 +1,8 @@
 import { Connection, createConnection, EntityManager, ObjectType, Repository } from "typeorm";
+import { lifeCycleObserver, LifeCycleObserver } from "@loopback/core";
 
-export class TypeORMDataSource {
+@lifeCycleObserver('datasource')
+export class TypeORMDataSource implements LifeCycleObserver {
   static dataSourceName = 'typeorm';
 
   private _config: any;
@@ -18,9 +20,30 @@ export class TypeORMDataSource {
       entities: [
           "dist/models/*.js"
       ],
-      synchronize: true,
+      synchronize: (process.env.CLOUD_PROVIDER_K8S_DATABASE_SYNCHRONIZE === "true"),
       logging: (process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING === "true")
     };
+  }
+
+
+  /**
+   * Start the datasource when application is started
+   */
+  async start(): Promise<void> {
+    console.log('Initialising datasource.');
+    await this.connection();
+    console.log('Datasource initialised.');
+  }
+
+  /**
+   * Disconnect the datasource when application is stopped. This allows the
+   * application to be shut down gracefully.
+   */
+  async stop(): Promise<void> {
+    if (this._connection) {
+      this._connection.close();
+      this._connection = null;
+    }
   }
 
   mergeConfig(config: any) {

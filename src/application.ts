@@ -23,7 +23,6 @@ import {
   NodeService,
 } from './services';
 import "reflect-metadata";
-import { DatasourceObserver } from "./observers";
 
 export class CloudProviderKubernetesApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -33,9 +32,6 @@ export class CloudProviderKubernetesApplication extends BootMixin(
 
     // Set up the custom sequence
     this.sequence(MySequence);
-
-    // Add datasource lifecycle observer
-    this.lifeCycleObserver(DatasourceObserver);
 
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
