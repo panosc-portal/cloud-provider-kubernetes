@@ -29,9 +29,9 @@ export class K8sInstanceService {
 
   async createK8sInstance(instanceCreator:InstanceCreatorDto,image:Image,flavour:Flavour): Promise<K8sInstance> {
     const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instanceCreator.name,image.name);
-    const deployment = await this._deploymentManager.createK8sDeployment(deploymentRequest);
+    const deployment = await this._deploymentManager.createDeploymentIfNotExist(deploymentRequest);
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceCreator.name);
-    const service = await this._serviceManager.createService(serviceRequest);
+    const service = await this._serviceManager.createServiceIfNotExist(serviceRequest);
     return new K8sInstance({deployment: deployment, service: service});
   }
 

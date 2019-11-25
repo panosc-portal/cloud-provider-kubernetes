@@ -1,45 +1,22 @@
-import {Model, model, property} from '@loopback/repository';
+export class K8sDeployment {
 
 
-@model()
-export class K8sDeployment extends Model {
-  @property({
-    type: 'object',
-    required: true,
-  })
   k8sResponse: any;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
+
   name: string;
 
-  @property({
-    type: 'string',
-  })
-  image?: string;
-
   isValid() {
-    if (this.k8sResponse !== undefined) {
-      // eslint-disable-next-line no-prototype-builtins
-      if (this.k8sResponse.hasOwnProperty('kind')) {
-        return this.k8sResponse.kind === 'Deployment';
-      } else {
-        return false;
+    return this.k8sResponse != null && this.name != null;
+
+  }
+
+  constructor(k8sResponse: any) {
+    this.k8sResponse = k8sResponse;
+    if (k8sResponse.kind != null && k8sResponse.kind === 'Deployment') {
+      if (k8sResponse.metadata) {
+        this.name = k8sResponse.metadata.name;
       }
-    } else {
-      return false;
     }
   }
-
-  constructor(data ?: Partial<K8sDeployment>) {
-    super(data);
-  }
 }
-
-export interface K8SDeploymentRelations {
-  // describe navigational properties here
-}
-
-export type K8SDeploymentWithRelations = K8sDeployment & K8SDeploymentRelations;

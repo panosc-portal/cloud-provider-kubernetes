@@ -1,11 +1,20 @@
 
 export default class K8SResponseCreator {
-  getService(name,namespace) {
+  getService(name,namespace,portName,portNumber) {
     return {
       "kind": "Service",
       "metadata": {
         "name": name,
         "namespace": namespace
+      },
+      "spec":{
+        "ports":[
+          {
+            "name":portName,
+            "port":portNumber,
+            "nodePort": 32417
+          }
+        ]
       }
     };
   };

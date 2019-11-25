@@ -1,46 +1,25 @@
-import {Model, model, property} from '@loopback/repository';
+export class K8sService {
 
-@model()
-export class K8sService extends Model {
-  @property({
-    type: 'object',
-    required: true,
-  })
   k8sResponse: any;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
   name: string;
 
-  @property({
-    type: 'object',
-    required: true,
-  })
   port: object;
 
   isValid() {
-    if (this.k8sResponse !== undefined) {
-      // eslint-disable-next-line no-prototype-builtins
-      if (this.k8sResponse.hasOwnProperty('kind')) {
-        return this.k8sResponse.kind === 'Service';
-      } else {
-        return false;
+    return this.k8sResponse != null && this.name != null && this.port != null;
+
+  }
+
+  constructor(k8sResponse: any) {
+    this.k8sResponse = k8sResponse;
+    if (k8sResponse.kind != null && k8sResponse.kind === 'Service') {
+      if (k8sResponse.metadata) {
+        this.name = k8sResponse.metadata.name;
       }
-    } else {
-      return false;
+      if (k8sResponse.spec) {
+        this.port = k8sResponse.spec.ports[0]
+      }
     }
   }
-
-
-  constructor(data?: Partial<K8sService>) {
-    super(data);
-  }
 }
-
-export interface K8SServiceRelations {
-  // describe navigational properties here
-}
-
-export type K8SServiceWithRelations = K8sService & K8SServiceRelations;
