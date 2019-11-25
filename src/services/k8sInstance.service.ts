@@ -4,22 +4,34 @@ import {Flavour, Image, K8sInstance} from '../models';
 import {K8sRequestFactoryService} from './k8sRequestFactory.service';
 import {K8sDeploymentManager} from './k8sDeployment.manager';
 import {InstanceCreatorDto} from '../controllers/dto/instanceCreatorDto';
+import {KubernetesDataSource} from '../datasources';
 
 @bind({scope: BindingScope.SINGLETON})
 export class K8sInstanceService {
 
-  private k8sRequestFactoryService = new K8sRequestFactoryService();
+  private _requestFactoryService = new K8sRequestFactoryService();
+  private _deploymentManager: K8sDeploymentManager;
+  private _serviceManager: K8sServiceManager;
 
-  constructor(@inject('services.K8sDeploymentManagerService') private kubernetesDeploymentManager: K8sDeploymentManager,
-              @inject('services.K8sServiceManagerService') private kubernetesServiceManager: K8sServiceManager){
+
+  get deploymentManager(): K8sDeploymentManager {
+    return this._deploymentManager;
   }
 
+  get serviceManager(): K8sServiceManager {
+    return this._serviceManager;
+  }
+
+  constructor(@inject('datasources.kubernetes') dataSource: KubernetesDataSource){
+    this._deploymentManager = new K8sDeploymentManager(dataSource);
+    this._serviceManager = new K8sServiceManager(dataSource);
+  }
 
   async createK8sInstance(instanceCreator:InstanceCreatorDto,image:Image,flavour:Flavour): Promise<K8sInstance> {
-    const deploymentRequest = this.k8sRequestFactoryService.createK8sDeploymentRequest(instanceCreator.name,image.name);
-    const deployment = await this.kubernetesDeploymentManager.createK8sDeployment(deploymentRequest);
-    const serviceRequest = this.k8sRequestFactoryService.createK8sServiceRequest(instanceCreator.name);
-    const service = await this.kubernetesServiceManager.createService(serviceRequest);
+    const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instanceCreator.name,image.name);
+    const deployment = await this._deploymentManager.createK8sDeployment(deploymentRequest);
+    const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceCreator.name);
+    const service = await this._serviceManager.createService(serviceRequest);
     return new K8sInstance({deployment: deployment, service: service});
   }
 

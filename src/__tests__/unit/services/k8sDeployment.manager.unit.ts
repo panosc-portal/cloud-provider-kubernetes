@@ -7,7 +7,7 @@ describe('K8sDeploymentManager', () => {
   let k8sDeploymentManager : K8sDeploymentManager;
 
   before('getK8sDeploymentManager', async () => {
-    k8sDeploymentManager= getTestApplicationContext().k8sDeploymentManager;
+    k8sDeploymentManager= getTestApplicationContext().k8sInstanceService.deploymentManager;
   });
 
 

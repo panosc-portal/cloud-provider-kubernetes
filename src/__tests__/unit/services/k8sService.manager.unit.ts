@@ -8,7 +8,7 @@ describe('K8sServiceManager', () => {
   let k8sServiceManager: K8sServiceManager;
 
   before('getK8sServiceManager', async () => {
-    k8sServiceManager = getTestApplicationContext().k8sServiceManager;
+    k8sServiceManager = getTestApplicationContext().k8sInstanceService.serviceManager;
   });
 
 
