@@ -1,5 +1,5 @@
 import {bind, /* inject, */ BindingScope} from '@loopback/core';
-import {Health} from '../models/Health';
+import {Health} from '../models/enumerations/Health';
 
 @bind({scope: BindingScope.SINGLETON})
 export class HealthService {

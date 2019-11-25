@@ -1,5 +1,5 @@
 import {model, property} from '@loopback/repository';
-import {Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique} from 'typeorm';
+import {Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {Instance} from './instance.model';
 
 

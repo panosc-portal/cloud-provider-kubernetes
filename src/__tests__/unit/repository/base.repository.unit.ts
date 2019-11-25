@@ -2,7 +2,7 @@ import {expect} from '@loopback/testlab';
 import { Image } from '../../../models';
 
 import {testDataSource} from '../../fixtures/datasources/testdb.datasource';
-import { BaseRepository } from '../../../repositories/base.repository';
+import { BaseRepository } from '../../../repositories';
 import { WhereBuilder } from '@loopback/repository';
 
 describe('BaseRepository', () => {

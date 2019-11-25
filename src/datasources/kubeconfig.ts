@@ -13,7 +13,6 @@ export class K8SConfigCreator {
       users: [
         {
           name: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_USERNAME,
-    
         },
       ],
       contexts: [

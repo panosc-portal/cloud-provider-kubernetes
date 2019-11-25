@@ -75,6 +75,7 @@ export class Instance {
   })
   protocols: Protocol[];
 
+  @property({type:'number'})
   @ManyToOne(type => Flavour, {
     eager: true
   })
@@ -84,6 +85,7 @@ export class Instance {
   @ManyToOne(type => Image, {
     eager: true
   })
+  @property({type:'number'})
   @JoinColumn({name: 'image_id'})
   image: Image;
 

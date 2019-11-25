@@ -4,13 +4,14 @@
 
 
 import {del, get, getModelSchemaRef, param, post, requestBody} from '@loopback/openapi-v3';
-import {Instance, InstanceState} from '../models';
+import {Image, Instance, InstanceState} from '../models';
 import {inject} from '@loopback/context';
-import {InstanceService} from '../services';
-import { HttpErrors } from '@loopback/rest';
+import {FlavourService, ImageService, InstanceService} from '../services';
+import {HttpErrors} from '@loopback/rest';
+import {InstanceCreatorDto} from './dto/instanceCreatorDto';
 
 export class InstanceController {
-  constructor(@inject('services.InstanceService') private _instanceservice: InstanceService) {
+  constructor(@inject('services.InstanceService') private _instanceservice: InstanceService, @inject('services.ImageService') private _imageservice: ImageService, @inject('services.FlavourService') private _flavourservice: FlavourService) {
   }
 
   @get('/instances', {
@@ -43,8 +44,14 @@ export class InstanceController {
       },
     },
   })
-  create(@requestBody() instance: Instance): Promise<Instance> {
-    return this._instanceservice.create();
+  async create(@requestBody() dto: InstanceCreatorDto): Promise<Instance> {
+
+    const image = await this._imageservice.getById(dto.imageId);
+    const flavour = await this._flavourservice.getById(dto.flavourId);
+    if (image && flavour) {
+      return this._instanceservice.create(dto, image, flavour);
+    }
+
   }
 
   @get('/instances/{id}', {
@@ -99,8 +106,8 @@ export class InstanceController {
         } else {
           resolve(this._instanceservice.delete(instance));
         }
-   
-      })
+
+      });
     });
   }
 

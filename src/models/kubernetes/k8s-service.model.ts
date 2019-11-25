@@ -6,7 +6,7 @@ export class K8sService extends Model {
     type: 'object',
     required: true,
   })
-  k8sResponse: object;
+  k8sResponse: any;
 
   @property({
     type: 'string',
@@ -19,6 +19,19 @@ export class K8sService extends Model {
     required: true,
   })
   port: object;
+
+  isValid() {
+    if (this.k8sResponse !== undefined) {
+      // eslint-disable-next-line no-prototype-builtins
+      if (this.k8sResponse.hasOwnProperty('kind')) {
+        return this.k8sResponse.kind === 'Service';
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
 
 
   constructor(data?: Partial<K8sService>) {

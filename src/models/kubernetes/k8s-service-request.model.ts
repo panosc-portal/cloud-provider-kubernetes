@@ -31,7 +31,7 @@ export class K8sServiceRequest extends Model {
       'metadata': {
         'name': this._name,
         'labels': {
-          'app': 'visa',
+          'app': this._name,
         },
       },
       'spec': {
@@ -43,7 +43,7 @@ export class K8sServiceRequest extends Model {
           },
         ],
         'selector': {
-          'app': 'visa',
+          'app': this._name,
         },
       },
     };

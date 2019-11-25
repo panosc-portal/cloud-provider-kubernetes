@@ -6,7 +6,7 @@
 import {inject} from '@loopback/context';
 import {HealthService} from '../services';
 import {get} from '@loopback/openapi-v3';
-import {Health} from '../models/Health';
+import {Health} from '../models/enumerations/Health';
 
 
 export class HealthController {

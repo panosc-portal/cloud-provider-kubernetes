@@ -1,21 +1,27 @@
 import {bind, BindingScope, inject} from '@loopback/core';
-import { Instance, InstanceState, K8sInstance} from '../models';
-import { K8sInstanceService} from './k8s-instance.service';
-import { InstanceRepository, QueryOptions} from '../repositories';
-import { repository } from '@loopback/repository';
-import { BaseService } from './base.service';
+import {Flavour, Image, Instance, InstanceState, K8sInstance} from '../models';
+import {K8sInstanceService} from './k8sInstance.service';
+import {InstanceRepository, QueryOptions} from '../repositories';
+import {repository} from '@loopback/repository';
+import {BaseService} from './base.service';
+import {InstanceCreatorDto} from '../controllers/dto/instanceCreatorDto';
 
 @bind({scope: BindingScope.SINGLETON})
 export class InstanceService extends BaseService<Instance> {
 
   constructor(@repository(InstanceRepository) repo: InstanceRepository, @inject('services.K8sInstanceService') private k8sInstanceService: K8sInstanceService) {
-    super(repo)
+    super(repo);
   }
 
-  async create(): Promise<Instance> {
-    const kubeInstance: K8sInstance = await this.k8sInstanceService.createK8sInstance();
-    const instanceName = kubeInstance.deployment.name;
-    return new Instance({name: instanceName});
+  updateById(id: number): Promise<Instance> {
+    return new Promise<Instance>(function(resolve, reject) {
+      resolve();
+    });
+  }
+
+  async create(instanceBody: InstanceCreatorDto, image: Image, flavour: Flavour): Promise<Instance> {
+    const kubeInstance: K8sInstance = await this.k8sInstanceService.createK8sInstance(instanceBody, image, flavour);
+    return new Instance({name: kubeInstance.deployment.name});
   }
 
   getStateById(): Promise<InstanceState> {

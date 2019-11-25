@@ -46,26 +46,26 @@ export class K8sDeploymentRequest extends Model {
       'metadata': {
         'name': this._name,
         'labels': {
-          'app': 'visa',
+          'app': this._name,
         },
       },
       'spec': {
         'selector': {
           'matchLabels': {
-            'app': 'visa',
+            'app': this._name,
           },
         },
         'replicas': 1,
         'template': {
           'metadata': {
             'labels': {
-              'app': 'visa',
+              'app': this._name,
             },
           },
           'spec': {
             'containers': [
               {
-                'name': 'visa',
+                'name': 'test',
                 'image': this._image,
                 'ports': [
                   {

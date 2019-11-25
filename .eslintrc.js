@@ -1,3 +1,3 @@
 module.exports = {
-  extends: '@loopback/eslint-config',
+  extends: ['@loopback/eslint-config']
 };
