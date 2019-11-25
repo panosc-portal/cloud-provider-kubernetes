@@ -1,6 +1,0 @@
-{
-  "name": "kubernetes",
-  "connector": "rest",
-  "baseURL": "127.0.0.1",
-  "crud": false
-}

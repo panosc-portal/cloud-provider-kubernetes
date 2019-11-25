@@ -18,7 +18,7 @@ export class CloudProviderKubernetesApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-    if (options.dotenv) {
+    if (!options.ignoreDotenv) {
       dotenv.config();
     }
 

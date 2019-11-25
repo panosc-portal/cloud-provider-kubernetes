@@ -16,7 +16,7 @@ export async function setupApplication(): Promise<AppWithClient> {
 
   const app = new CloudProviderKubernetesApplication({
     rest: restConfig,
-    dotenv: false
+    ignoreDotenv: true
   });
 
   await app.boot();
