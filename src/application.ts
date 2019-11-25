@@ -1,9 +1,6 @@
 import * as dotenv from "dotenv";
-
-dotenv.config();
-
 import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig, createBindingFromClass} from '@loopback/core';
+import {ApplicationConfig} from '@loopback/core';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
@@ -13,15 +10,6 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import * as path from 'path';
 import {MySequence} from './sequence';
-import {
-  FlavourService,
-  HealthService,
-  ImageService,
-  InfoService,
-  InstanceService,
-  MetricsService,
-  NodeService,
-} from './services';
 import "reflect-metadata";
 
 export class CloudProviderKubernetesApplication extends BootMixin(
@@ -29,6 +17,10 @@ export class CloudProviderKubernetesApplication extends BootMixin(
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
+
+    if (options.dotenv) {
+      dotenv.config();
+    }
 
     // Set up the custom sequence
     this.sequence(MySequence);

@@ -15,8 +15,7 @@ describe('ImageService', () => {
 
   it('gets all images', async () => {
     const images = await imageService.getAll();
-
-    expect(images.length).to.equal(2);
+    expect(images.length).to.equal(3);
   });
 
   it('gets an image', async () => {
@@ -27,9 +26,6 @@ describe('ImageService', () => {
   });
 
   it('saves an image', async () => {
-    const images = await imageService.getAll();
-    expect(images.length).to.equal(2);
-
     const image = new Image({
       name: 'image 3',
       description: 'A new image'
@@ -43,20 +39,19 @@ describe('ImageService', () => {
 
   it('deletes an image', async () => {
     let images = await imageService.getAll();
-    expect(images.length).to.equal(2);
+    expect(images.length).to.equal(3);
 
-    const image = images[0];
+    const image = images.find(image => image.id == 3);
 
     await imageService.delete(image);
 
     images = await imageService.getAll();
-    expect(images.length).to.equal(1);
+    expect(images.length).to.equal(2);
   });
 
 
   it('updates an image', async () => {
     const images = await imageService.getAll();
-    expect(images.length).to.equal(2);
 
     const image = images[0];
     image.name = "A new name";
@@ -65,6 +60,9 @@ describe('ImageService', () => {
     expect(persistedImage).to.not.be.null;
     expect(persistedImage.id).to.equal(image.id);
     expect(persistedImage.name).to.equal(image.name);
+
+    const imagesAfterUpdate = await imageService.getAll();
+    expect(imagesAfterUpdate.length).to.equal(images.length);
   });
 
 });

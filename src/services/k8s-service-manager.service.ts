@@ -5,8 +5,7 @@ import {KubernetesDataSource} from '../datasources';
 @bind({scope: BindingScope.SINGLETON})
 export class K8sServiceManagerService {
 
-  constructor(@inject('datasources.kubernetes')
-              protected dataSource: KubernetesDataSource = new KubernetesDataSource()) {
+  constructor(@inject('datasources.kubernetes') private dataSource: KubernetesDataSource) {
   }
 
   async getServiceWithName(name: string) {

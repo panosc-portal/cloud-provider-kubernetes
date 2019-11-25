@@ -14,12 +14,7 @@ export class BaseService<T extends {id: number}> {
   }
 
   save(object: T): Promise<T> {
-    if (object.id == null) {
-      return this._repository.save(object);
-
-    } else {
-      return this.update(object);
-    }
+    return this._repository.save(object);
   }
 
   delete(object: T): Promise<boolean> {

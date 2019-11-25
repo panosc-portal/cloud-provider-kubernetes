@@ -1,12 +1,9 @@
 import {
-  inject,
   lifeCycleObserver,
   LifeCycleObserver,
   ValueOrPromise,
 } from '@loopback/core';
-import {juggler} from '@loopback/repository';
-import * as config from './kubernetes.datasource.json';
-import {K8config} from './kubeconfig';
+import {K8SConfigCreator} from './kubeconfig';
 import { ApiRoot} from 'kubernetes-client';
 import {KubeConfig} from '@kubernetes/client-node';
 const Request = require('kubernetes-client/backends/request');
@@ -14,20 +11,19 @@ const Client = require('kubernetes-client').Client;
 
 
 @lifeCycleObserver('datasource')
-export class KubernetesDataSource extends juggler.DataSource
-  implements LifeCycleObserver {
+export class KubernetesDataSource implements LifeCycleObserver {
+  
   static dataSourceName = 'kubernetes';
+  
   defaultNamespace = 'panosc';
   K8sClient: ApiRoot;
 
-
-  constructor(
-    @inject('datasources.config.kubernetes', {optional: true})
-      dsConfig: object = config,
-  ) {
-    super(dsConfig);
+  constructor() {
     const kubeconfig = new KubeConfig();
-    kubeconfig.loadFromString(JSON.stringify(K8config));
+
+    const k8Sconfig = new K8SConfigCreator().getConfig();
+    
+    kubeconfig.loadFromString(JSON.stringify(k8Sconfig));
     const backend = new Request({kubeconfig});
     this.K8sClient = new Client({backend, version: '1.13'});
   }
@@ -43,6 +39,5 @@ export class KubernetesDataSource extends juggler.DataSource
    * application to be shut down gracefully.
    */
   stop(): ValueOrPromise<void> {
-    return super.disconnect();
   }
 }

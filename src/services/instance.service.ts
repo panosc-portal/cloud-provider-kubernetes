@@ -1,6 +1,6 @@
 import {bind, BindingScope, inject} from '@loopback/core';
 import { Instance, InstanceState, K8sInstance} from '../models';
-import { K8sInstanceServiceTest} from './k8s-instance.service';
+import { K8sInstanceService} from './k8s-instance.service';
 import { InstanceRepository, QueryOptions} from '../repositories';
 import { repository } from '@loopback/repository';
 import { BaseService } from './base.service';
@@ -8,7 +8,7 @@ import { BaseService } from './base.service';
 @bind({scope: BindingScope.SINGLETON})
 export class InstanceService extends BaseService<Instance> {
 
-  constructor(@repository(InstanceRepository) repo: InstanceRepository) {
+  constructor(@repository(InstanceRepository) repo: InstanceRepository, @inject('services.K8sInstanceService') private k8sInstanceService: K8sInstanceService) {
     super(repo)
   }
 
@@ -19,7 +19,7 @@ export class InstanceService extends BaseService<Instance> {
   }
 
   async create(): Promise<Instance> {
-    const kubeInstance: K8sInstance = await K8sInstanceServiceTest.createK8sInstance();
+    const kubeInstance: K8sInstance = await this.k8sInstanceService.createK8sInstance();
     const instanceName = kubeInstance.deployment.name;
     return new Instance({name: instanceName});
   }

@@ -1,11 +1,12 @@
-import {FlavourRepository, ImageRepository, InstanceRepository } from '../../repositories';
+import {FlavourRepository, ImageRepository, InstanceRepository, ProtocolRepository } from '../../repositories';
 import {testDataSource} from '../fixtures/datasources/testdb.datasource';
 import * as fs from 'fs';
 
 export async function emptyDatabase() {
+  await new ProtocolRepository(testDataSource).deleteAll();
+  await new InstanceRepository(testDataSource).deleteAll();
   await new FlavourRepository(testDataSource).deleteAll();
   await new ImageRepository(testDataSource).deleteAll();
-  await new InstanceRepository(testDataSource).deleteAll();
 }
 
 export async function givenInitialisedDatabase() {

@@ -5,15 +5,11 @@ import {K8sRequestFactoryService} from './k8s-request-factory.service';
 import {K8sDeploymentManagerService} from './k8s-deployment-manager.service';
 
 @bind({scope: BindingScope.SINGLETON})
-class K8sInstanceService {
+export class K8sInstanceService {
 
-  constructor(@inject('services.K8sDeploymentManagerService')
-              protected  kubernetesDeploymentManager: K8sDeploymentManagerService = new K8sDeploymentManagerService(),
-              @inject('services.K8sServiceManagerService')
-              protected  kubernetesServiceManager: K8sServiceManagerService = new K8sServiceManagerService(),
-              @inject('services.K8sRequestFactoryService')
-              protected  kubernetesFactoryService: K8sRequestFactoryService = new K8sRequestFactoryService(),
-  ) {
+  constructor(@inject('services.K8sDeploymentManagerService') private kubernetesDeploymentManager: K8sDeploymentManagerService,
+              @inject('services.K8sServiceManagerService') private kubernetesServiceManager: K8sServiceManagerService,
+              @inject('services.K8sRequestFactoryService') private kubernetesFactoryService: K8sRequestFactoryService) {
   }
 
   async createK8sInstance(): Promise<K8sInstance> {
@@ -25,5 +21,3 @@ class K8sInstanceService {
   }
 
 }
-
-export const K8sInstanceServiceTest = new K8sInstanceService;
