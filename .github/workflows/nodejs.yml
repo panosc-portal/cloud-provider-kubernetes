@@ -1,0 +1,35 @@
+name: Node CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install, build, and test
+      run: |
+        npm ci
+        npm run build --if-present
+        npm test
+      env:
+        CI: true
+        NODE_ENV: "test"
+        CLOUD_PROVIDER_K8S_DATABASE_TYPE: "sqlite"
+        CLOUD_PROVIDER_K8S_DATABASE_NAME: ":memory:"
+        CLOUD_PROVIDER_K8S_DATABASE_SYNCHRONIZE: "true"
+        CLOUD_PROVIDER_K8S_DATABASE_LOGGING: "false"
+        CLOUD_PROVIDER_K8S_KUBERNETES_HTTP_URL: "http://localhost:3001"
+        CLOUD_PROVIDER_K8S_KUBERNETES_CONTEXT_NAME: "docker"
+        CLOUD_PROVIDER_K8S_KUBERNETES_USERNAME: "docker"
+        CLOUD_PROVIDER_K8S_KUBERNETES_CLUSTER_NAME: "docker"
