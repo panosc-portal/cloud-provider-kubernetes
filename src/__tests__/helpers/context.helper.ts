@@ -5,7 +5,6 @@ import {
   ImageService,
   InstanceService,
   K8sInstanceService,
-  K8sServiceManager, K8sDeploymentManager,
 } from '../../services';
 import {testDataSource} from '../fixtures/datasources/testdb.datasource';
 import {KubernetesDataSource} from '../../datasources';

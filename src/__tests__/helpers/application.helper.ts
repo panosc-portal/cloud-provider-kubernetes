@@ -5,6 +5,8 @@ import {
   Client,
 } from '@loopback/testlab';
 import { TypeORMDataSource } from '../../datasources';
+import { KubernetesMockServer } from '../kubernetesMock/KubernetesMockServer';
+import { createBindingFromClass } from '@loopback/core';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const restConfig = givenHttpServerConfig({
@@ -20,9 +22,10 @@ export async function setupApplication(): Promise<AppWithClient> {
     ignoreDotenv: true
   });
 
+  app.add(createBindingFromClass(KubernetesMockServer));
+
   await app.boot();
   await app.start();
-
   const datasource: TypeORMDataSource = await app.get('datasources.typeorm');
 
   const client = createRestAppClient(app);
