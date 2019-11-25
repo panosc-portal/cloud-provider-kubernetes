@@ -30,9 +30,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
    * Start the datasource when application is started
    */
   async start(): Promise<void> {
-    console.log('Initialising datasource.');
     await this.connection();
-    console.log('Datasource initialised.');
   }
 
   /**

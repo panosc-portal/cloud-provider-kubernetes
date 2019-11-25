@@ -1,18 +1,23 @@
 import {FlavourRepository, ImageRepository, InstanceRepository, ProtocolRepository } from '../../repositories';
 import {testDataSource} from '../fixtures/datasources/testdb.datasource';
 import * as fs from 'fs';
+import { TypeORMDataSource } from '../../datasources';
 
-export async function emptyDatabase() {
-  await new ProtocolRepository(testDataSource).deleteAll();
-  await new InstanceRepository(testDataSource).deleteAll();
-  await new FlavourRepository(testDataSource).deleteAll();
-  await new ImageRepository(testDataSource).deleteAll();
+async function emptyDatabase(datasource: TypeORMDataSource) {
+  await new ProtocolRepository(datasource).deleteAll();
+  await new InstanceRepository(datasource).deleteAll();
+  await new FlavourRepository(datasource).deleteAll();
+  await new ImageRepository(datasource).deleteAll();
 }
 
-export async function givenInitialisedDatabase() {
-  await emptyDatabase();
+export function givenInitialisedTestDatabase() {
+  return givenInitialisedDatabase(testDataSource);
+}
 
-  const entityManager = await testDataSource.entityManager();
+export async function givenInitialisedDatabase(datasource: TypeORMDataSource) {
+  await emptyDatabase(datasource);
+
+  const entityManager = await datasource.entityManager();
 
   const fixtures = fs.readFileSync('./resources/__tests__/fixtures.sql', 'utf8');
   const sqlQueries = fixtures.replace(/(\r\n|\n|\r)/gm, "").split(';').filter(query => query.length > 0).map(query => query + ';');

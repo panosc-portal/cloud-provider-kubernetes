@@ -1,4 +1,3 @@
-import {juggler} from '@loopback/repository';
 import { TypeORMDataSource } from '../../../datasources';
 
 export const testDataSource = setupDataSource();

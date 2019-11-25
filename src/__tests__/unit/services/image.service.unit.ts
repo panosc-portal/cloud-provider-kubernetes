@@ -1,5 +1,5 @@
 import {expect} from '@loopback/testlab';
-import { givenInitialisedDatabase } from '../../helpers/database.helper';
+import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { getTestApplicationContext } from '../../helpers/context.helper';
 import { ImageService } from '../../../services';
 import { Image } from '../../../models';
@@ -11,7 +11,7 @@ describe('ImageService', () => {
     imageService = getTestApplicationContext().imageService;
   });
 
-  beforeEach('Initialise Database', givenInitialisedDatabase);
+  beforeEach('Initialise Database', givenInitialisedTestDatabase);
 
   it('gets all images', async () => {
     const images = await imageService.getAll();

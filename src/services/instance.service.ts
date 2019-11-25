@@ -12,12 +12,6 @@ export class InstanceService extends BaseService<Instance> {
     super(repo)
   }
 
-  updateById(id: number): Promise<Instance> {
-    return new Promise<Instance>(function(resolve, reject) {
-      resolve();
-    });
-  }
-
   async create(): Promise<Instance> {
     const kubeInstance: K8sInstance = await this.k8sInstanceService.createK8sInstance();
     const instanceName = kubeInstance.deployment.name;

@@ -4,6 +4,7 @@ import {
   givenHttpServerConfig,
   Client,
 } from '@loopback/testlab';
+import { TypeORMDataSource } from '../../datasources';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const restConfig = givenHttpServerConfig({
@@ -22,12 +23,15 @@ export async function setupApplication(): Promise<AppWithClient> {
   await app.boot();
   await app.start();
 
+  const datasource: TypeORMDataSource = await app.get('datasources.typeorm');
+
   const client = createRestAppClient(app);
 
-  return {app, client};
+  return {app, client, datasource};
 }
 
 export interface AppWithClient {
   app: CloudProviderKubernetesApplication;
   client: Client;
+  datasource: TypeORMDataSource;
 }
