@@ -1,9 +1,7 @@
-import {bind, BindingScope} from '@loopback/core';
 import {K8sDeploymentRequest, K8sServiceRequest} from '../models';
 
-@bind({scope: BindingScope.SINGLETON})
 export class K8sRequestFactoryService {
-  constructor(/* Add @inject to inject parameters */) {
+  constructor() {
   }
 
   createK8sServiceRequest(serviceName: string): K8sServiceRequest {

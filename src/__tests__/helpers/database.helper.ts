@@ -2,6 +2,7 @@ import {FlavourRepository, ImageRepository, InstanceRepository, ProtocolReposito
 import {testDataSource} from '../fixtures/datasources/testdb.datasource';
 import * as fs from 'fs';
 import { TypeORMDataSource } from '../../datasources';
+import { logger } from '../../utils';
 
 async function emptyDatabase(datasource: TypeORMDataSource) {
   await new ProtocolRepository(datasource).deleteAll();
@@ -24,10 +25,11 @@ export async function givenInitialisedDatabase(datasource: TypeORMDataSource) {
   for (let i = 0; i < sqlQueries.length; i++) {
     const sqlQuery = sqlQueries[i];
     try {
+      logger.debug(`Executing fixtures SQL query : ${sqlQuery}`);
       await entityManager.query(sqlQuery);
 
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
   }
 }

@@ -1,10 +1,8 @@
-import {bind, BindingScope, inject} from '@loopback/core';
 import {K8sDeployment, K8sDeploymentRequest} from '../models';
 import {KubernetesDataSource} from '../datasources';
 
-@bind({scope: BindingScope.SINGLETON})
 export class K8sDeploymentManager {
-  constructor(@inject('datasources.kubernetes') private dataSource: KubernetesDataSource) {
+  constructor(private dataSource: KubernetesDataSource) {
   }
 
   async getDeploymentsWithName(name: string) {

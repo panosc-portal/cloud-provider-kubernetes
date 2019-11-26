@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import KubernetesResponseCreator from './KubernetesResponseCreator';
 import {lifeCycleObserver} from '@loopback/core';
+import { logger } from '../../utils';
 
 @lifeCycleObserver('server')
 export class KubernetesMockServer {
@@ -23,7 +24,7 @@ export class KubernetesMockServer {
     app.get('/apis/apps/v1/namespaces/:namespace/deployments/:deployment', (req, res) => {
       const deploymentName = req.params.deployment;
       const namespace = req.params.namespace;
-      console.log(`Getting deploymnet ${deploymentName} from namespace ${namespace}`);
+      logger.info(`Getting deploymnet ${deploymentName} from namespace ${namespace}`);
       if (this.isDeploymentCreated(deploymentName, namespace)) {
         res.status(200).send(k8sResponseCreator.getDeployment(deploymentName, namespace));
       } else {
@@ -34,37 +35,43 @@ export class KubernetesMockServer {
     app.get('/api/v1/namespaces/:namespace/services/:service', (req, res) => {
       const serviceName = req.params.service;
       const namespace = req.params.namespace;
-      console.log(`Getting service ${serviceName} from namespace ${namespace}`);
-      if (this.isServiceCreated(serviceName, namespace)) {
-        res.status(200).send(k8sResponseCreator.getService(req.body.metadata.name, req.params.namespace,req.body.spec.name,req.body.spec.port));
+      logger.info(`Getting service ${serviceName} from namespace ${namespace}`);
+
+      const response = this.createdServices.get(`${req.params.namespace}.${req.body.metadata.name}`);
+      if (response != null) {
+        res.status(200).send(response);
+
       } else {
         res.status(404).send();
       }
     });
 
     app.get('*', (req, res) => {
-      res.send(`Hello World your path is ${req.originalUrl}`);
-      console.log(`GET ${req.originalUrl}`);
+      res.status(404).send();
+      logger.info(`GET ${req.originalUrl}: unmapped path`);
     });
 
     app.post('/apis/apps/v1/namespaces/:namespace/deployments', jsonParser, (req, res) => {
-      console.log(`Posting deployment ${req.body.metadata.name}  in namespace ${req.params.namespace}`);
+      logger.info(`Posting deployment ${req.body.metadata.name} in namespace ${req.params.namespace}`);
       res.status(200).send(k8sResponseCreator.getDeployment(req.body.metadata.name, req.params.namespace));
       this.createdDeployments.set(req.params.deployment, req.params.namespace);
     });
 
     app.post('/api/v1/namespaces/:namespace/services', jsonParser, (req, res) => {
-      console.log(`Posting service ${req.body.metadata.name}  in namespace ${req.params.namespace}`);
-      res.status(200).send(k8sResponseCreator.getService(req.body.metadata.name, req.params.namespace,req.body.spec.name,req.body.spec.port));
-      this.createdServices.set(req.body.metadata.name, req.params.namespace);
+      logger.info(`Posting service ${req.body.metadata.name} in namespace ${req.params.namespace}`);
+
+      const response = k8sResponseCreator.getService(req.body.metadata.name, req.params.namespace,req.body.spec.name,req.body.spec.port);
+      this.createdServices.set(`${req.params.namespace}.${req.body.metadata.name}`, response);
+
+      res.status(200).send();
     });
 
     app.post('*', (req, res) => {
-      res.send(`Hello World your path is ${req.originalUrl}`);
-      console.log(`POST ${req.originalUrl}`);
+      res.status(404).send();
+      logger.info(`POST ${req.originalUrl}: unmapped path`);
     });
 
-    this.server = app.listen(this.port, () => console.log(`Kubernetes Mock Server listening on port ${this.port}!`));
+    this.server = app.listen(this.port, () => logger.info(`Kubernetes Mock Server listening on port ${this.port}!`));
   }
 
   isDeploymentCreated(name, namespace) {
@@ -83,6 +90,7 @@ export class KubernetesMockServer {
     if (this.server != null) {
       this.server.close();
       this.server = null;
+      logger.info(`Kubernetes Mock Server stopped`);
     }
   }
 }

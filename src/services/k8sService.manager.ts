@@ -1,12 +1,10 @@
-import {bind, BindingScope, inject} from '@loopback/core';
 import {K8sService, K8sServiceRequest} from '../models';
 import {KubernetesDataSource} from '../datasources';
 
 
-@bind({scope: BindingScope.SINGLETON})
 export class K8sServiceManager {
 
-  constructor(@inject('datasources.kubernetes') private dataSource: KubernetesDataSource) {
+  constructor(private dataSource: KubernetesDataSource) {
   }
 
   async getServiceWithName(name: string) {

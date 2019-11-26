@@ -5,6 +5,7 @@ import {K8sRequestFactoryService} from './k8sRequestFactory.service';
 import {K8sDeploymentManager} from './k8sDeployment.manager';
 import {InstanceCreatorDto} from '../controllers/dto/instanceCreatorDto';
 import {KubernetesDataSource} from '../datasources';
+import {logger} from '../utils';
 
 @bind({scope: BindingScope.SINGLETON})
 export class K8sInstanceService {
@@ -29,8 +30,10 @@ export class K8sInstanceService {
 
   async createK8sInstance(instanceCreator:InstanceCreatorDto,image:Image,flavour:Flavour): Promise<K8sInstance> {
     const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instanceCreator.name,image.name);
+    logger.info('Creating Deployment in Kubernetes');
     const deployment = await this._deploymentManager.createDeploymentIfNotExist(deploymentRequest);
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceCreator.name);
+    logger.info('Creating Service in Kubernetes');
     const service = await this._serviceManager.createServiceIfNotExist(serviceRequest);
     return new K8sInstance({deployment: deployment, service: service});
   }
