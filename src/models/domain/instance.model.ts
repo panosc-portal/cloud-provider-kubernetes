@@ -32,6 +32,9 @@ export class Instance {
   description?: string;
 
 
+  @Column({length: 250})
+  namespace: string;
+
   @property({
     type: 'string',
     required: true,

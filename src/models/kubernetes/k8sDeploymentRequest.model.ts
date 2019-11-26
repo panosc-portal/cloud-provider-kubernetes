@@ -1,19 +1,9 @@
-import {Model, model, property} from '@loopback/repository';
-
-@model()
-export class K8sDeploymentRequest extends Model {
+export class K8sDeploymentRequest {
 
 
-  @property({
-    type: 'object',
-    required: true,
-  })
-  modal: object;
+  model: object;
 
-  @property({
-    type: 'string',
-    required: true,
-  }) private _name: string;
+  private _name: string;
 
   get name(): string {
     return this._name;
@@ -32,15 +22,13 @@ export class K8sDeploymentRequest extends Model {
     this._image = value;
   }
 
-  @property({
-    type: 'string',
-    required: true,
-  }) private _image: string;
+  private _image: string;
 
 
-  constructor(data?: Partial<K8sDeploymentRequest>) {
-    super(data);
-    this.modal = {
+  constructor(name: string, image: string) {
+    this.name = name;
+    this.image = image;
+    this.model = {
       'apiVersion': 'apps/v1',
       'kind': 'Deployment',
       'metadata': {
@@ -80,11 +68,4 @@ export class K8sDeploymentRequest extends Model {
     };
   }
 }
-
-
-export interface K8SDeploymentRequestRelations {
-  // describe navigational properties here
-}
-
-export type K8SDeploymentRequestWithRelations = K8sDeploymentRequest & K8SDeploymentRequestRelations;
 

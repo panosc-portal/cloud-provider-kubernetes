@@ -15,7 +15,6 @@ export class KubernetesDataSource implements LifeCycleObserver {
   
   static dataSourceName = 'kubernetes';
   
-  defaultNamespace = 'panosc';
   K8sClient: ApiRoot;
 
   constructor() {

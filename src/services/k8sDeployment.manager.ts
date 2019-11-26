@@ -5,9 +5,9 @@ export class K8sDeploymentManager {
   constructor(private dataSource: KubernetesDataSource) {
   }
 
-  async getDeploymentsWithName(name: string) {
+  async getDeploymentsWithName(name: string, namespace: string) {
     try {
-      const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespace(this.dataSource.defaultNamespace)
+      const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespace(namespace)
         .deployments(name)
         .get();
       const k8sDeployment = new K8sDeployment({k8sResponse: deployment.body});
@@ -25,21 +25,22 @@ export class K8sDeploymentManager {
     }
   }
 
-  async createDeployment(deploymentRequest: K8sDeploymentRequest): Promise<K8sDeployment> {
-    const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespaces(this.dataSource.defaultNamespace).deployments.post({body: deploymentRequest.modal});
-    const newDeployment = new K8sDeployment( deployment.body);
+  async createDeployment(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
+    const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments.post({body: deploymentRequest.model});
+    const newDeployment = new K8sDeployment(deployment.body);
     if (newDeployment.isValid()) {
+      console.log('Deployment ' + newDeployment.name + ' has been created');
       return newDeployment;
     } else {
       throw new Error('Did not manage to create a kubernetes deployment');
     }
   }
 
-  async createDeploymentIfNotExist(deploymentRequest: K8sDeploymentRequest): Promise<K8sDeployment> {
+  async createDeploymentIfNotExist(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
     const deploymentName = deploymentRequest.name;
-    const existingDeployment = await this.getDeploymentsWithName(deploymentName);
+    const existingDeployment = await this.getDeploymentsWithName(deploymentName, namespace);
     if (existingDeployment == null) {
-      return this.createDeployment(deploymentRequest);
+      return this.createDeployment(deploymentRequest, namespace);
     } else {
       return existingDeployment;
     }

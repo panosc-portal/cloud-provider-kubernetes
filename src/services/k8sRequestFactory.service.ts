@@ -1,15 +1,19 @@
-import {K8sDeploymentRequest, K8sServiceRequest} from '../models';
+import {K8sDeploymentRequest, K8sNamespaceRequest, K8sServiceRequest} from '../models';
 
 export class K8sRequestFactoryService {
   constructor() {
   }
 
-  createK8sServiceRequest(serviceName: string): K8sServiceRequest {
-    return new K8sServiceRequest({name: serviceName});
+  createK8sServiceRequest(name: string): K8sServiceRequest {
+    return new K8sServiceRequest(name);
   }
 
-  createK8sDeploymentRequest(deploymentName: string, deployementImage: string): K8sDeploymentRequest {
-    return new K8sDeploymentRequest({name: deploymentName, image: deployementImage});
+  createK8sDeploymentRequest(name: string, image: string): K8sDeploymentRequest {
+    return new K8sDeploymentRequest(name,image);
+  }
+
+  createK8sNamespaceRequest(name:string): K8sNamespaceRequest{
+    return new K8sNamespaceRequest(name)
   }
 
 }

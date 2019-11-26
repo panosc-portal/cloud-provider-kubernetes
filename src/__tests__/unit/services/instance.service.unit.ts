@@ -47,6 +47,7 @@ describe('InstanceService', () => {
       currentMemory: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
+      namespace:'panosc',
       protocols: [new Protocol({name: 'ssh', port: 2222}), new Protocol({name: 'rdp', port: 1234})]
     });
 

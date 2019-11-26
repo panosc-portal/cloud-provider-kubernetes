@@ -1,4 +1,4 @@
-import {K8sService, K8sServiceRequest} from '../models';
+import {K8sDeployment, K8sService, K8sServiceRequest} from '../models';
 import {KubernetesDataSource} from '../datasources';
 
 
@@ -7,9 +7,9 @@ export class K8sServiceManager {
   constructor(private dataSource: KubernetesDataSource) {
   }
 
-  async getServiceWithName(name: string) {
+  async getServiceWithName(name: string, namespace: string) {
     try {
-      const service = await this.dataSource.K8sClient.api.v1.namespaces(this.dataSource.defaultNamespace)
+      const service = await this.dataSource.K8sClient.api.v1.namespaces(namespace)
         .services(name)
         .get();
       const k8sService = new K8sService({k8sResponse: service.body});
@@ -27,21 +27,22 @@ export class K8sServiceManager {
     }
   }
 
-  async createService(serviceRequest: K8sServiceRequest): Promise<K8sService> {
-    const service = await this.dataSource.K8sClient.api.v1.namespace(this.dataSource.defaultNamespace).services.post({body: serviceRequest.modal});
+  async createService(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
+    const service = await this.dataSource.K8sClient.api.v1.namespace(namespace).services.post({body: serviceRequest.model});
     const newService = new K8sService(service.body);
     if (newService.isValid()) {
+      console.log('Service ', newService.name, ' has been created');
       return newService;
     } else {
       throw new Error('Did not manage to create a kubernetes service');
     }
   }
 
-  async createServiceIfNotExist(serviceRequest: K8sServiceRequest): Promise<K8sService> {
+  async createServiceIfNotExist(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
     const serviceName = serviceRequest.name;
-    const existingService = await this.getServiceWithName(serviceName);
+    const existingService = await this.getServiceWithName(serviceName, namespace);
     if (existingService == null) {
-      return this.createService(serviceRequest);
+      return this.createService(serviceRequest, namespace);
     } else {
       return existingService;
     }

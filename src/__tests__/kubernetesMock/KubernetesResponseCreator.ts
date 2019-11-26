@@ -28,6 +28,17 @@ export default class K8SResponseCreator {
       }
     };
   };
+
+  getNamespace(name){
+    return{
+      "kind": "Namespace",
+      "metadata": {
+        "name": name,
+      }
+    }
+  }
 };
+
+
 
 

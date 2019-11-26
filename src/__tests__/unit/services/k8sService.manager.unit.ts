@@ -17,10 +17,9 @@ describe('K8sServiceManager', () => {
     kubernetesMockServer.stop();
   });
 
-
   it('create kubernetes service', async () => {
-    const k8sServiceRequest = new K8sServiceRequest({name: 'test'});
-    const k8sService = await k8sServiceManager.createService(k8sServiceRequest);
+    const k8sServiceRequest = new K8sServiceRequest( 'test');
+    const k8sService = await k8sServiceManager.createService(k8sServiceRequest,"panosc");
     expect(k8sService).to.not.be.null();
     expect(k8sService.name).to.be.equal('test');
     expect(k8sService.port).to.not.be.null();

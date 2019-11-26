@@ -18,8 +18,8 @@ describe('K8sDeploymentManager', () => {
   });
 
   it('create kubernetes deployment', async () => {
-    const k8sDeploymentRequest = new K8sDeploymentRequest({name: 'test', image: 'danielguerra/ubuntu-xrdp'});
-    const k8sDeployment = await k8sDeploymentManager.createDeployment(k8sDeploymentRequest);
+    const k8sDeploymentRequest = new K8sDeploymentRequest( 'test' , 'danielguerra/ubuntu-xrdp');
+    const k8sDeployment = await k8sDeploymentManager.createDeployment(k8sDeploymentRequest,"panosc");
     expect(k8sDeployment).to.not.be.null();
     expect(k8sDeployment.name).to.be.equal('test');
   });

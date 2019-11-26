@@ -11,6 +11,7 @@ export class KubernetesMockServer {
   private port = 3001;
   private createdDeployments = new Map();
   private createdServices = new Map();
+  private createdNamespaces = new Map();
 
   start() {
     if (this.server != null) {
@@ -25,10 +26,12 @@ export class KubernetesMockServer {
       const deploymentName = req.params.deployment;
       const namespace = req.params.namespace;
       logger.info(`Getting deploymnet ${deploymentName} from namespace ${namespace}`);
-      if (this.isDeploymentCreated(deploymentName, namespace)) {
-        res.status(200).send(k8sResponseCreator.getDeployment(deploymentName, namespace));
+      const response = this.createdDeployments.get(`${req.params.namespace}.${req.body.metadata.name}`);
+      if (response != null) {
+        res.status(200).send(response);
+
       } else {
-        res.status(404).send();
+        res.sendStatus(404);
       }
     });
 
@@ -37,12 +40,23 @@ export class KubernetesMockServer {
       const namespace = req.params.namespace;
       logger.info(`Getting service ${serviceName} from namespace ${namespace}`);
 
-      const response = this.createdServices.get(`${req.params.namespace}.${req.body.metadata.name}`);
+      const response = this.createdServices.get(`${serviceName}.${namespace}`);
       if (response != null) {
         res.status(200).send(response);
 
       } else {
-        res.status(404).send();
+        res.sendStatus(404);
+      }
+    });
+
+    app.get('/api/v1/namespaces/:namespace', (req, res) => {
+      const namespace = req.params.namespace;
+      logger.info(`Getting namespace ${namespace}`);
+      const response = this.createdNamespaces.get(namespace);
+      if (response != null) {
+        res.status(200).send(response);
+      } else {
+        res.sendStatus(404);
       }
     });
 
@@ -52,19 +66,31 @@ export class KubernetesMockServer {
     });
 
     app.post('/apis/apps/v1/namespaces/:namespace/deployments', jsonParser, (req, res) => {
-      logger.info(`Posting deployment ${req.body.metadata.name} in namespace ${req.params.namespace}`);
-      res.status(200).send(k8sResponseCreator.getDeployment(req.body.metadata.name, req.params.namespace));
-      this.createdDeployments.set(req.params.deployment, req.params.namespace);
+     const namespace = req.params.namespace;
+      const deploymentName = req.body.metadata.name;
+      logger.info(`Posting deployment ${deploymentName} in namespace ${namespace}`);
+      const response = k8sResponseCreator.getDeployment(req.body.metadata.name, namespace);
+      this.createdDeployments.set(`${namespace}.${deploymentName}`, response);
+      res.status(200).send(response);
+    });
+
+    app.post('/api/v1/namespaces', jsonParser, (req, res) => {
+      const namespace = req.body.metadata.name;
+      logger.info(`Posting namespace ${namespace}`);
+      const response = k8sResponseCreator.getNamespace(namespace);
+      this.createdNamespaces.set(namespace,response);
+      res.status(200).send(response);
     });
 
     app.post('/api/v1/namespaces/:namespace/services', jsonParser, (req, res) => {
-      logger.info(`Posting service ${req.body.metadata.name} in namespace ${req.params.namespace}`);
-
-      const response = k8sResponseCreator.getService(req.body.metadata.name, req.params.namespace,req.body.spec.name,req.body.spec.port);
-      this.createdServices.set(`${req.params.namespace}.${req.body.metadata.name}`, response);
-
-      res.status(200).send();
+      const namespace = req.params.namespace;
+      const serviceName = req.body.metadata.name;
+      logger.info(`Posting service ${serviceName} in namespace ${namespace}`);
+      const response = k8sResponseCreator.getService(serviceName, namespace,req.body.spec.name,req.body.spec.port);
+      this.createdServices.set(`${namespace}.${serviceName}`, response);
+      res.status(200).send(response);
     });
+
 
     app.post('*', (req, res) => {
       res.status(404).send();
@@ -74,17 +100,6 @@ export class KubernetesMockServer {
     this.server = app.listen(this.port, () => logger.info(`Kubernetes Mock Server listening on port ${this.port}!`));
   }
 
-  isDeploymentCreated(name, namespace) {
-    for (const [key, value] of this.createdDeployments) {
-      return key === name && value === namespace;
-    }
-  }
-
-  isServiceCreated(name, namespace) {
-    for (const [key, value] of this.createdDeployments) {
-      return key === name && value === namespace;
-    }
-  }
 
   stop() {
     if (this.server != null) {

@@ -22,6 +22,7 @@ export class InstanceService extends BaseService<Instance> {
   async create(instanceBody: InstanceCreatorDto, image: Image, flavour: Flavour): Promise<Instance> {
     const kubeInstance: K8sInstance = await this.k8sInstanceService.createK8sInstance(instanceBody, image, flavour);
     return new Instance({name: kubeInstance.deployment.name});
+    //TODO save instance to DB
   }
 
   getStateById(): Promise<InstanceState> {
