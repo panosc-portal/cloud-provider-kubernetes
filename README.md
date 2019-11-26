@@ -1,6 +1,7 @@
 # Cloud Provider Kubernetes
 
 [![Actions Status](https://github.com/panosc-portal/cloud-provider-kubernetes/workflows/Node%20CI/badge.svg)](https://github.com/panosc-portal/cloud-provider-kubernetes/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
 This micro service implements the Cloud Provider API for the PaNOSC Common Portal  using a Kubernetes backend.
