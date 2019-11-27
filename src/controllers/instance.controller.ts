@@ -9,9 +9,10 @@ import {inject} from '@loopback/context';
 import {FlavourService, ImageService, InstanceService} from '../services';
 import {HttpErrors} from '@loopback/rest';
 import {InstanceCreatorDto} from './dto/instanceCreatorDto';
+import { InstanceStatus } from '../models/enumerations/InstanceStatus';
 
 export class InstanceController {
-  constructor(@inject('services.InstanceService') private _instanceservice: InstanceService, @inject('services.ImageService') private _imageservice: ImageService, @inject('services.FlavourService') private _flavourservice: FlavourService) {
+  constructor(@inject('services.InstanceService') private _instanceService: InstanceService, @inject('services.ImageService') private _imageservice: ImageService, @inject('services.FlavourService') private _flavourservice: FlavourService) {
   }
 
   @get('/instances', {
@@ -28,7 +29,7 @@ export class InstanceController {
     },
   })
   getAll(): Promise<Instance[]> {
-    return this._instanceservice.getAll();
+    return this._instanceService.getAll();
   }
 
   @post('/instances', {
@@ -44,14 +45,28 @@ export class InstanceController {
       },
     },
   })
-  async create(@requestBody() dto: InstanceCreatorDto): Promise<Instance> {
+  async create(@requestBody() instanceCreator: InstanceCreatorDto): Promise<Instance> {
 
-    const image = await this._imageservice.getById(dto.imageId);
-    const flavour = await this._flavourservice.getById(dto.flavourId);
-    if (image && flavour) {
-      return this._instanceservice.create(dto, image, flavour);
+    const image = await this._imageservice.getById(instanceCreator.imageId);
+    const flavour = await this._flavourservice.getById(instanceCreator.flavourId);
+
+    if (image == null) {
+      throw new HttpErrors.BadRequest('Invalid image');
     }
 
+    if (flavour == null) {
+      throw new HttpErrors.BadRequest('Invalid flavour');
+    }
+
+    const instance: Instance = new Instance({
+      name: instanceCreator.name,
+      description: instanceCreator.description,
+      status: InstanceStatus.BUILDING,
+      image: image,
+      flavour: flavour
+    })
+
+    return this._instanceService.create(instance);
   }
 
   @get('/instances/{id}', {
@@ -68,7 +83,7 @@ export class InstanceController {
     },
   })
   getById(@param.path.string('id') id: number): Promise<Instance> {
-    return this._instanceservice.getById(id);
+    return this._instanceService.getById(id);
   }
 
   @get('/instances/{id}/state', {
@@ -86,7 +101,7 @@ export class InstanceController {
     },
   })
   getStateById(): Promise<InstanceState> {
-    return this._instanceservice.getStateById();
+    return this._instanceService.getStateById();
   }
 
   @del('/instances/{id}', {
@@ -97,18 +112,13 @@ export class InstanceController {
       },
     },
   })
-  deleteById(@param.path.string('id') id: number): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      this._instanceservice.getById(id).then(instance => {
-        if (instance == null) {
-          reject(new HttpErrors.NotFound('Instance with given id does not exist'));
+  async deleteById(@param.path.string('id') id: number): Promise<boolean> {
+    const instance = await this._instanceService.getById(id);
+    if (instance == null) {
+      throw new HttpErrors.NotFound('Instance with given id does not exist');
+    }
 
-        } else {
-          resolve(this._instanceservice.delete(instance));
-        }
-
-      });
-    });
+    return this._instanceService.delete(instance);
   }
 
   @post('/instances/{id}/actions', {
@@ -120,7 +130,7 @@ export class InstanceController {
     },
   })
   actionById(): void {
-    return this._instanceservice.actionById();
+    return this._instanceService.actionById();
   }
 
 }

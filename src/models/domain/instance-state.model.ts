@@ -1,17 +1,13 @@
-import {Entity, model, property} from '@loopback/repository';
+import {model, property} from '@loopback/repository';
+import { InstanceStatus } from '../enumerations/InstanceStatus';
 
 @model()
-export class InstanceState extends Entity {
+export class InstanceState {
   @property({
     type: 'string',
     required: true,
   })
-  state: ["BUILDING",
-    "STARTING",
-    "ACTIVE",
-    "STOPPED",
-    "REBOOTING",
-    'ERROR'];
+  status: InstanceStatus;
 
   @property({
     type: 'number',
@@ -25,15 +21,7 @@ export class InstanceState extends Entity {
   })
   memory: number;
 
-
-
   constructor(data?: Partial<InstanceState>) {
-    super(data);
+    Object.assign(this, data);
   }
 }
-
-export interface InstanceStateRelations {
-  // describe navigational properties here
-}
-
-export type InstanceStateWithRelations = InstanceState & InstanceStateRelations;

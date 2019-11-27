@@ -3,7 +3,7 @@ import { Protocol} from './protocol.model';
 import {Flavour} from './flavour.model';
 import {Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
 import {Image} from './image.model';
-
+import { InstanceStatus } from '../enumerations/InstanceStatus';
 
 @Entity()
 @model()
@@ -31,7 +31,6 @@ export class Instance {
   @Column({length: 2500, nullable: true})
   description?: string;
 
-
   @Column({length: 250})
   namespace: string;
 
@@ -47,7 +46,7 @@ export class Instance {
     required: true,
   })
   @Column({length: 50})
-  state: string;
+  status: InstanceStatus;
 
   @property({
     type: 'number',
@@ -100,8 +99,3 @@ export class Instance {
     this.protocols.push(protocol);
   }
 }
-
-export interface InstanceRelations {
-}
-
-export type InstanceWithRelations = Instance & InstanceRelations;

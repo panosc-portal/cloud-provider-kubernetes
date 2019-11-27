@@ -22,7 +22,7 @@ describe('ImageService', () => {
     const image = await imageService.getById(1);
 
     expect(image).to.not.be.null;
-    expect(image.name).to.equal("image 1");
+    expect(image.name).to.equal('image 1');
   });
 
   it('saves an image', async () => {
@@ -54,7 +54,7 @@ describe('ImageService', () => {
     const images = await imageService.getAll();
 
     const image = images[0];
-    image.name = "A new name";
+    image.name = 'A new name';
 
     const persistedImage = await imageService.save(image);
     expect(persistedImage).to.not.be.null;

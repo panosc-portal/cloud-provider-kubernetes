@@ -1,5 +1,6 @@
 import {K8sDeployment, K8sDeploymentRequest} from '../models';
 import {KubernetesDataSource} from '../datasources';
+import { logger } from '../utils';
 
 export class K8sDeploymentManager {
   constructor(private dataSource: KubernetesDataSource) {
@@ -29,7 +30,7 @@ export class K8sDeploymentManager {
     const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments.post({body: deploymentRequest.model});
     const newDeployment = new K8sDeployment(deployment.body);
     if (newDeployment.isValid()) {
-      console.log('Deployment ' + newDeployment.name + ' has been created');
+      logger.debug('Deployment ' + newDeployment.name + ' has been created');
       return newDeployment;
     } else {
       throw new Error('Did not manage to create a kubernetes deployment');

@@ -1,8 +1,8 @@
-import {Entity, model, property} from '@loopback/repository';
+import {model, property} from '@loopback/repository';
 import {ResourceMonitor} from './resource-monitor.model';
 
 @model()
-export class Node extends Entity {
+export class Node {
   @property({
     type: 'string',
     id: true,
@@ -18,13 +18,6 @@ export class Node extends Entity {
   memory: ResourceMonitor;
 
   constructor(data?: Partial<Node>) {
-    super(data);
+    Object.assign(this, data);
   }
 }
-
-
-export interface NodeRelations {
-  // describe navigational properties here
-}
-
-export type NodeWithRelations = Node & NodeRelations;

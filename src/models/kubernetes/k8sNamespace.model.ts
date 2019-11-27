@@ -1,19 +1,17 @@
 export class K8sNamespace {
 
-  k8sResponse: any;
-
-  name: string;
-
-  isValid() {
-    return this.k8sResponse != null && this.name != null;
+  get name(): string {
+    return this.isValid() ? this._k8sResponse.metadata.name : null;
   }
 
-  constructor(k8sResponse: any) {
-    this.k8sResponse = k8sResponse;
-    if (k8sResponse.kind != null && k8sResponse.kind === 'Namespace') {
-      if (k8sResponse.metadata) {
-        this.name = k8sResponse.metadata.name;
-      }
-    }
+  constructor(private _k8sResponse: any) {
+  }
+
+  isValid() {
+    return (this._k8sResponse != null && 
+      this._k8sResponse.kind != null &&
+      this._k8sResponse.kind === 'Namespace' &&
+      this._k8sResponse.metadata != null &&
+      this._k8sResponse.metadata.name != null);
   }
 }

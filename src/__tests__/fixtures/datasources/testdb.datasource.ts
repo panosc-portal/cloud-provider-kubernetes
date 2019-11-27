@@ -6,9 +6,9 @@ export function setupDataSource(): TypeORMDataSource {
 
   const dataSource = new TypeORMDataSource();
   dataSource.mergeConfig({
-    type: "sqlite",
-    name: "memory",
-    database: ":memory:",
+    type: 'sqlite',
+    name: 'memory',
+    database: ':memory:',
     synchronize: true,
     logging: false
   });

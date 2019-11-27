@@ -1,34 +1,21 @@
 export class K8sDeploymentRequest {
 
-
-  model: object;
-
-  private _name: string;
+  private _model: any;
 
   get name(): string {
     return this._name;
   }
 
-  set name(value: string) {
-    this._name = value;
-  }
-
-
   get image(): string {
     return this._image;
   }
 
-  set image(value: string) {
-    this._image = value;
+  get model(): any {
+    return this._model;
   }
 
-  private _image: string;
-
-
-  constructor(name: string, image: string) {
-    this.name = name;
-    this.image = image;
-    this.model = {
+  constructor(private _name: string, private _image: string) {
+    this._model = {
       'apiVersion': 'apps/v1',
       'kind': 'Deployment',
       'metadata': {

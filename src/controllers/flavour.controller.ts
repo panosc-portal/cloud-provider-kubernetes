@@ -61,14 +61,10 @@ export class FlavourController {
     },
   })
   updateById(@param.path.number('id') id: number, @requestBody() flavour: Flavour): Promise<Flavour> {
-    return new Promise<Flavour>((resolve, reject) => {
-      if (id === flavour.id) {
-        resolve(this._flavourService.update(flavour));
-      } else {
-        reject(new HttpErrors.BadRequest('Id in path is not the same as body id'));
-      }
-    });
-
+    if (id === flavour.id) {
+      throw new HttpErrors.BadRequest('Id in path is not the same as body id');
+    }
+    return this._flavourService.update(flavour);
   }
 
 

@@ -18,7 +18,7 @@ describe('K8sNamespaceManager', () => {
   });
 
   it('create kubernetes service', async () => {
-    const k8sNamespaceRequest = new K8sNamespaceRequest( 'test');
+    const k8sNamespaceRequest = new K8sNamespaceRequest('test');
     const k8sNamespace = await k8sNamespaceManager.createNamespace(k8sNamespaceRequest);
     expect(k8sNamespace).to.not.be.null();
     expect(k8sNamespace.name).to.be.equal('test');

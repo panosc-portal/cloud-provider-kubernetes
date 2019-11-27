@@ -1,5 +1,6 @@
 import {K8sDeployment, K8sService, K8sServiceRequest} from '../models';
 import {KubernetesDataSource} from '../datasources';
+import { logger } from '../utils';
 
 
 export class K8sServiceManager {
@@ -31,7 +32,7 @@ export class K8sServiceManager {
     const service = await this.dataSource.K8sClient.api.v1.namespace(namespace).services.post({body: serviceRequest.model});
     const newService = new K8sService(service.body);
     if (newService.isValid()) {
-      console.log('Service ', newService.name, ' has been created');
+      logger.debug('Service ', newService.name, ' has been created');
       return newService;
     } else {
       throw new Error('Did not manage to create a kubernetes service');

@@ -45,9 +45,3 @@ export class Flavour {
     Object.assign(this, data);
   }
 }
-
-export interface FlavourRelations {
-  // describe navigational properties here
-}
-
-export type FlavourWithRelations = Flavour & FlavourRelations;

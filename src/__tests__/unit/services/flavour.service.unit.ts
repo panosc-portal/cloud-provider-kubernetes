@@ -22,7 +22,7 @@ describe('FlavourService', () => {
     const flavour = await flavourService.getById(1);
 
     expect(flavour).to.not.be.null;
-    expect(flavour.name).to.equal("flavour 1");
+    expect(flavour.name).to.equal('flavour 1');
   });
 
   it('saves a flavour', async () => {
@@ -57,7 +57,7 @@ describe('FlavourService', () => {
     const flavours = await flavourService.getAll();
 
     const flavour = flavours[0];
-    flavour.name = "A new name";
+    flavour.name = 'A new name';
 
     const persistedFlavour = await flavourService.save(flavour);
     expect(persistedFlavour).to.not.be.null;

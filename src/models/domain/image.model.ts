@@ -32,9 +32,3 @@ export class Image {
     Object.assign(this, data);
   }
 }
-
-export interface ImageRelations {
-  // describe navigational properties here
-}
-
-export type ImageWithRelations = Image & ImageRelations;

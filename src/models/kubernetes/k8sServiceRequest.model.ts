@@ -1,20 +1,17 @@
 export class K8sServiceRequest {
 
-  model: object;
-
-  private _name: string;
+  private _model: object;
 
   get name(): string {
     return this._name;
   }
 
-  set name(value: string) {
-    this._name = value;
+  get model(): any {
+    return this._model
   }
 
-  constructor(name: string) {
-    this.name = name;
-    this.model = {
+  constructor(private _name: string) {
+    this._model = {
       'apiVersion': 'v1',
       'kind': 'Service',
       'metadata': {

@@ -3,6 +3,8 @@ import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { getTestApplicationContext } from '../../helpers/context.helper';
 import { InstanceService, ImageService, FlavourService } from '../../../services';
 import { Instance, Protocol } from '../../../models';
+import { ProtocolName } from '../../../models/enumerations/ProtocolName';
+import { InstanceStatus } from '../../../models/enumerations/InstanceStatus';
 
 describe('InstanceService', () => {
   let instanceService: InstanceService;
@@ -27,7 +29,7 @@ describe('InstanceService', () => {
     const instance = await instanceService.getById(1);
 
     expect(instance).to.not.be.null;
-    expect(instance.name).to.equal("instance 1");
+    expect(instance.name).to.equal('instance 1');
   });
 
   it('saves an instance', async () => {
@@ -42,13 +44,13 @@ describe('InstanceService', () => {
       image: image,
       flavour: flavour,
       hostname: 'test.host.eu',
-      state: 'BUILDING',
+      status: InstanceStatus.BUILDING,
       currentCPU: 0,
       currentMemory: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
       namespace:'panosc',
-      protocols: [new Protocol({name: 'ssh', port: 2222}), new Protocol({name: 'rdp', port: 1234})]
+      protocols: [new Protocol({name: ProtocolName.SSH, port: 2222}), new Protocol({name: ProtocolName.RDP, port: 1234})]
     });
 
     await instanceService.save(instance);
@@ -94,7 +96,7 @@ describe('InstanceService', () => {
     const instances = await instanceService.getAll();
 
     const instance = instances[0];
-    instance.name = "A new name";
+    instance.name = 'A new name';
 
     const persistedInstance = await instanceService.save(instance);
     expect(persistedInstance).to.not.be.null;

@@ -1,7 +1,7 @@
-import {Entity, model, property} from '@loopback/repository';
+import {model, property} from '@loopback/repository';
 
 @model()
-export class Metrics extends Entity {
+export class Metrics {
   @property({
     type: 'object',
   })
@@ -24,12 +24,6 @@ export class Metrics extends Entity {
 
 
   constructor(data?: Partial<Metrics>) {
-    super(data);
+    Object.assign(this, data);
   }
 }
-
-export interface MetricsRelations {
-  // describe navigational properties here
-}
-
-export type MetricsWithRelations = Metrics & MetricsRelations;

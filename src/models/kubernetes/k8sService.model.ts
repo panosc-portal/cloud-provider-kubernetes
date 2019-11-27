@@ -1,25 +1,33 @@
 export class K8sService {
 
-  k8sResponse: any;
-
-  name: string;
-
-  port: object;
-
-  isValid() {
-    return this.k8sResponse != null && this.name != null && this.port != null;
-
+  get name(): string {
+    return this.isValid() ? this._k8sResponse.metadata.name : null;
   }
 
-  constructor(k8sResponse: any) {
-    this.k8sResponse = k8sResponse;
-    if (k8sResponse.kind != null && k8sResponse.kind === 'Service') {
-      if (k8sResponse.metadata) {
-        this.name = k8sResponse.metadata.name;
-      }
-      if (k8sResponse.spec) {
-        this.port = k8sResponse.spec.ports[0]
-      }
+  get ports(): any[] {
+    return this.isValid() ? this._k8sResponse.spec.ports : null;
+  }
+
+  constructor(private _k8sResponse: any) {
+  }
+
+  isValid() {
+    return (this._k8sResponse != null && 
+      this._k8sResponse.kind != null &&
+      this._k8sResponse.kind === 'Service' &&
+      this._k8sResponse.metadata != null &&
+      this._k8sResponse.metadata.name != null &&
+      this._k8sResponse.spec != null &&
+      this._k8sResponse.spec.ports != null);
+  }
+
+  getPort(name: string): any {
+    if (this.isValid()) {
+      const portSpec = this._k8sResponse.spec.ports.find(port => port.name === name);
+      return portSpec;
+    
+    } else {
+      return null;
     }
   }
 }

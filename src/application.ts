@@ -1,4 +1,4 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {
@@ -10,7 +10,7 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import * as path from 'path';
 import {MySequence} from './sequence';
-import "reflect-metadata";
+import 'reflect-metadata';
 
 export class CloudProviderKubernetesApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),

@@ -2,7 +2,9 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import KubernetesResponseCreator from './KubernetesResponseCreator';
 import {lifeCycleObserver} from '@loopback/core';
-import { logger } from '../../utils';
+import { buildLogger } from '../../utils';
+
+const logger = buildLogger('[K8S Mock Server]');
 
 @lifeCycleObserver('server')
 export class KubernetesMockServer {
@@ -69,9 +71,16 @@ export class KubernetesMockServer {
      const namespace = req.params.namespace;
       const deploymentName = req.body.metadata.name;
       logger.info(`Posting deployment ${deploymentName} in namespace ${namespace}`);
-      const response = k8sResponseCreator.getDeployment(req.body.metadata.name, namespace);
-      this.createdDeployments.set(`${namespace}.${deploymentName}`, response);
-      res.status(200).send(response);
+      if (this.createdNamespaces.get(namespace) != null) {
+        const response = k8sResponseCreator.getDeployment(req.body.metadata.name, namespace);
+        this.createdDeployments.set(`${namespace}.${deploymentName}`, response);
+        res.status(200).send(response);
+      
+      } else {
+        logger.error(`Cannot create deployment ${deploymentName}: namespace ${namespace} does not exist`);
+        res.sendStatus(500);
+      }
+
     });
 
     app.post('/api/v1/namespaces', jsonParser, (req, res) => {
@@ -86,11 +95,16 @@ export class KubernetesMockServer {
       const namespace = req.params.namespace;
       const serviceName = req.body.metadata.name;
       logger.info(`Posting service ${serviceName} in namespace ${namespace}`);
-      const response = k8sResponseCreator.getService(serviceName, namespace,req.body.spec.name,req.body.spec.port);
-      this.createdServices.set(`${namespace}.${serviceName}`, response);
-      res.status(200).send(response);
+      if (this.createdNamespaces.get(namespace) != null) {
+        const response = k8sResponseCreator.getService(serviceName, namespace,req.body.spec.name,req.body.spec.port);
+        this.createdServices.set(`${namespace}.${serviceName}`, response);
+        res.status(200).send(response);
+      
+      } else {
+        logger.error(`Cannot create service ${serviceName}: namespace ${namespace} does not exist`);
+        res.sendStatus(500);
+      }
     });
-
 
     app.post('*', (req, res) => {
       res.status(404).send();

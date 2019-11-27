@@ -1,6 +1,6 @@
-import { Connection, createConnection, EntityManager, ObjectType, Repository } from "typeorm";
-import { lifeCycleObserver, LifeCycleObserver } from "@loopback/core";
-import { logger } from "../utils";
+import { Connection, createConnection, EntityManager, ObjectType, Repository } from 'typeorm';
+import { lifeCycleObserver, LifeCycleObserver } from '@loopback/core';
+import { logger } from '../utils';
 
 @lifeCycleObserver('datasource')
 export class TypeORMDataSource implements LifeCycleObserver {
@@ -19,10 +19,10 @@ export class TypeORMDataSource implements LifeCycleObserver {
       database: process.env.CLOUD_PROVIDER_K8S_DATABASE_NAME,
       schema: process.env.CLOUD_PROVIDER_K8S_DATABASE_SCHEMA,
       entities: [
-          "dist/models/*.js"
+          'dist/models/*.js'
       ],
-      synchronize: (process.env.CLOUD_PROVIDER_K8S_DATABASE_SYNCHRONIZE === "true"),
-      logging: (process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING === "true")
+      synchronize: (process.env.CLOUD_PROVIDER_K8S_DATABASE_SYNCHRONIZE === 'true'),
+      logging: (process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING === 'true')
     };
   }
 
@@ -31,7 +31,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
    * Start the datasource when application is started
    */
   async start(): Promise<void> {
-    logger.info("Initialising database connection");
+    logger.info('Initialising database connection');
     await this.connection();
   }
 
@@ -41,7 +41,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
    */
   async stop(): Promise<void> {
     if (this._connection) {
-      logger.info("Closing database connection");
+      logger.info('Closing database connection');
       this._connection.close();
       this._connection = null;
     }

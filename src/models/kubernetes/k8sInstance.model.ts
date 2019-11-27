@@ -1,16 +1,17 @@
 import {K8sDeployment} from './k8sDeployment.model';
 import {K8sService} from './k8sService.model';
 
-export class K8sInstance  {
+export class K8sInstance {
 
-  deployment: K8sDeployment;
+  get deployment(): K8sDeployment {
+    return this._deployment;
+  }
 
-  service: K8sService;
+  get service(): K8sService {
+    return this._service;
+  }
 
-
-  constructor(deployment:K8sDeployment,service:K8sService) {
-    this.deployment = deployment;
-    this.service = service
+  constructor(private _deployment: K8sDeployment, private _service: K8sService) {
   }
 }
 

@@ -1,7 +1,7 @@
 import {model, property} from '@loopback/repository';
 import {Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {Instance} from './instance.model';
-
+import { ProtocolName } from '../enumerations/ProtocolName';
 
 @Entity()
 @model()
@@ -20,7 +20,7 @@ export class Protocol {
   })
   @Index('protocol_name_index')
   @Column({length: 250})
-  name: string;
+  name: ProtocolName;
 
   @property({
     type: 'number',
@@ -40,9 +40,3 @@ export class Protocol {
     Object.assign(this, data);
   }
 }
-
-export interface ProtocolRelations {
-  // describe navigational properties here
-}
-
-export type InstanceServiceWithRelations = Protocol & ProtocolRelations;

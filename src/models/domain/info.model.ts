@@ -1,7 +1,7 @@
-import {Entity, model, property} from '@loopback/repository';
+import {model, property} from '@loopback/repository';
 
 @model()
-export class Info extends Entity {
+export class Info {
   @property({
     type: 'string',
     required: true,
@@ -16,12 +16,6 @@ export class Info extends Entity {
 
 
   constructor(data?: Partial<Info>) {
-    super(data);
+    Object.assign(this, data);
   }
 }
-
-export interface InfoRelations {
-  // describe navigational properties here
-}
-
-export type InfoWithRelations = Info & InfoRelations;

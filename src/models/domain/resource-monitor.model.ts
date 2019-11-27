@@ -1,7 +1,7 @@
-import {Entity, model, property} from '@loopback/repository';
+import {model, property} from '@loopback/repository';
 
 @model()
-export class ResourceMonitor extends Entity {
+export class ResourceMonitor {
   @property({
     type: 'number',
     required: true,
@@ -20,14 +20,7 @@ export class ResourceMonitor extends Entity {
   })
   used: number;
 
-
   constructor(data?: Partial<ResourceMonitor>) {
-    super(data);
+    Object.assign(this, data);
   }
 }
-
-export interface ResourceMonitorRelations {
-  // describe navigational properties here
-}
-
-export type ResourceMonitorWithRelations = ResourceMonitor & ResourceMonitorRelations;

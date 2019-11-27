@@ -44,17 +44,13 @@ export class ImageController {
       },
     },
   })
-  getById(@param.path.string('id') id: number): Promise<Image> {
-    return new Promise<Image>((resolve, reject) => {
-      this._imageService.getById(id).then(image => {
-        if (image != null) {
-          resolve(image);
+  async getById(@param.path.string('id') id: number): Promise<Image> {
+    const image = await this._imageService.getById(id);
+    if (image == null) {
+      throw new HttpErrors.NotFound('Image with given id does not exist');
+    }
 
-        } else {
-          reject(new HttpErrors.NotFound('Image with given id does not exist'));
-        }
-      })
-    });
+    return image;
   }
 
   @put('/images/{id}', {
