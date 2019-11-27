@@ -19,7 +19,6 @@ export class InstanceCreatorDto {
   )
   flavourId: number;
 
-
   @property(
     {type: 'number'}
   )

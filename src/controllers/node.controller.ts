@@ -1,15 +1,12 @@
-// Uncomment these imports to begin using these cool features!
-
-// import {inject} from '@loopback/context';
-
-
 import {get, getModelSchemaRef, param} from '@loopback/openapi-v3';
 import {Instance, Node} from '../models';
 import {inject} from '@loopback/context';
 import {NodeService} from '../services';
+import { BaseController } from './BaseController';
 
-export class NodeController {
-  constructor(@inject('services.NodeService') private _nodeservice: NodeService) {
+export class NodeController extends BaseController {
+  constructor(@inject('services.NodeService') private _nodeService: NodeService) {
+    super();
   }
 
   @get('/nodes', {
@@ -26,7 +23,7 @@ export class NodeController {
     },
   })
   getAll(): Promise<Node[]> {
-    return this._nodeservice.getAll();
+    return this._nodeService.getAll();
   }
 
   @get('/nodes/{id}', {
@@ -42,8 +39,11 @@ export class NodeController {
       },
     },
   })
-  getById(@param.path.string('id') id: number): Promise<Node> {
-    return this._nodeservice.getById(id);
+  async getById(@param.path.string('id') id: number): Promise<Node> {
+    const node = await this._nodeService.getById(id);
+    this.throwNotFoundIfNull(node, 'Node with given id does not exist');
+
+    return node;
   }
 
   @get('/nodes/{id}/instances', {
@@ -59,8 +59,11 @@ export class NodeController {
       },
     },
   })
-  getInstancesByNodeId(@param.path.string('id') id: number): Promise<Instance[]> {
-    return this._nodeservice.getInstancesByNodeId(id);
+  async getInstancesByNodeId(@param.path.string('id') id: number): Promise<Instance[]> {
+    const node = await this._nodeService.getById(id);
+    this.throwNotFoundIfNull(node, 'Node with given id does not exist');
+
+    return this._nodeService.getInstancesByNode(node);
   }
 
 }

@@ -1,8 +1,3 @@
-// Uncomment these imports to begin using these cool features!
-
-// import {inject} from '@loopback/context';
-
-
 import {get, getModelSchemaRef} from '@loopback/openapi-v3';
 import {Info} from '../models';
 import {inject} from '@loopback/context';

@@ -17,7 +17,7 @@ export class NodeService {
     });
   }
 
-  getInstancesByNodeId(id: number): Promise<Instance[]> {
+  getInstancesByNode(node: Node): Promise<Instance[]> {
     return new Promise<Instance[]>(function(resolve, reject) {
       resolve();
     });

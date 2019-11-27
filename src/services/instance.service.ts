@@ -7,15 +7,13 @@ import {BaseService} from './base.service';
 
 @bind({scope: BindingScope.SINGLETON})
 export class InstanceService extends BaseService<Instance> {
-
   constructor(@repository(InstanceRepository) repo: InstanceRepository, @inject('services.K8sInstanceService') private k8sInstanceService: K8sInstanceService) {
     super(repo);
   }
 
   updateById(id: number): Promise<Instance> {
-    return new Promise<Instance>(function(resolve, reject) {
-      resolve();
-    });
+    // TODO
+    throw new Error("Method not implemented.");
   }
 
   async create(instance: Instance): Promise<Instance> {
@@ -34,13 +32,8 @@ export class InstanceService extends BaseService<Instance> {
     return instance;
   }
 
-  getStateById(): Promise<InstanceState> {
-    return new Promise<InstanceState>(function(resolve, reject) {
-      resolve();
-    });
-  }
-
-  actionById(): void {
+  executeAction(instance: Instance): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
   getAll(): Promise<Instance[]> {

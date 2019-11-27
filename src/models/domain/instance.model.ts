@@ -4,6 +4,7 @@ import {Flavour} from './flavour.model';
 import {Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
 import {Image} from './image.model';
 import { InstanceStatus } from '../enumerations/InstanceStatus';
+import { InstanceState } from './instance-state.model';
 
 @Entity()
 @model()
@@ -90,6 +91,14 @@ export class Instance {
   @property({type:'number'})
   @JoinColumn({name: 'image_id'})
   image: Image;
+
+  get state(): InstanceState {
+    return new InstanceState({
+      status: this.status,
+      cpu: this.currentCPU,
+      memory: this.currentMemory
+    });
+  }
 
   constructor(data?: Partial<Instance>) {
     Object.assign(this, data);

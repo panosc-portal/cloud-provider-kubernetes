@@ -1,8 +1,3 @@
-// Uncomment these imports to begin using these cool features!
-
-// import {inject} from '@loopback/context';
-
-
 import {inject} from '@loopback/context';
 import {HealthService} from '../services';
 import {get} from '@loopback/openapi-v3';

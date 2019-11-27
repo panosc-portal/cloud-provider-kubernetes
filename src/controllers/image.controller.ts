@@ -1,17 +1,12 @@
-// Uncomment these imports to begin using these cool features!
-
-// import {inject} from '@loopback/context';
-
-
 import {get, getModelSchemaRef, param, put, requestBody} from '@loopback/openapi-v3';
 import {Image} from '../models';
 import {inject} from '@loopback/context';
 import {ImageService} from '../services';
-import {HttpErrors, Response, RestBindings} from '@loopback/rest';
+import { BaseController } from './BaseController';
 
-export class ImageController {
-  constructor(@inject('services.ImageService') private _imageService: ImageService,
-              @inject(RestBindings.Http.RESPONSE) protected response: Response) {
+export class ImageController extends BaseController {
+  constructor(@inject('services.ImageService') private _imageService: ImageService) {
+    super();
   }
 
   @get('/images', {
@@ -46,9 +41,8 @@ export class ImageController {
   })
   async getById(@param.path.string('id') id: number): Promise<Image> {
     const image = await this._imageService.getById(id);
-    if (image == null) {
-      throw new HttpErrors.NotFound('Image with given id does not exist');
-    }
+
+    this.throwNotFoundIfNull(image, 'Image with given id does not exist');
 
     return image;
   }
@@ -67,14 +61,10 @@ export class ImageController {
     },
   })
   updateById(@param.path.number('id') id: number, @requestBody() image: Image): Promise<Image> {
-    return new Promise<Image>((resolve, reject) => {
-      if (id === image.id) {
-        resolve(this._imageService.update(image));
-      } else {
-        reject(new HttpErrors.BadRequest('Id in path is not the same as body id'));
-      }
-    });
+    this.throwBadRequestIfNull(image, 'Image with given id does not exist');
+    this.throwBadRequestIfNotEqual(id, image.id, 'Id in path is not the same as body id');
 
+    return this._imageService.update(image);
   }
 
 }

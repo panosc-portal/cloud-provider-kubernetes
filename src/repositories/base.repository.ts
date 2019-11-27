@@ -51,9 +51,6 @@ export class BaseRepository<T, ID> {
   async findById(id: ID): Promise<T> {
     await this.init();
     const result = await this._repository.findOne(id);
-    if (result == null) {
-      throw new Error('Not found');
-    }
     return result;
   }
 
