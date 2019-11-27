@@ -1,9 +1,8 @@
 import {bind, BindingScope, inject, lifeCycleObserver} from '@loopback/core';
 import {K8sServiceManager} from './k8sService.manager';
-import {Flavour, Image, K8sInstance, Instance} from '../models';
+import {K8sInstance, Instance} from '../models';
 import {K8sRequestFactoryService} from './k8sRequestFactory.service';
 import {K8sDeploymentManager} from './k8sDeployment.manager';
-import {InstanceCreatorDto} from '../controllers/dto/instanceCreatorDto';
 import {KubernetesDataSource} from '../datasources';
 import {logger} from '../utils';
 import {K8sNamespaceManager} from './k8sNamespace.manager';

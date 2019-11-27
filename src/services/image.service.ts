@@ -1,4 +1,4 @@
-import {bind, BindingScope, inject} from '@loopback/core';
+import {bind, BindingScope} from '@loopback/core';
 import {Image} from '../models';
 import {ImageRepository} from '../repositories';
 import { repository } from '@loopback/repository';

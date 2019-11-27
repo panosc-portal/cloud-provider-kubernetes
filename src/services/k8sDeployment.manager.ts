@@ -3,12 +3,12 @@ import {KubernetesDataSource} from '../datasources';
 import { logger } from '../utils';
 
 export class K8sDeploymentManager {
-  constructor(private dataSource: KubernetesDataSource) {
+  constructor(private _dataSource: KubernetesDataSource) {
   }
 
   async getDeploymentsWithName(name: string, namespace: string) {
     try {
-      const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespace(namespace)
+      const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespace(namespace)
         .deployments(name)
         .get();
       const k8sDeployment = new K8sDeployment({k8sResponse: deployment.body});
@@ -27,7 +27,7 @@ export class K8sDeploymentManager {
   }
 
   async createDeployment(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
-    const deployment = await this.dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments.post({body: deploymentRequest.model});
+    const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments.post({body: deploymentRequest.model});
     const newDeployment = new K8sDeployment(deployment.body);
     if (newDeployment.isValid()) {
       logger.debug('Deployment ' + newDeployment.name + ' has been created');

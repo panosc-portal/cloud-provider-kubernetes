@@ -31,7 +31,7 @@ const PING_RESPONSE: ResponseObject = {
  * A simple controller to bounce back http requests
  */
 export class PingController {
-  constructor(@inject(RestBindings.Http.REQUEST) private req: Request) {}
+  constructor(@inject(RestBindings.Http.REQUEST) private _request: Request) {}
 
   // Map to `GET /ping`
   @get('/ping', {
@@ -44,8 +44,8 @@ export class PingController {
     return {
       greeting: 'Hello from LoopBack',
       date: new Date(),
-      url: this.req.url,
-      headers: Object.assign({}, this.req.headers),
+      url: this._request.url,
+      headers: Object.assign({}, this._request.headers),
     };
   }
 }

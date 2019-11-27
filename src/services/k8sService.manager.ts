@@ -5,12 +5,12 @@ import { logger } from '../utils';
 
 export class K8sServiceManager {
 
-  constructor(private dataSource: KubernetesDataSource) {
+  constructor(private _dataSource: KubernetesDataSource) {
   }
 
   async getServiceWithName(name: string, namespace: string) {
     try {
-      const service = await this.dataSource.K8sClient.api.v1.namespaces(namespace)
+      const service = await this._dataSource.K8sClient.api.v1.namespaces(namespace)
         .services(name)
         .get();
       const k8sService = new K8sService({k8sResponse: service.body});
@@ -29,7 +29,7 @@ export class K8sServiceManager {
   }
 
   async createService(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
-    const service = await this.dataSource.K8sClient.api.v1.namespace(namespace).services.post({body: serviceRequest.model});
+    const service = await this._dataSource.K8sClient.api.v1.namespace(namespace).services.post({body: serviceRequest.model});
     const newService = new K8sService(service.body);
     if (newService.isValid()) {
       logger.debug('Service ', newService.name, ' has been created');

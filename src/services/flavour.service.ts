@@ -1,4 +1,4 @@
-import {bind, BindingScope, inject} from '@loopback/core';
+import {bind, BindingScope} from '@loopback/core';
 import {Flavour} from '../models';
 import {FlavourRepository} from '../repositories';
 import { repository } from '@loopback/repository';

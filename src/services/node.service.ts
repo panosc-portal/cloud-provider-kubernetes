@@ -1,9 +1,9 @@
-import {bind, /* inject, */ BindingScope} from '@loopback/core';
+import {bind, BindingScope} from '@loopback/core';
 import {Instance, Node} from '../models';
 
 @bind({scope: BindingScope.SINGLETON})
 export class NodeService {
-  constructor(/* Add @inject to inject parameters */) {}
+  constructor() {}
 
   getAll(): Promise<Node[]> {
     return new Promise<Node[]>(function(resolve, reject) {
