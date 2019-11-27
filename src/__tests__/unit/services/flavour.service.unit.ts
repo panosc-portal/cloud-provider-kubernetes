@@ -21,30 +21,31 @@ describe('FlavourService', () => {
   it('gets a flavour', async () => {
     const flavour = await flavourService.getById(1);
 
-    expect(flavour).to.not.be.null;
+    expect(flavour).to.not.be.null();
     expect(flavour.name).to.equal('flavour 1');
   });
 
   it('saves a flavour', async () => {
     const flavours = await flavourService.getAll();
+    expect(flavours.length).to.equal(3);
 
     const flavour = new Flavour({
-      name: 'flavour 3',
+      name: 'flavour 4',
       description: 'A new flavour',
       memory: 1024,
       cpu: 4
     });
     await flavourService.save(flavour);
-    expect(flavour.id).to.not.be.null;
+    expect(flavour.id).to.not.be.null();
 
     const persistedFlavour = await flavourService.getById(flavour.id);
-    expect(persistedFlavour).to.not.be.null;
+    expect(persistedFlavour).to.not.be.null();
   });
 
   it('deletes a flavour', async () => {
     let flavours = await flavourService.getAll();
 
-    const flavour = flavours.find(flavour => flavour.id == 3);
+    const flavour = flavours.find(aFlavour => aFlavour.id === 3);
 
     await flavourService.delete(flavour);
 
@@ -60,7 +61,7 @@ describe('FlavourService', () => {
     flavour.name = 'A new name';
 
     const persistedFlavour = await flavourService.save(flavour);
-    expect(persistedFlavour).to.not.be.null;
+    expect(persistedFlavour).to.not.be.null();
     expect(persistedFlavour.id).to.equal(flavour.id);
     expect(persistedFlavour.name).to.equal(flavour.name);
 

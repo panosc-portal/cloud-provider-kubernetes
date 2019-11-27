@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv';
 import {FlavourRepository, ImageRepository, InstanceRepository} from '../../repositories';
 import {
   FlavourService,

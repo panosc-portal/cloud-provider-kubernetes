@@ -1,6 +1,6 @@
 import {TypeORMDataSource} from '../datasources';
 import {Repository, ObjectType, OrderByCondition, SelectQueryBuilder} from 'typeorm';
-import {Options, Filter, Where, Command, NamedParameters, PositionalParameters, WhereBuilder, AnyObject, } from '@loopback/repository';
+import {Filter, Where, Command, NamedParameters, PositionalParameters, WhereBuilder, AnyObject, } from '@loopback/repository';
 
 interface ParamterizedClause {
   clause: string,
@@ -61,50 +61,30 @@ export class BaseRepository<T, ID> {
 
     const queryBuilder = await this.buildDelete(whereClause);
 
-    try {
-      await queryBuilder.execute();
-      return true;
-
-    } catch (error) {
-      throw error;
-    }
+    await queryBuilder.execute();
+    return true;
   }
 
   async updateById(id: ID, data:object): Promise<T> {
     await this.init();
 
-    try {
-      await this._repository.update(id, data);
-      return this.findById(id);
-
-    } catch (error) {
-      throw error;
-    }
+    await this._repository.update(id, data);
+    return this.findById(id);
   }
 
   async updateAll(data: T, where?: Where): Promise<boolean> {
     await this.init();
     const queryBuilder = await this.buildUpdate(data, where);
-    try {
-      await queryBuilder.execute();
-      return true;
-
-    } catch (error) {
-      throw error;
-    }
+    await queryBuilder.execute();
+    return true;
   }
 
   async deleteAll(where?: Where): Promise<boolean>  {
     await this.init();
     const queryBuilder = await this.buildDelete(where);
     
-    try {
-      await queryBuilder.execute();
-      return true;
-
-    } catch (error) {
-      throw error;
-    }
+    await queryBuilder.execute();
+    return true;
   }
 
   async count(where?: Where): Promise<number> {
@@ -167,8 +147,8 @@ export class BaseRepository<T, ID> {
    * @param where Where object
    */
   buildWhere(where: any, parameters?: any): ParamterizedClause {
-    function getNextParameterName(parameters: any): string {
-      const index = Object.keys(parameters).length + 1;
+    function getNextParameterName(params: any): string {
+      const index = Object.keys(params).length + 1;
       return `p${index}`;
     }
 
@@ -270,7 +250,7 @@ export class BaseRepository<T, ID> {
     return {
       clause: clauses.join(' AND '),
       parameters: parameters,
-      isComposite: (where.and != null) || (where.or != null) || clauses.length > 1,
+      isComposite: (where.and != null) || (where.or != null) || clauses.length > 1
     };
   }
 
@@ -281,7 +261,7 @@ export class BaseRepository<T, ID> {
    */
   async buildUpdate(dataObject: T, where?: Where) {
     await this.init();
-    let queryBuilder = this._repository
+    const queryBuilder = this._repository
       .createQueryBuilder()
       .update(this._entityClass)
       .set(dataObject);
@@ -299,7 +279,7 @@ export class BaseRepository<T, ID> {
    */
   async buildDelete(where?: Where) {
     await this.init();
-    let queryBuilder = this._repository
+    const queryBuilder = this._repository
       .createQueryBuilder()
       .delete()
       .from(this._entityClass);

@@ -2,7 +2,7 @@ import { HttpErrors } from "@loopback/rest";
 
 export class BaseController {
 
-  constructor() {
+  constructor() {
   }
 
   throwNotFoundIfNull(object: any, message?: string) {

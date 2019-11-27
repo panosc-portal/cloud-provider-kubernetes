@@ -24,11 +24,11 @@ describe('ImageController', () => {
     const res = await client.get('/api/v1/images').expect(200);
 
     const images = res.body as Image[];
-    expect(images).to.not.be.null;
+    expect(images).to.not.be.null();
 
     expect(images.length).to.equal(3);
     images.forEach(image => {
-      expect(image.id).to.not.be.null;
+      expect(image.id).to.not.be.null();
     });
   });
 
@@ -36,7 +36,7 @@ describe('ImageController', () => {
     const res = await client.get('/api/v1/images/1').expect(200);
 
     const image = res.body as Image;
-    expect(image).to.not.be.null;
+    expect(image).to.not.be.null();
     expect(image.id).to.equal(1);
     expect(image.name).to.equal('image 1');
   });

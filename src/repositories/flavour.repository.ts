@@ -1,4 +1,4 @@
-import {Flavour, Image} from '../models';
+import {Flavour} from '../models';
 import {inject} from '@loopback/core';
 import {BaseRepository} from './base.repository';
 import {TypeORMDataSource} from '../datasources';

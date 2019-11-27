@@ -21,7 +21,7 @@ describe('ImageService', () => {
   it('gets an image', async () => {
     const image = await imageService.getById(1);
 
-    expect(image).to.not.be.null;
+    expect(image).to.not.be.null();
     expect(image.name).to.equal('image 1');
   });
 
@@ -31,17 +31,17 @@ describe('ImageService', () => {
       description: 'A new image'
     });
     await imageService.save(image);
-    expect(image.id).to.not.be.null;
+    expect(image.id).to.not.be.null();
 
     const persistedImage = await imageService.getById(image.id);
-    expect(persistedImage).to.not.be.null;
+    expect(persistedImage).to.not.be.null();
   });
 
   it('deletes an image', async () => {
     let images = await imageService.getAll();
     expect(images.length).to.equal(3);
 
-    const image = images.find(image => image.id == 3);
+    const image = images.find(anImage => anImage.id === 3);
 
     await imageService.delete(image);
 
@@ -57,7 +57,7 @@ describe('ImageService', () => {
     image.name = 'A new name';
 
     const persistedImage = await imageService.save(image);
-    expect(persistedImage).to.not.be.null;
+    expect(persistedImage).to.not.be.null();
     expect(persistedImage.id).to.equal(image.id);
     expect(persistedImage.name).to.equal(image.name);
 

@@ -24,11 +24,11 @@ describe('FlavourController', () => {
     const res = await client.get('/api/v1/flavours').expect(200);
 
     const flavours = res.body as Flavour[];
-    expect(flavours).to.not.be.null;
+    expect(flavours).to.not.be.null();
 
     expect(flavours.length).to.equal(3);
     flavours.forEach(flavour => {
-      expect(flavour.id).to.not.be.null;
+      expect(flavour.id).to.not.be.null();
     });
   });
 
@@ -36,7 +36,7 @@ describe('FlavourController', () => {
     const res = await client.get('/api/v1/flavours/1').expect(200);
 
     const flavour = res.body as Flavour;
-    expect(flavour).to.not.be.null;
+    expect(flavour).to.not.be.null();
     expect(flavour.id).to.equal(1);
     expect(flavour.name).to.equal('flavour 1');
   });

@@ -42,7 +42,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
   async stop(): Promise<void> {
     if (this._connection) {
       logger.info('Closing database connection');
-      this._connection.close();
+      await this._connection.close();
       this._connection = null;
     }
   }

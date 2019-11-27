@@ -28,12 +28,13 @@ describe('InstanceService', () => {
   it('gets an instance', async () => {
     const instance = await instanceService.getById(1);
 
-    expect(instance).to.not.be.null;
+    expect(instance).to.not.be.null();
     expect(instance.name).to.equal('instance 1');
   });
 
   it('saves an instance', async () => {
     const instances = await instanceService.getAll();
+    expect(instances.length).to.equal(2);
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
@@ -54,17 +55,17 @@ describe('InstanceService', () => {
     });
 
     await instanceService.save(instance);
-    expect(instance.id).to.not.be.null;
+    expect(instance.id).to.not.be.null();
 
     const persistedInstance = await instanceService.getById(instance.id);
-    expect(persistedInstance).to.not.be.null;
-    expect(persistedInstance.image).to.not.be.null;
+    expect(persistedInstance).to.not.be.null();
+    expect(persistedInstance.image).to.not.be.null();
     expect(persistedInstance.image.id).to.equal(1);
-    expect(persistedInstance.flavour).to.not.be.null;
+    expect(persistedInstance.flavour).to.not.be.null();
     expect(persistedInstance.flavour.id).to.equal(2);
     expect(persistedInstance.protocols.length).to.equal(2);
     persistedInstance.protocols.forEach(protocol => {
-      expect(protocol.id).to.not.be.null;
+      expect(protocol.id).to.not.be.null();
     })
   });
 
@@ -73,9 +74,9 @@ describe('InstanceService', () => {
 
     const instance = instances[0];
     const image = instance.image;
-    expect(image).to.not.be.null;
+    expect(image).to.not.be.null();
     const flavour = instance.flavour;
-    expect(flavour).to.not.be.null;
+    expect(flavour).to.not.be.null();
 
     await instanceService.delete(instance);
 
@@ -84,11 +85,11 @@ describe('InstanceService', () => {
 
     // Make sure image not deleted
     const persistedImage = imageService.getById(image.id);
-    expect(persistedImage).to.not.be.null;
+    expect(persistedImage).to.not.be.null();
 
     // Make sure flavour not deleted
     const persistedFlavour = flavourService.getById(flavour.id);
-    expect(persistedFlavour).to.not.be.null;
+    expect(persistedFlavour).to.not.be.null();
   });
 
 
@@ -99,7 +100,7 @@ describe('InstanceService', () => {
     instance.name = 'A new name';
 
     const persistedInstance = await instanceService.save(instance);
-    expect(persistedInstance).to.not.be.null;
+    expect(persistedInstance).to.not.be.null();
     expect(persistedInstance.id).to.equal(instance.id);
     expect(persistedInstance.name).to.equal(instance.name);
 

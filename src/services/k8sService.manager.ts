@@ -1,4 +1,4 @@
-import {K8sDeployment, K8sService, K8sServiceRequest} from '../models';
+import {K8sService, K8sServiceRequest} from '../models';
 import {KubernetesDataSource} from '../datasources';
 import { logger } from '../utils';
 

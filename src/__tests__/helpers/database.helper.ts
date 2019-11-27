@@ -22,8 +22,7 @@ export async function givenInitialisedDatabase(datasource: TypeORMDataSource) {
 
   const fixtures = fs.readFileSync('./resources/__tests__/fixtures.sql', 'utf8');
   const sqlQueries = fixtures.replace(/(\r\n|\n|\r)/gm, "").split(';').filter(query => query.length > 0).map(query => query + ';');
-  for (let i = 0; i < sqlQueries.length; i++) {
-    const sqlQuery = sqlQueries[i];
+  for (const sqlQuery of sqlQueries) {
     try {
       logger.debug(`Executing fixtures SQL query : ${sqlQuery}`);
       await entityManager.query(sqlQuery);
