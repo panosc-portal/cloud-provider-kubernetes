@@ -10,9 +10,9 @@ if (require.main === module) {
       host: process.env.HOST,
       openApiSpec: {
         // useful when used with OpenAPI-to-GraphQL to locate your application
-        setServersFromRequest: true,
-      },
-    },
+        setServersFromRequest: true
+      }
+    }
   };
   application.main(config).catch(err => {
     console.error('Cannot start the application.', err);
