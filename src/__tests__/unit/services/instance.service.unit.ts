@@ -1,4 +1,4 @@
-import {expect} from '@loopback/testlab';
+import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { getTestApplicationContext } from '../../helpers/context.helper';
 import { InstanceService, ImageService, FlavourService } from '../../../services';
@@ -50,8 +50,11 @@ describe('InstanceService', () => {
       currentMemory: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
-      namespace:'panosc',
-      protocols: [new Protocol({name: ProtocolName.SSH, port: 2222}), new Protocol({name: ProtocolName.RDP, port: 1234})]
+      namespace: 'panosc',
+      protocols: [
+        new Protocol({ name: ProtocolName.SSH, port: 2222 }),
+        new Protocol({ name: ProtocolName.RDP, port: 1234 })
+      ]
     });
 
     await instanceService.save(instance);
@@ -66,7 +69,7 @@ describe('InstanceService', () => {
     expect(persistedInstance.protocols.length).to.equal(2);
     persistedInstance.protocols.forEach(protocol => {
       expect(protocol.id).to.not.be.null();
-    })
+    });
   });
 
   it('deletes an instance', async () => {
@@ -92,7 +95,6 @@ describe('InstanceService', () => {
     expect(persistedFlavour).to.not.be.null();
   });
 
-
   it('updates an instance', async () => {
     const instances = await instanceService.getAll();
 
@@ -107,5 +109,4 @@ describe('InstanceService', () => {
     const instancesAfterUpdate = await instanceService.getAll();
     expect(instancesAfterUpdate.length).to.equal(instances.length);
   });
-
 });

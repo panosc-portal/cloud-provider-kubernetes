@@ -1,19 +1,18 @@
-import {model, property} from '@loopback/repository';
+import { model, property } from '@loopback/repository';
 
 @model()
 export class Info {
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
   name: string;
 
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
   version: string;
-
 
   constructor(data?: Partial<Info>) {
     Object.assign(this, data);

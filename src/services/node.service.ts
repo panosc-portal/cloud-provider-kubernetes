@@ -1,7 +1,7 @@
-import {bind, BindingScope} from '@loopback/core';
-import {Instance, Node} from '../models';
+import { bind, BindingScope } from '@loopback/core';
+import { Instance, Node } from '../models';
 
-@bind({scope: BindingScope.SINGLETON})
+@bind({ scope: BindingScope.SINGLETON })
 export class NodeService {
   constructor() {}
 
@@ -9,7 +9,7 @@ export class NodeService {
     return new Promise<Node[]>(function(resolve, reject) {
       resolve([]);
     });
-  };
+  }
 
   getById(id: number): Promise<Node> {
     return new Promise<Node>(function(resolve, reject) {

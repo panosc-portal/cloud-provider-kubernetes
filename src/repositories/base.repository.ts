@@ -1,15 +1,23 @@
-import {TypeORMDataSource} from '../datasources';
-import {Repository, ObjectType, OrderByCondition, SelectQueryBuilder} from 'typeorm';
-import {Filter, Where, Command, NamedParameters, PositionalParameters, WhereBuilder, AnyObject, } from '@loopback/repository';
+import { TypeORMDataSource } from '../datasources';
+import { Repository, ObjectType, OrderByCondition, SelectQueryBuilder } from 'typeorm';
+import {
+  Filter,
+  Where,
+  Command,
+  NamedParameters,
+  PositionalParameters,
+  WhereBuilder,
+  AnyObject
+} from '@loopback/repository';
 
 interface ParamterizedClause {
-  clause: string,
-  parameters: any,
-  isComposite: boolean,
+  clause: string;
+  parameters: any;
+  isComposite: boolean;
 }
 
 export interface QueryOptions {
-  leftJoins?: string[] 
+  leftJoins?: string[];
 }
 
 /*
@@ -18,10 +26,9 @@ export interface QueryOptions {
 export class BaseRepository<T, ID> {
   private _repository: Repository<T>;
 
-  constructor(private _dataSource: TypeORMDataSource, private _entityClass: ObjectType<T>) {
-  }
+  constructor(private _dataSource: TypeORMDataSource, private _entityClass: ObjectType<T>) {}
 
-  private async init() {
+  async init() {
     if (this._repository == null) {
       this._repository = await this._dataSource.repository(this._entityClass);
     }
@@ -41,7 +48,7 @@ export class BaseRepository<T, ID> {
     if (options != null && options.leftJoins != null) {
       options.leftJoins.forEach((relation: string) => {
         queryBuilder = queryBuilder.leftJoinAndSelect(`${entityName}.${relation}`, relation);
-      })
+      });
     }
 
     const result = queryBuilder.getMany();
@@ -65,7 +72,7 @@ export class BaseRepository<T, ID> {
     return true;
   }
 
-  async updateById(id: ID, data:object): Promise<T> {
+  async updateById(id: ID, data: object): Promise<T> {
     await this.init();
 
     await this._repository.update(id, data);
@@ -79,10 +86,10 @@ export class BaseRepository<T, ID> {
     return true;
   }
 
-  async deleteAll(where?: Where): Promise<boolean>  {
+  async deleteAll(where?: Where): Promise<boolean> {
     await this.init();
     const queryBuilder = await this.buildDelete(where);
-    
+
     await queryBuilder.execute();
     return true;
   }
@@ -109,7 +116,7 @@ export class BaseRepository<T, ID> {
    * Convert order clauses to OrderByCondition
    * @param order An array of orders
    */
-  private buildOrder(order: string[]) {
+  buildOrder(order: string[]) {
     const orderBy: OrderByCondition = {};
     for (const o of order) {
       const match = /^([^\s]+)( (ASC|DESC))?$/.exec(o);
@@ -124,7 +131,7 @@ export class BaseRepository<T, ID> {
    * Build a TypeORM query from LoopBack Filter
    * @param filter Filter object
    */
-  private async buildQuery(name: string, filter?: Filter): Promise<SelectQueryBuilder<T>> {
+  async buildQuery(name: string, filter?: Filter): Promise<SelectQueryBuilder<T>> {
     await this.init();
     const queryBuilder = this._repository.createQueryBuilder(name);
     if (!filter) return queryBuilder;
@@ -153,20 +160,21 @@ export class BaseRepository<T, ID> {
     }
 
     const clauses: string[] = [];
-    parameters = parameters || {}; 
-    
+    parameters = parameters || {};
+
     if (where.and) {
-      const andClauses = where.and.map((w: any) => this.buildWhere(w, parameters))
+      const andClauses = where.and.map((w: any) => this.buildWhere(w, parameters));
       const and = andClauses.map((pc: ParamterizedClause) => pc.clause).join(' AND ');
       clauses.push(and);
       andClauses.forEach((pc: ParamterizedClause) => {
         Object.assign(parameters, pc.parameters);
       });
-
     }
     if (where.or) {
-      const orClauses = where.or.map((w: any) => this.buildWhere(w, parameters))
-      const or = orClauses.map((pc: ParamterizedClause) => pc.isComposite ? `(${pc.clause})` : pc.clause).join(' OR ');
+      const orClauses = where.or.map((w: any) => this.buildWhere(w, parameters));
+      const or = orClauses
+        .map((pc: ParamterizedClause) => (pc.isComposite ? `(${pc.clause})` : pc.clause))
+        .join(' OR ');
       clauses.push(`(${or})`);
       orClauses.forEach((pc: ParamterizedClause) => {
         Object.assign(parameters, pc.parameters);
@@ -182,63 +190,54 @@ export class BaseRepository<T, ID> {
         const parameterName = getNextParameterName(parameters);
         parameters[parameterName] = condition.eq;
         clause = `${key} = :${parameterName}`;
-
       } else if (condition.neq) {
         const parameterName = getNextParameterName(parameters);
         parameters[parameterName] = condition.neq;
         clause = `${key} != :${parameterName}`;
-
       } else if (condition.lt) {
         const parameterName = getNextParameterName(parameters);
         parameters[parameterName] = condition.lt;
         clause = `${key} < :${parameterName}`;
-
       } else if (condition.lte) {
         const parameterName = getNextParameterName(parameters);
         parameters[parameterName] = condition.lte;
         clause = `${key} <= :${parameterName}`;
-
       } else if (condition.gt) {
         const parameterName = getNextParameterName(parameters);
         parameters[parameterName] = condition.gt;
         clause = `${key} > :${parameterName}`;
-
       } else if (condition.gte) {
         const parameterName = getNextParameterName(parameters);
         parameters[parameterName] = condition.gte;
         clause = `${key} >= :${parameterName}`;
-
       } else if (condition.inq) {
         let vals = '';
-        for (let i = 0; i < condition.inq.length; i ++) {
+        for (let i = 0; i < condition.inq.length; i++) {
           const parameterValue = condition.inq[i];
           const parameterName = getNextParameterName(parameters);
           parameters[parameterName] = parameterValue;
 
-          vals += i > 0 ?  `, :${parameterName}` : `:${parameterName}`;
+          vals += i > 0 ? `, :${parameterName}` : `:${parameterName}`;
         }
 
         clause = `${key} IN (${vals})`;
-
       } else if (condition.nin) {
         let vals = '';
-        for (let i = 0; i < condition.nin.length; i ++) {
+        for (let i = 0; i < condition.nin.length; i++) {
           const parameterValue = condition.nin[i];
           const parameterName = getNextParameterName(parameters);
           parameters[parameterName] = parameterValue;
 
-          vals += i > 0 ?  `, :${parameterName}` : `:${parameterName}`;
+          vals += i > 0 ? `, :${parameterName}` : `:${parameterName}`;
         }
 
         clause = `${key} NOT IN (${vals})`;
-
       } else if (condition.between) {
         const p1Name = getNextParameterName(parameters);
         parameters[p1Name] = condition.between[0];
         const p2Name = getNextParameterName(parameters);
         parameters[p2Name] = condition.between[1];
         clause = `${key} BETWEEN :${p1Name} AND :${p2Name}`;
-
       } else {
         // Shorthand form: {x:1} => X = 1
         const parameterName = getNextParameterName(parameters);
@@ -250,7 +249,7 @@ export class BaseRepository<T, ID> {
     return {
       clause: clauses.join(' AND '),
       parameters: parameters,
-      isComposite: (where.and != null) || (where.or != null) || clauses.length > 1
+      isComposite: where.and != null || where.or != null || clauses.length > 1
     };
   }
 
@@ -290,5 +289,4 @@ export class BaseRepository<T, ID> {
     }
     return queryBuilder;
   }
-
 }

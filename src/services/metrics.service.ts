@@ -1,7 +1,7 @@
-import {bind, BindingScope} from '@loopback/core';
-import { Metrics} from '../models';
+import { bind, BindingScope } from '@loopback/core';
+import { Metrics } from '../models';
 
-@bind({scope: BindingScope.SINGLETON})
+@bind({ scope: BindingScope.SINGLETON })
 export class MetricsService {
   constructor() {}
 
@@ -9,6 +9,5 @@ export class MetricsService {
     return new Promise<Metrics>(function(resolve, reject) {
       resolve();
     });
-  };
-
+  }
 }

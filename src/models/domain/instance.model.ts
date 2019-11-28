@@ -1,8 +1,18 @@
-import {model, property} from '@loopback/repository';
-import { Protocol} from './protocol.model';
-import {Flavour} from './flavour.model';
-import {Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
-import {Image} from './image.model';
+import { model, property } from '@loopback/repository';
+import { Protocol } from './protocol.model';
+import { Flavour } from './flavour.model';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  OneToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn
+} from 'typeorm';
+import { Image } from './image.model';
 import { InstanceStatus } from '../enumerations/InstanceStatus';
 import { InstanceState } from './instance-state.model';
 
@@ -13,83 +23,84 @@ export class Instance {
     type: 'number',
     id: true,
     required: true,
-    generated: true,
+    generated: true
   })
   @PrimaryGeneratedColumn()
   id: number;
 
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
   @Index('instance_name_index')
-  @Column({length: 250})
+  @Column({ length: 250 })
   name: string;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
-  @Column({length: 2500, nullable: true})
+  @Column({ length: 2500, nullable: true })
   description?: string;
 
-  @Column({length: 250})
+  @Column({ length: 250 })
   namespace: string;
 
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
-  @Column({length: 128})
+  @Column({ length: 128 })
   hostname: string;
 
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
-  @Column({length: 50})
+  @Column({ length: 50 })
   status: InstanceStatus;
 
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
-  @Column({name: 'current_cpu', type: 'float'})
+  @Column({ name: 'current_cpu', type: 'float' })
   currentCPU: number;
 
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
-  @Column({name: 'current_memory'})
+  @Column({ name: 'current_memory' })
   currentMemory: number;
 
   @property({
     type: 'date',
-    required: true,
+    required: true
   })
-  @CreateDateColumn({name: 'created_at', type: process.env.NODE_ENV === 'test' ? 'date' : 'timestamp'})
+  @CreateDateColumn({ name: 'created_at', type: process.env.NODE_ENV === 'test' ? 'date' : 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn({name: 'updated_at', type: process.env.NODE_ENV === 'test' ? 'date' : 'timestamp'})
+  @UpdateDateColumn({ name: 'updated_at', type: process.env.NODE_ENV === 'test' ? 'date' : 'timestamp' })
   updatedAt: Date;
 
   @OneToMany(type => Protocol, protocol => protocol.instance, {
-    eager: true, cascade: true
+    eager: true,
+    cascade: true
   })
   protocols: Protocol[];
 
-  @property({type:'number'})
+  @property({ type: 'number' })
   @ManyToOne(type => Flavour, {
     eager: true
   })
-  @JoinColumn({name: 'flavour_id'})
+  @JoinColumn({ name: 'flavour_id' })
   flavour: Flavour;
 
   @ManyToOne(type => Image, {
     eager: true
   })
-  @property({type:'number'})
-  @JoinColumn({name: 'image_id'})
+  @property({ type: 'number' })
+  @JoinColumn({ name: 'image_id' })
   image: Image;
 
   get state(): InstanceState {

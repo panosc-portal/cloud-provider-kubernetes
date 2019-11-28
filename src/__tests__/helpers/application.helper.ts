@@ -1,9 +1,5 @@
-import {CloudProviderKubernetesApplication} from '../..';
-import {
-  createRestAppClient,
-  givenHttpServerConfig,
-  Client,
-} from '@loopback/testlab';
+import { CloudProviderKubernetesApplication } from '../..';
+import { createRestAppClient, givenHttpServerConfig, Client } from '@loopback/testlab';
 import { TypeORMDataSource } from '../../datasources';
 import { KubernetesMockServer } from '../kubernetesMock/KubernetesMockServer';
 import { createBindingFromClass } from '@loopback/core';
@@ -30,7 +26,7 @@ export async function setupApplication(): Promise<AppWithClient> {
 
   const client = createRestAppClient(app);
 
-  return {app, client, datasource};
+  return { app, client, datasource };
 }
 
 export interface AppWithClient {

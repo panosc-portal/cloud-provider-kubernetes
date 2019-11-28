@@ -1,6 +1,6 @@
-import {model, property} from '@loopback/repository';
-import {Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
-import {Instance} from './instance.model';
+import { model, property } from '@loopback/repository';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Instance } from './instance.model';
 import { ProtocolName } from '../enumerations/ProtocolName';
 
 @Entity()
@@ -10,30 +10,30 @@ export class Protocol {
     type: 'number',
     id: true,
     required: true,
-    generated: false,
+    generated: false
   })
   @PrimaryGeneratedColumn()
   id: number;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
   @Index('protocol_name_index')
-  @Column({length: 250})
+  @Column({ length: 250 })
   name: ProtocolName;
 
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
   @Column()
   port: number;
 
   @property({
-    type: 'number',
+    type: 'number'
   })
   @ManyToOne(type => Instance, instance => instance.protocols)
-  @JoinColumn({name: 'instance_id'})
+  @JoinColumn({ name: 'instance_id' })
   instance?: Instance;
 
   constructor(data?: Partial<Protocol>) {

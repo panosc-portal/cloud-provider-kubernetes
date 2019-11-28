@@ -1,27 +1,22 @@
-import {model, property} from '@loopback/repository';
+import { model, property } from '@loopback/repository';
 
 @model()
 export class InstanceCreatorDto {
-
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
   name: string;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
   description?: string;
 
-  @property(
-    {type: 'number'}
-  )
+  @property({ type: 'number' })
   flavourId: number;
 
-  @property(
-    {type: 'number'}
-  )
+  @property({ type: 'number' })
   imageId: number;
 
   constructor(data?: Partial<InstanceCreatorDto>) {

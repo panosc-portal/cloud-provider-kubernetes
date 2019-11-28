@@ -1,6 +1,6 @@
-import {Client, expect} from '@loopback/testlab';
-import {CloudProviderKubernetesApplication} from '../../..';
-import {setupApplication} from '../../helpers/application.helper';
+import { Client, expect } from '@loopback/testlab';
+import { CloudProviderKubernetesApplication } from '../../..';
+import { setupApplication } from '../../helpers/application.helper';
 import { givenInitialisedDatabase } from '../../helpers/database.helper';
 import { TypeORMDataSource } from '../../../datasources';
 import { Instance } from '../../../models';
@@ -11,14 +11,16 @@ describe('InstanceController', () => {
   let datasource: TypeORMDataSource;
 
   before('setupApplication', async () => {
-    ({app, client, datasource} = await setupApplication());
+    ({ app, client, datasource } = await setupApplication());
   });
 
   after(async () => {
     await app.stop();
   });
 
-  beforeEach('Initialise Database', function () { return givenInitialisedDatabase(datasource) });
+  beforeEach('Initialise Database', function() {
+    return givenInitialisedDatabase(datasource);
+  });
 
   it('invokes GET /instances', async () => {
     const res = await client.get('/api/v1/instances').expect(200);

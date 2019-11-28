@@ -1,7 +1,7 @@
-import {get, getModelSchemaRef, param, put, requestBody} from '@loopback/rest';
-import {Flavour} from '../models';
-import {inject} from '@loopback/context';
-import {FlavourService} from '../services';
+import { get, getModelSchemaRef, param, put, requestBody } from '@loopback/rest';
+import { Flavour } from '../models';
+import { inject } from '@loopback/context';
+import { FlavourService } from '../services';
 import { BaseController } from './BaseController';
 
 export class FlavourController extends BaseController {
@@ -16,11 +16,11 @@ export class FlavourController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Flavour)},
-          },
-        },
-      },
-    },
+            schema: { type: 'array', items: getModelSchemaRef(Flavour) }
+          }
+        }
+      }
+    }
   })
   getAll(): Promise<Flavour[]> {
     return this._flavourService.getAll();
@@ -33,11 +33,11 @@ export class FlavourController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Flavour),
-          },
-        },
-      },
-    },
+            schema: getModelSchemaRef(Flavour)
+          }
+        }
+      }
+    }
   })
   async getById(@param.path.string('id') id: number): Promise<Flavour> {
     const flavour = await this._flavourService.getById(id);
@@ -54,11 +54,11 @@ export class FlavourController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Flavour),
-          },
-        },
-      },
-    },
+            schema: getModelSchemaRef(Flavour)
+          }
+        }
+      }
+    }
   })
   updateById(@param.path.number('id') id: number, @requestBody() flavour: Flavour): Promise<Flavour> {
     this.throwBadRequestIfNull(flavour, 'Flavour with given id does not exist');
@@ -66,5 +66,4 @@ export class FlavourController extends BaseController {
 
     return this._flavourService.update(flavour);
   }
-
 }

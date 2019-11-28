@@ -1,11 +1,10 @@
-import {model, property} from '@loopback/repository';
+import { model, property } from '@loopback/repository';
 
 @model()
 export class InstanceActionDto {
-
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
   name: string;
 

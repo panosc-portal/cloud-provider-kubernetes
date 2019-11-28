@@ -1,14 +1,18 @@
-import {del, get, getModelSchemaRef, param, post, requestBody, put} from '@loopback/openapi-v3';
-import {Image, Instance, InstanceState} from '../models';
-import {inject} from '@loopback/context';
-import {FlavourService, ImageService, InstanceService} from '../services';
-import {InstanceCreatorDto} from './dto/instanceCreatorDto';
+import { del, get, getModelSchemaRef, param, post, requestBody, put } from '@loopback/openapi-v3';
+import { Image, Instance, InstanceState } from '../models';
+import { inject } from '@loopback/context';
+import { FlavourService, ImageService, InstanceService } from '../services';
+import { InstanceCreatorDto } from './dto/instanceCreatorDto';
 import { InstanceStatus } from '../models/enumerations/InstanceStatus';
 import { InstanceActionDto } from './dto/instanceActionDto';
 import { BaseController } from './BaseController';
 
 export class InstanceController extends BaseController {
-  constructor(@inject('services.InstanceService') private _instanceService: InstanceService, @inject('services.ImageService') private _imageservice: ImageService, @inject('services.FlavourService') private _flavourservice: FlavourService) {
+  constructor(
+    @inject('services.InstanceService') private _instanceService: InstanceService,
+    @inject('services.ImageService') private _imageservice: ImageService,
+    @inject('services.FlavourService') private _flavourservice: FlavourService
+  ) {
     super();
   }
 
@@ -19,11 +23,11 @@ export class InstanceController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Instance)},
-          },
-        },
-      },
-    },
+            schema: { type: 'array', items: getModelSchemaRef(Instance) }
+          }
+        }
+      }
+    }
   })
   getAll(): Promise<Instance[]> {
     return this._instanceService.getAll();
@@ -36,11 +40,11 @@ export class InstanceController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Instance),
-          },
-        },
-      },
-    },
+            schema: getModelSchemaRef(Instance)
+          }
+        }
+      }
+    }
   })
   async getById(@param.path.string('id') id: number): Promise<Instance> {
     const instance = await this._instanceService.getById(id);
@@ -56,11 +60,11 @@ export class InstanceController extends BaseController {
         description: 'Created',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Instance),
-          },
-        },
-      },
-    },
+            schema: getModelSchemaRef(Instance)
+          }
+        }
+      }
+    }
   })
   async create(@requestBody() instanceCreator: InstanceCreatorDto): Promise<Instance> {
     const image = await this._imageservice.getById(instanceCreator.imageId);
@@ -89,11 +93,11 @@ export class InstanceController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Instance),
-          },
-        },
-      },
-    },
+            schema: getModelSchemaRef(Instance)
+          }
+        }
+      }
+    }
   })
   updateById(@param.path.number('id') id: number, @requestBody() instance: Instance): Promise<Image> {
     this.throwBadRequestIfNull(instance, 'Invalid instance');
@@ -109,12 +113,11 @@ export class InstanceController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(InstanceState),
-
-          },
-        },
-      },
-    },
+            schema: getModelSchemaRef(InstanceState)
+          }
+        }
+      }
+    }
   })
   async getStateById(@param.path.string('id') id: number): Promise<InstanceState> {
     const instance = await this._instanceService.getById(id);
@@ -127,9 +130,9 @@ export class InstanceController extends BaseController {
     summary: 'Delete an instance by a given identifier',
     responses: {
       '200': {
-        description: 'Ok',
-      },
-    },
+        description: 'Ok'
+      }
+    }
   })
   async deleteById(@param.path.string('id') id: number): Promise<boolean> {
     const instance = await this._instanceService.getById(id);
@@ -142,9 +145,9 @@ export class InstanceController extends BaseController {
     summary: 'Invoke an action by a given identifier i.e. REBOOT, TERMINATE',
     responses: {
       '201': {
-        description: 'Created',
-      },
-    },
+        description: 'Created'
+      }
+    }
   })
   async actionById(@param.path.string('id') id: number, @requestBody() action: InstanceActionDto): Promise<void> {
     const instance = await this._instanceService.getById(id);
@@ -154,5 +157,4 @@ export class InstanceController extends BaseController {
 
     return this._instanceService.executeAction(instance);
   }
-
 }

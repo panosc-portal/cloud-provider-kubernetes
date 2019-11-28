@@ -1,7 +1,7 @@
-import {bind, BindingScope} from '@loopback/core';
-import {Info} from '../models';
+import { bind, BindingScope } from '@loopback/core';
+import { Info } from '../models';
 
-@bind({scope: BindingScope.SINGLETON})
+@bind({ scope: BindingScope.SINGLETON })
 export class InfoService {
   constructor() {}
 
@@ -9,6 +9,5 @@ export class InfoService {
     return new Promise<Info>(function(resolve, reject) {
       resolve();
     });
-  };
-
+  }
 }

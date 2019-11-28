@@ -1,22 +1,22 @@
-import {model, property} from '@loopback/repository';
+import { model, property } from '@loopback/repository';
 
 @model()
 export class ResourceMonitor {
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
   total: number;
 
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
   available: number;
 
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
   used: number;
 

@@ -1,4 +1,4 @@
-import {createLogger, format, transports} from 'winston';
+import { createLogger, format, transports } from 'winston';
 
 export const buildLogger = function(prefix?: string) {
   return createLogger({
@@ -12,12 +12,11 @@ export const buildLogger = function(prefix?: string) {
           }),
           format.printf(info => {
             return `${info.timestamp} ${info.level}: ${prefix ? prefix + ' ' : ''}${info.message}`;
-          }),
-        ),
+          })
+        )
       })
     ]
-  })
-}
+  });
+};
 
 export const logger = buildLogger();
-

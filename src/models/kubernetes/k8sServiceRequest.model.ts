@@ -1,5 +1,4 @@
 export class K8sServiceRequest {
-
   private _model: object;
 
   get name(): string {
@@ -7,32 +6,31 @@ export class K8sServiceRequest {
   }
 
   get model(): any {
-    return this._model
+    return this._model;
   }
 
   constructor(private _name: string) {
     this._model = {
-      'apiVersion': 'v1',
-      'kind': 'Service',
-      'metadata': {
-        'name': this._name,
-        'labels': {
-          'app': this._name,
-        },
+      apiVersion: 'v1',
+      kind: 'Service',
+      metadata: {
+        name: this._name,
+        labels: {
+          app: this._name
+        }
       },
-      'spec': {
-        'type': 'NodePort',
-        'ports': [
+      spec: {
+        type: 'NodePort',
+        ports: [
           {
-            'name': 'xrdp',
-            'port': 3389,
-          },
+            name: 'xrdp',
+            port: 3389
+          }
         ],
-        'selector': {
-          'app': this._name,
-        },
-      },
+        selector: {
+          app: this._name
+        }
+      }
     };
   }
 }
-
