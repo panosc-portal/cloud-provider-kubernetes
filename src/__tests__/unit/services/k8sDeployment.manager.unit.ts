@@ -28,6 +28,20 @@ describe('K8sDeploymentManager', () => {
     expect(k8sDeployment).to.not.be.null();
     expect(k8sDeployment.name).to.be.equal('test');
   });
+
+  it('get a non existing deployment', async () => {
+    const k8sDeployment =await k8sDeploymentManager.getDeploymentsWithName("test1","panosc");
+    expect(k8sDeployment).to.be.null()
+  });
+
+  it('create and get kubernetes deployment', async () => {
+    const k8sDeploymentRequest = new K8sDeploymentRequest( 'test' , 'danielguerra/ubuntu-xrdp');
+    await k8sDeploymentManager.createDeployment(k8sDeploymentRequest,"panosc");
+    const k8sDeployment =await k8sDeploymentManager.getDeploymentsWithName("test","panosc");
+    expect(k8sDeployment).to.not.be.null();
+    expect(k8sDeployment.name).to.be.equal('test');
+  });
+
 });
 
 

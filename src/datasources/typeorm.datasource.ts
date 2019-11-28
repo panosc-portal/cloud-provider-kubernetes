@@ -63,7 +63,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
       return this._connection;
 
     } catch (error) {
-      logger.error(error);
+      logger.error(error.message);
       process.exit();
     }
   }

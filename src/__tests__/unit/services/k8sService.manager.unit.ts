@@ -29,4 +29,17 @@ describe('K8sServiceManager', () => {
     expect(k8sService.name).to.be.equal('test');
     expect(k8sService.ports).to.not.be.null();
   });
+
+  it('get a non existing service', async () => {
+    const k8sService =await k8sServiceManager.getServiceWithName("test1","panosc");
+    expect(k8sService).to.be.null()
+  });
+
+  it('create and get kubernetes service', async () => {
+    const k8sServiceRequest = new K8sServiceRequest( 'testService' );
+    await k8sServiceManager.createService(k8sServiceRequest,"panosc");
+    const k8sNamespace =await k8sServiceManager.getServiceWithName('testService','panosc');
+    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace.name).to.be.equal('testService');
+  });
 });

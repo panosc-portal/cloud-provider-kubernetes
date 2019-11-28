@@ -11,7 +11,7 @@ export class K8sDeploymentManager {
       const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespace(namespace)
         .deployments(name)
         .get();
-      const k8sDeployment = new K8sDeployment({k8sResponse: deployment.body});
+      const k8sDeployment = new K8sDeployment(deployment.body);
       if (k8sDeployment.isValid()) {
         return k8sDeployment;
       } else {

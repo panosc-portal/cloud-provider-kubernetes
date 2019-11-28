@@ -63,7 +63,7 @@ export class KubernetesMockServer {
     });
 
     app.get('*', (req, res) => {
-      res.status(404).send();
+      res.sendStatus(404);
       logger.info(`GET ${req.originalUrl}: unmapped path`);
     });
 
@@ -107,7 +107,7 @@ export class KubernetesMockServer {
     });
 
     app.post('*', (req, res) => {
-      res.status(404).send();
+      res.sendStatus(404);
       logger.info(`POST ${req.originalUrl}: unmapped path`);
     });
 

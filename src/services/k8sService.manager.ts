@@ -13,7 +13,7 @@ export class K8sServiceManager {
       const service = await this._dataSource.K8sClient.api.v1.namespaces(namespace)
         .services(name)
         .get();
-      const k8sService = new K8sService({k8sResponse: service.body});
+      const k8sService = new K8sService(service.body);
       if (k8sService.isValid()) {
         return k8sService;
       } else {
