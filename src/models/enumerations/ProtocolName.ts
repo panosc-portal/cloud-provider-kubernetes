@@ -1,4 +1,4 @@
 export enum ProtocolName {
-  SSH="SSH",
-  RDP="RDP"
+  SSH = 'SSH',
+  RDP = 'RDP'
 }

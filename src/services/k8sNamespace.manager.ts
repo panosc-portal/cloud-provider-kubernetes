@@ -1,13 +1,11 @@
-import {bind, BindingScope, inject} from '@loopback/core';
-import {K8sNamespace, K8sNamespaceRequest} from '../models';
-import {KubernetesDataSource} from '../datasources';
+import { bind, BindingScope, inject } from '@loopback/core';
+import { K8sNamespace, K8sNamespaceRequest } from '../models';
+import { KubernetesDataSource } from '../datasources';
 import { logger } from '../utils';
 
-@bind({scope: BindingScope.SINGLETON})
+@bind({ scope: BindingScope.SINGLETON })
 export class K8sNamespaceManager {
-
-  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {
-  }
+  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {}
 
   async getNamespaceWithName(name: string) {
     try {
@@ -29,7 +27,7 @@ export class K8sNamespaceManager {
   }
 
   async createNamespace(namespaceRequest: K8sNamespaceRequest): Promise<K8sNamespace> {
-    const namespace = await this._dataSource.K8sClient.api.v1.namespaces.post({body: namespaceRequest.model});
+    const namespace = await this._dataSource.K8sClient.api.v1.namespaces.post({ body: namespaceRequest.model });
     const newNamespace = new K8sNamespace(namespace.body);
     if (newNamespace.isValid()) {
       logger.debug('Namespace ' + newNamespace.name + ' has been created');

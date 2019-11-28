@@ -1,19 +1,17 @@
-import {K8sService, K8sServiceRequest} from '../models';
-import {KubernetesDataSource} from '../datasources';
+import { K8sService, K8sServiceRequest } from '../models';
+import { KubernetesDataSource } from '../datasources';
 import { logger } from '../utils';
 
-
 export class K8sServiceManager {
-
-  constructor(private _dataSource: KubernetesDataSource) {
-  }
+  constructor(private _dataSource: KubernetesDataSource) {}
 
   async getServiceWithName(name: string, namespace: string) {
     try {
-      const service = await this._dataSource.K8sClient.api.v1.namespaces(namespace)
+      const service = await this._dataSource.K8sClient.api.v1
+        .namespaces(namespace)
         .services(name)
         .get();
-      const k8sService = new K8sService({k8sResponse: service.body});
+      const k8sService = new K8sService({ k8sResponse: service.body });
       if (k8sService.isValid()) {
         return k8sService;
       } else {
@@ -29,7 +27,9 @@ export class K8sServiceManager {
   }
 
   async createService(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
-    const service = await this._dataSource.K8sClient.api.v1.namespace(namespace).services.post({body: serviceRequest.model});
+    const service = await this._dataSource.K8sClient.api.v1
+      .namespace(namespace)
+      .services.post({ body: serviceRequest.model });
     const newService = new K8sService(service.body);
     if (newService.isValid()) {
       logger.debug('Service ', newService.name, ' has been created');
@@ -48,5 +48,4 @@ export class K8sServiceManager {
       return existingService;
     }
   }
-
 }

@@ -1,4 +1,4 @@
-import {expect} from '@loopback/testlab';
+import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { getTestApplicationContext } from '../../helpers/context.helper';
 import { FlavourService } from '../../../services';
@@ -53,7 +53,6 @@ describe('FlavourService', () => {
     expect(flavours.length).to.equal(2);
   });
 
-
   it('updates a flavour', async () => {
     const flavours = await flavourService.getAll();
 
@@ -68,5 +67,4 @@ describe('FlavourService', () => {
     const flavoursAfterUpdate = await flavourService.getAll();
     expect(flavoursAfterUpdate.length).to.equal(flavours.length);
   });
-
 });

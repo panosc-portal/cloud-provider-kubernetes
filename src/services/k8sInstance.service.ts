@@ -1,16 +1,15 @@
-import {bind, BindingScope, inject, lifeCycleObserver} from '@loopback/core';
-import {K8sServiceManager} from './k8sService.manager';
-import {K8sInstance, Instance} from '../models';
-import {K8sRequestFactoryService} from './k8sRequestFactory.service';
-import {K8sDeploymentManager} from './k8sDeployment.manager';
-import {KubernetesDataSource} from '../datasources';
-import {logger} from '../utils';
-import {K8sNamespaceManager} from './k8sNamespace.manager';
+import { bind, BindingScope, inject, lifeCycleObserver } from '@loopback/core';
+import { K8sServiceManager } from './k8sService.manager';
+import { K8sInstance, Instance } from '../models';
+import { K8sRequestFactoryService } from './k8sRequestFactory.service';
+import { K8sDeploymentManager } from './k8sDeployment.manager';
+import { KubernetesDataSource } from '../datasources';
+import { logger } from '../utils';
+import { K8sNamespaceManager } from './k8sNamespace.manager';
 
 @lifeCycleObserver('server')
-@bind({scope: BindingScope.SINGLETON})
+@bind({ scope: BindingScope.SINGLETON })
 export class K8sInstanceService {
-
   private _requestFactoryService = new K8sRequestFactoryService();
   private _deploymentManager: K8sDeploymentManager;
   private _serviceManager: K8sServiceManager;
@@ -49,7 +48,10 @@ export class K8sInstanceService {
 
     const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instance.name, image.name);
     logger.debug('Creating Deployment in Kubernetes');
-    const deployment = await this._deploymentManager.createDeploymentIfNotExist(deploymentRequest, this._defaultNamespace);
+    const deployment = await this._deploymentManager.createDeploymentIfNotExist(
+      deploymentRequest,
+      this._defaultNamespace
+    );
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instance.name);
     logger.debug('Creating Service in Kubernetes');
     const service = await this._serviceManager.createServiceIfNotExist(serviceRequest, this._defaultNamespace);
@@ -62,5 +64,4 @@ export class K8sInstanceService {
     logger.debug(`Initialising default kubernetes namespace: ${this._defaultNamespace}`);
     await this.namespaceManager.createNamespaceIfNotExist(defaultNamespaceRequest);
   }
-
 }

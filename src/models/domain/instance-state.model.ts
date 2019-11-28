@@ -1,23 +1,23 @@
-import {model, property} from '@loopback/repository';
+import { model, property } from '@loopback/repository';
 import { InstanceStatus } from '../enumerations/InstanceStatus';
 
 @model()
 export class InstanceState {
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
   status: InstanceStatus;
 
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
   cpu: number;
 
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
   memory: number;
 

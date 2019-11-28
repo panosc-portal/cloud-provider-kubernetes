@@ -1,5 +1,4 @@
 export class K8sNamespaceRequest {
-
   private _model: any;
 
   get name(): string {
@@ -7,17 +6,16 @@ export class K8sNamespaceRequest {
   }
 
   get model(): any {
-    return this._model
+    return this._model;
   }
 
   constructor(private _name: string) {
     this._model = {
-      'apiVersion': 'v1',
-      'kind': 'Namespace',
-      'metadata': {
-        'name': this._name,
-      },
+      apiVersion: 'v1',
+      kind: 'Namespace',
+      metadata: {
+        name: this._name
+      }
     };
   }
 }
-

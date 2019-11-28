@@ -1,8 +1,7 @@
-import {inject} from '@loopback/context';
-import {HealthService} from '../services';
-import {get} from '@loopback/openapi-v3';
-import {Health} from '../models/enumerations/Health';
-
+import { inject } from '@loopback/context';
+import { HealthService } from '../services';
+import { get } from '@loopback/openapi-v3';
+import { Health } from '../models/enumerations/Health';
 
 export class HealthController {
   constructor(@inject('services.HealthService') private _healthservice: HealthService) {}
@@ -14,11 +13,12 @@ export class HealthController {
         content: {
           'application/json': {
             schema: {
-            type: 'string' }
-          },
-        },
-      },
-    },
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
   })
   getHealth(): Promise<Health> {
     return this._healthservice.getHealth();

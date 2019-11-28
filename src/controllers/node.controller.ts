@@ -1,7 +1,7 @@
-import {get, getModelSchemaRef, param} from '@loopback/openapi-v3';
-import {Instance, Node} from '../models';
-import {inject} from '@loopback/context';
-import {NodeService} from '../services';
+import { get, getModelSchemaRef, param } from '@loopback/openapi-v3';
+import { Instance, Node } from '../models';
+import { inject } from '@loopback/context';
+import { NodeService } from '../services';
 import { BaseController } from './BaseController';
 
 export class NodeController extends BaseController {
@@ -16,11 +16,11 @@ export class NodeController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Node)},
-          },
-        },
-      },
-    },
+            schema: { type: 'array', items: getModelSchemaRef(Node) }
+          }
+        }
+      }
+    }
   })
   getAll(): Promise<Node[]> {
     return this._nodeService.getAll();
@@ -33,11 +33,11 @@ export class NodeController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Node),
-          },
-        },
-      },
-    },
+            schema: getModelSchemaRef(Node)
+          }
+        }
+      }
+    }
   })
   async getById(@param.path.string('id') id: number): Promise<Node> {
     const node = await this._nodeService.getById(id);
@@ -53,11 +53,11 @@ export class NodeController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Instance)},
-          },
-        },
-      },
-    },
+            schema: { type: 'array', items: getModelSchemaRef(Instance) }
+          }
+        }
+      }
+    }
   })
   async getInstancesByNodeId(@param.path.string('id') id: number): Promise<Instance[]> {
     const node = await this._nodeService.getById(id);
@@ -65,5 +65,4 @@ export class NodeController extends BaseController {
 
     return this._nodeService.getInstancesByNode(node);
   }
-
 }

@@ -1,4 +1,4 @@
-import {expect} from '@loopback/testlab';
+import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { getTestApplicationContext } from '../../helpers/context.helper';
 import { ImageService } from '../../../services';
@@ -49,7 +49,6 @@ describe('ImageService', () => {
     expect(images.length).to.equal(2);
   });
 
-
   it('updates an image', async () => {
     const images = await imageService.getAll();
 
@@ -64,5 +63,4 @@ describe('ImageService', () => {
     const imagesAfterUpdate = await imageService.getAll();
     expect(imagesAfterUpdate.length).to.equal(images.length);
   });
-
 });

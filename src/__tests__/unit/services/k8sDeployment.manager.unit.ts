@@ -1,8 +1,8 @@
-import {expect} from '@loopback/testlab';
-import {getTestApplicationContext} from '../../helpers/context.helper';
-import {K8sDeploymentManager, K8sNamespaceManager} from '../../../services';
-import {K8sDeploymentRequest, K8sNamespaceRequest} from '../../../models';
-import {KubernetesMockServer} from '../../kubernetesMock/KubernetesMockServer';
+import { expect } from '@loopback/testlab';
+import { getTestApplicationContext } from '../../helpers/context.helper';
+import { K8sDeploymentManager, K8sNamespaceManager } from '../../../services';
+import { K8sDeploymentRequest, K8sNamespaceRequest } from '../../../models';
+import { KubernetesMockServer } from '../../kubernetesMock/KubernetesMockServer';
 
 describe('K8sDeploymentManager', () => {
   let k8sNamespaceManager: K8sNamespaceManager;
@@ -23,11 +23,9 @@ describe('K8sDeploymentManager', () => {
     const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest('test' , 'danielguerra/ubuntu-xrdp');
+    const k8sDeploymentRequest = new K8sDeploymentRequest('test', 'danielguerra/ubuntu-xrdp');
     const k8sDeployment = await k8sDeploymentManager.createDeployment(k8sDeploymentRequest, 'panosc');
     expect(k8sDeployment).to.not.be.null();
     expect(k8sDeployment.name).to.be.equal('test');
   });
 });
-
-

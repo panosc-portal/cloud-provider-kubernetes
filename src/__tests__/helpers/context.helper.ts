@@ -1,12 +1,7 @@
-import {FlavourRepository, ImageRepository, InstanceRepository} from '../../repositories';
-import {
-  FlavourService,
-  ImageService,
-  InstanceService,
-  K8sInstanceService,
-} from '../../services';
-import {testDataSource} from '../fixtures/datasources/testdb.datasource';
-import {KubernetesDataSource} from '../../datasources';
+import { FlavourRepository, ImageRepository, InstanceRepository } from '../../repositories';
+import { FlavourService, ImageService, InstanceService, K8sInstanceService } from '../../services';
+import { testDataSource } from '../fixtures/datasources/testdb.datasource';
+import { KubernetesDataSource } from '../../datasources';
 
 export interface TestApplicationContext {
   flavourRepository: FlavourRepository;
@@ -15,11 +10,10 @@ export interface TestApplicationContext {
   flavourService: FlavourService;
   imageService: ImageService;
   instanceService: InstanceService;
-  k8sInstanceService: K8sInstanceService
+  k8sInstanceService: K8sInstanceService;
 }
 
 export function getTestApplicationContext(): TestApplicationContext {
-
   const kubernetesDataSource = new KubernetesDataSource();
 
   const flavourRepository: FlavourRepository = new FlavourRepository(testDataSource);
@@ -31,6 +25,13 @@ export function getTestApplicationContext(): TestApplicationContext {
   const k8sInstanceService = new K8sInstanceService(kubernetesDataSource);
   const instanceService: InstanceService = new InstanceService(instanceRepository, k8sInstanceService);
 
-
-  return {flavourRepository, imageRepository, instanceRepository, flavourService, imageService, instanceService, k8sInstanceService};
+  return {
+    flavourRepository,
+    imageRepository,
+    instanceRepository,
+    flavourService,
+    imageService,
+    instanceService,
+    k8sInstanceService
+  };
 }

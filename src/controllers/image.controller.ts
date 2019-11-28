@@ -1,7 +1,7 @@
-import {get, getModelSchemaRef, param, put, requestBody} from '@loopback/openapi-v3';
-import {Image} from '../models';
-import {inject} from '@loopback/context';
-import {ImageService} from '../services';
+import { get, getModelSchemaRef, param, put, requestBody } from '@loopback/openapi-v3';
+import { Image } from '../models';
+import { inject } from '@loopback/context';
+import { ImageService } from '../services';
 import { BaseController } from './BaseController';
 
 export class ImageController extends BaseController {
@@ -16,11 +16,11 @@ export class ImageController extends BaseController {
         description: 'OK',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Image)},
-          },
-        },
-      },
-    },
+            schema: { type: 'array', items: getModelSchemaRef(Image) }
+          }
+        }
+      }
+    }
   })
   getAll(): Promise<Image[]> {
     return this._imageService.getAll();
@@ -33,11 +33,11 @@ export class ImageController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Image),
-          },
-        },
-      },
-    },
+            schema: getModelSchemaRef(Image)
+          }
+        }
+      }
+    }
   })
   async getById(@param.path.string('id') id: number): Promise<Image> {
     const image = await this._imageService.getById(id);
@@ -54,11 +54,11 @@ export class ImageController extends BaseController {
         description: 'Ok',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Image),
-          },
-        },
-      },
-    },
+            schema: getModelSchemaRef(Image)
+          }
+        }
+      }
+    }
   })
   updateById(@param.path.number('id') id: number, @requestBody() image: Image): Promise<Image> {
     this.throwBadRequestIfNull(image, 'Image with given id does not exist');
@@ -66,5 +66,4 @@ export class ImageController extends BaseController {
 
     return this._imageService.update(image);
   }
-
 }

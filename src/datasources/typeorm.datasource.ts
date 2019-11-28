@@ -18,14 +18,11 @@ export class TypeORMDataSource implements LifeCycleObserver {
       password: process.env.CLOUD_PROVIDER_K8S_DATABASE_PASSWORD,
       database: process.env.CLOUD_PROVIDER_K8S_DATABASE_NAME,
       schema: process.env.CLOUD_PROVIDER_K8S_DATABASE_SCHEMA,
-      entities: [
-          'dist/models/*.js'
-      ],
-      synchronize: (process.env.CLOUD_PROVIDER_K8S_DATABASE_SYNCHRONIZE === 'true'),
-      logging: (process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING === 'true')
+      entities: ['dist/models/*.js'],
+      synchronize: process.env.CLOUD_PROVIDER_K8S_DATABASE_SYNCHRONIZE === 'true',
+      logging: process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING === 'true'
     };
   }
-
 
   /**
    * Start the datasource when application is started
@@ -50,7 +47,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
   mergeConfig(config: any) {
     Object.keys(config).forEach(key => {
       this._config[key] = config[key];
-    })
+    });
   }
 
   async connection(): Promise<Connection> {
@@ -61,7 +58,6 @@ export class TypeORMDataSource implements LifeCycleObserver {
       }
 
       return this._connection;
-
     } catch (error) {
       logger.error(error);
       process.exit();

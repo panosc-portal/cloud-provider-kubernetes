@@ -1,5 +1,5 @@
-import {model, property} from '@loopback/repository';
-import {Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
+import { model, property } from '@loopback/repository';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 @model()
@@ -8,35 +8,35 @@ export class Flavour {
     type: 'number',
     id: true,
     required: true,
-    generated: true,
+    generated: true
   })
   @PrimaryGeneratedColumn()
   id: number;
 
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
   @Index('flavour_name_index')
-  @Column({length:250})
+  @Column({ length: 250 })
   name: string;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
-  @Column({length:2500,nullable:true})
+  @Column({ length: 2500, nullable: true })
   description?: string;
 
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
-  @Column({type:'float'})
+  @Column({ type: 'float' })
   cpu: number;
 
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
   @Column()
   memory: number;

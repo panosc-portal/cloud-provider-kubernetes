@@ -1,6 +1,6 @@
-import {Client, expect} from '@loopback/testlab';
-import {CloudProviderKubernetesApplication} from '../../..';
-import {setupApplication} from '../../helpers/application.helper';
+import { Client, expect } from '@loopback/testlab';
+import { CloudProviderKubernetesApplication } from '../../..';
+import { setupApplication } from '../../helpers/application.helper';
 import { givenInitialisedDatabase } from '../../helpers/database.helper';
 import { TypeORMDataSource } from '../../../datasources';
 import { Flavour } from '../../../models';
@@ -11,14 +11,16 @@ describe('FlavourController', () => {
   let datasource: TypeORMDataSource;
 
   before('setupApplication', async () => {
-    ({app, client, datasource} = await setupApplication());
+    ({ app, client, datasource } = await setupApplication());
   });
 
   after(async () => {
     await app.stop();
   });
 
-  beforeEach('Initialise Database', function () { return givenInitialisedDatabase(datasource) });
+  beforeEach('Initialise Database', function() {
+    return givenInitialisedDatabase(datasource);
+  });
 
   it('invokes GET /flavours', async () => {
     const res = await client.get('/api/v1/flavours').expect(200);

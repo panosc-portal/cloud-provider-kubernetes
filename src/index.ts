@@ -1,8 +1,8 @@
-import {CloudProviderKubernetesApplication} from './application';
-import {ApplicationConfig} from '@loopback/core';
+import { CloudProviderKubernetesApplication } from './application';
+import { ApplicationConfig } from '@loopback/core';
 import { logger } from './utils';
 
-export {CloudProviderKubernetesApplication};
+export { CloudProviderKubernetesApplication };
 
 export async function main(options: ApplicationConfig = {}) {
   const app = new CloudProviderKubernetesApplication(options);

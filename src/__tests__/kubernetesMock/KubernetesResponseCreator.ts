@@ -1,44 +1,39 @@
-
 export default class K8SResponseCreator {
-  getService(name,namespace,portName,portNumber) {
+  getService(name, namespace, portName, portNumber) {
     return {
-      'kind': 'Service',
-      'metadata': {
-        'name': name,
-        'namespace': namespace
+      kind: 'Service',
+      metadata: {
+        name: name,
+        namespace: namespace
       },
-      'spec':{
-        'ports':[
+      spec: {
+        ports: [
           {
-            'name':portName,
-            'port':portNumber,
-            'nodePort': 32417
+            name: portName,
+            port: portNumber,
+            nodePort: 32417
           }
         ]
       }
     };
-  };
-  
-  getDeployment(name,namespace) {
+  }
+
+  getDeployment(name, namespace) {
     return {
-      'kind': 'Deployment',
-      'metadata': {
-        'name': name,
-        'namespace': namespace
+      kind: 'Deployment',
+      metadata: {
+        name: name,
+        namespace: namespace
       }
     };
-  };
-
-  getNamespace(name){
-    return{
-      'kind': 'Namespace',
-      'metadata': {
-        'name': name,
-      }
-    }
   }
-};
 
-
-
-
+  getNamespace(name) {
+    return {
+      kind: 'Namespace',
+      metadata: {
+        name: name
+      }
+    };
+  }
+}

@@ -1,9 +1,7 @@
-import {BaseRepository} from '../repositories';
+import { BaseRepository } from '../repositories';
 
-export class BaseService<T extends {id: number}> {
-  constructor(protected _repository: BaseRepository<T, number>) {
-  }
-
+export class BaseService<T extends { id: number }> {
+  constructor(protected _repository: BaseRepository<T, number>) {}
 
   getAll(): Promise<T[]> {
     return this._repository.find();
@@ -21,8 +19,7 @@ export class BaseService<T extends {id: number}> {
     return this._repository.deleteById(object.id);
   }
 
-  update(object: T):Promise<T> {
+  update(object: T): Promise<T> {
     return this._repository.updateById(object.id, object);
   }
 }
-

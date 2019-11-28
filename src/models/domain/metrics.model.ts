@@ -1,27 +1,26 @@
-import {model, property} from '@loopback/repository';
+import { model, property } from '@loopback/repository';
 
 @model()
 export class Metrics {
   @property({
-    type: 'object',
+    type: 'object'
   })
-  instances?: {count:number,active:number,inactive:number};
+  instances?: { count: number; active: number; inactive: number };
 
   @property({
-    type: 'object',
+    type: 'object'
   })
-  system?: {cpu:number,memory:number};
+  system?: { cpu: number; memory: number };
 
   @property({
-    type: 'object',
+    type: 'object'
   })
-  images?: {count:number,usage:number};
+  images?: { count: number; usage: number };
 
   @property({
-    type: 'object',
+    type: 'object'
   })
-  flavours?: {count:number,usage:number};
-
+  flavours?: { count: number; usage: number };
 
   constructor(data?: Partial<Metrics>) {
     Object.assign(this, data);
