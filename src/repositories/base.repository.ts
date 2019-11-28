@@ -21,7 +21,7 @@ export class BaseRepository<T, ID> {
   constructor(private _dataSource: TypeORMDataSource, private _entityClass: ObjectType<T>) {
   }
 
-  private async init() {
+  async init() {
     if (this._repository == null) {
       this._repository = await this._dataSource.repository(this._entityClass);
     }
@@ -109,7 +109,7 @@ export class BaseRepository<T, ID> {
    * Convert order clauses to OrderByCondition
    * @param order An array of orders
    */
-  private buildOrder(order: string[]) {
+  buildOrder(order: string[]) {
     const orderBy: OrderByCondition = {};
     for (const o of order) {
       const match = /^([^\s]+)( (ASC|DESC))?$/.exec(o);
@@ -124,7 +124,7 @@ export class BaseRepository<T, ID> {
    * Build a TypeORM query from LoopBack Filter
    * @param filter Filter object
    */
-  private async buildQuery(name: string, filter?: Filter): Promise<SelectQueryBuilder<T>> {
+  async buildQuery(name: string, filter?: Filter): Promise<SelectQueryBuilder<T>> {
     await this.init();
     const queryBuilder = this._repository.createQueryBuilder(name);
     if (!filter) return queryBuilder;
