@@ -1,5 +1,5 @@
 import { model, property } from '@loopback/repository';
-import { InstanceStatus } from '../enumerations/InstanceStatus';
+import { InstanceStatus } from '../enumerations';
 
 @model()
 export class InstanceState {

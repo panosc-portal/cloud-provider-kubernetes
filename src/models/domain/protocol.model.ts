@@ -1,7 +1,7 @@
 import { model, property } from '@loopback/repository';
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Instance } from './instance.model';
-import { ProtocolName } from '../enumerations/ProtocolName';
+import { ProtocolName } from '../enumerations';
 
 @Entity()
 @model()
