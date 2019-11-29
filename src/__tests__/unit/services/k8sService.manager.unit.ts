@@ -10,12 +10,15 @@ describe('K8sServiceManager', () => {
   const kubernetesMockServer = new KubernetesMockServer();
 
   before('getK8sDeploymentManager', async () => {
-    kubernetesMockServer.start();
     k8sNamespaceManager = getTestApplicationContext().k8sInstanceService.namespaceManager;
     k8sServiceManager = getTestApplicationContext().k8sInstanceService.serviceManager;
   });
 
-  after('stopMockServer', async () => {
+  beforeEach('startMockServer', async () => {
+    kubernetesMockServer.start();
+  });
+
+  afterEach('stopMockServer', async () => {
     kubernetesMockServer.stop();
   });
 
@@ -31,15 +34,39 @@ describe('K8sServiceManager', () => {
   });
 
   it('get a non existing service', async () => {
-    const k8sService =await k8sServiceManager.getServiceWithName("test1","panosc");
-    expect(k8sService).to.be.null()
+    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    expect(k8sNamespace).to.not.be.null();
+
+    const k8sService = await k8sServiceManager.getServiceWithName('test1', 'panosc');
+    expect(k8sService).to.be.null();
   });
 
   it('create and get kubernetes service', async () => {
-    const k8sServiceRequest = new K8sServiceRequest( 'testService' );
-    await k8sServiceManager.createService(k8sServiceRequest,"panosc");
-    const k8sNamespace =await k8sServiceManager.getServiceWithName('testService','panosc');
+    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
-    expect(k8sNamespace.name).to.be.equal('testService');
+
+    const k8sServiceRequest = new K8sServiceRequest('testService');
+    await k8sServiceManager.createService(k8sServiceRequest, 'panosc');
+    const k8sService = await k8sServiceManager.getServiceWithName('testService', 'panosc');
+    expect(k8sService).to.not.be.null();
+    expect(k8sService.name).to.be.equal('testService');
+  });
+
+  it('delete an inexistent service', async () => {
+    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    expect(k8sNamespace).to.not.be.null();
+
+    const deletedService = await k8sServiceManager.deleteService('test', 'panosc');
+    expect(deletedService).to.be.null();
+  });
+
+  it('create and delete a service', async () => {
+    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    expect(k8sNamespace).to.not.be.null();
+
+    const k8sServiceRequest = new K8sServiceRequest('testService');
+    await k8sServiceManager.createService(k8sServiceRequest, 'panosc');
+    const deletedService = await k8sServiceManager.deleteService('testService', 'panosc');
+    expect(deletedService).to.be.not.null();
   });
 });

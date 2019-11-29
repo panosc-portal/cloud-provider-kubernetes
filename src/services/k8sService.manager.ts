@@ -3,7 +3,8 @@ import { KubernetesDataSource } from '../datasources';
 import { logger } from '../utils';
 
 export class K8sServiceManager {
-  constructor(private _dataSource: KubernetesDataSource) {}
+  constructor(private _dataSource: KubernetesDataSource) {
+  }
 
   async getServiceWithName(name: string, namespace: string) {
     try {
@@ -18,24 +19,26 @@ export class K8sServiceManager {
         return null;
       }
     } catch (error) {
-      if (error.statusCode === 404) {
-        return null;
-      } else {
-        throw error;
-      }
+      logger.error(error.message);
+      return null;
     }
   }
 
   async createService(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
-    const service = await this._dataSource.K8sClient.api.v1
-      .namespace(namespace)
-      .services.post({ body: serviceRequest.model });
-    const newService = new K8sService(service.body);
-    if (newService.isValid()) {
-      logger.debug('Service ', newService.name, ' has been created');
-      return newService;
-    } else {
-      throw new Error('Did not manage to create a kubernetes service');
+    try {
+      const service = await this._dataSource.K8sClient.api.v1
+        .namespace(namespace)
+        .services.post({ body: serviceRequest.model });
+      const newService = new K8sService(service.body);
+      if (newService.isValid()) {
+        logger.debug('Service ', newService.name, ' has been created');
+        return newService;
+      } else {
+        logger.error('Did not manage to create a kubernetes service');
+      }
+    } catch (error) {
+      logger.error(error.message);
+      return null;
     }
   }
 
@@ -46,6 +49,20 @@ export class K8sServiceManager {
       return this.createService(serviceRequest, namespace);
     } else {
       return existingService;
+    }
+  }
+
+  async deleteService(name: string, namespace: string) {
+    try {
+      const deletedService = await this._dataSource.K8sClient.api.v1
+        .namespaces(namespace)
+        .services(name)
+        .delete();
+      logger.debug(`Service ` + name + ` has been deleted`);
+      return deletedService
+    } catch (error) {
+      logger.error(error.message);
+      return null;
     }
   }
 }

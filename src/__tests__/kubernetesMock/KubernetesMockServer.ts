@@ -27,7 +27,7 @@ export class KubernetesMockServer {
       const deploymentName = req.params.deployment;
       const namespace = req.params.namespace;
       logger.info(`Getting deploymnet ${deploymentName} from namespace ${namespace}`);
-      const response = this._createdDeployments.get(`${req.params.namespace}.${req.body.metadata.name}`);
+      const response = this._createdDeployments.get(`${namespace}.${deploymentName}`);
       if (response != null) {
         res.status(200).send(response);
       } else {
@@ -40,7 +40,7 @@ export class KubernetesMockServer {
       const namespace = req.params.namespace;
       logger.info(`Getting service ${serviceName} from namespace ${namespace}`);
 
-      const response = this._createdServices.get(`${serviceName}.${namespace}`);
+      const response = this._createdServices.get(`${namespace}.${serviceName}`);
       if (response != null) {
         res.status(200).send(response);
       } else {
@@ -69,9 +69,14 @@ export class KubernetesMockServer {
       const deploymentName = req.body.metadata.name;
       logger.info(`Posting deployment ${deploymentName} in namespace ${namespace}`);
       if (this._createdNamespaces.get(namespace) != null) {
-        const response = k8sResponseCreator.getDeployment(req.body.metadata.name, namespace);
-        this._createdDeployments.set(`${namespace}.${deploymentName}`, response);
-        res.status(200).send(response);
+        const deploymentExist = this._createdDeployments.get(`${namespace}.${deploymentName}`);
+        if (deploymentExist == null) {
+          const response = k8sResponseCreator.getDeployment(req.body.metadata.name, namespace);
+          this._createdDeployments.set(`${namespace}.${deploymentName}`, response);
+          res.status(200).send(response);
+        } else {
+          res.status(409).send(`deployment ${deploymentName}  already exists`);
+        }
       } else {
         logger.error(`Cannot create deployment ${deploymentName}: namespace ${namespace} does not exist`);
         res.sendStatus(500);
@@ -80,10 +85,15 @@ export class KubernetesMockServer {
 
     app.post('/api/v1/namespaces', jsonParser, (req, res) => {
       const namespace = req.body.metadata.name;
+      const namespaceExist = this._createdNamespaces.get(namespace);
       logger.info(`Posting namespace ${namespace}`);
-      const response = k8sResponseCreator.getNamespace(namespace);
-      this._createdNamespaces.set(namespace, response);
-      res.status(200).send(response);
+      if (namespaceExist == null) {
+        const response = k8sResponseCreator.getNamespace(namespace);
+        this._createdNamespaces.set(namespace, response);
+        res.status(200).send(response);
+      } else {
+        res.status(409).send(`namespace ${namespace} already exists`);
+      }
     });
 
     app.post('/api/v1/namespaces/:namespace/services', jsonParser, (req, res) => {
@@ -91,9 +101,19 @@ export class KubernetesMockServer {
       const serviceName = req.body.metadata.name;
       logger.info(`Posting service ${serviceName} in namespace ${namespace}`);
       if (this._createdNamespaces.get(namespace) != null) {
-        const response = k8sResponseCreator.getService(serviceName, namespace, req.body.spec.name, req.body.spec.port);
-        this._createdServices.set(`${namespace}.${serviceName}`, response);
-        res.status(200).send(response);
+        const serviceExist = this._createdServices.get(`${namespace}.${serviceName}`);
+        if (serviceExist == null) {
+          const response = k8sResponseCreator.getService(
+            serviceName,
+            namespace,
+            req.body.spec.name,
+            req.body.spec.port
+          );
+          this._createdServices.set(`${namespace}.${serviceName}`, response);
+          res.status(200).send(response);
+        } else {
+          res.status(409).send(`service ${serviceName} already exists`);
+        }
       } else {
         logger.error(`Cannot create service ${serviceName}: namespace ${namespace} does not exist`);
         res.sendStatus(500);
@@ -103,6 +123,44 @@ export class KubernetesMockServer {
     app.post('*', (req, res) => {
       res.sendStatus(404);
       logger.info(`POST ${req.originalUrl}: unmapped path`);
+    });
+
+    app.delete('/apis/apps/v1/namespaces/:namespace/deployments/:name', jsonParser, (req, res) => {
+      const namespace = req.params.namespace;
+      const deploymentName = req.params.name;
+      logger.info(`Deleting deployment ${deploymentName} in namespace ${namespace}`);
+      const deploymentExist = this._createdDeployments.get(`${namespace}.${deploymentName}`);
+      if (deploymentExist != null) {
+        const response = k8sResponseCreator.getSuccessStatus(deploymentName, 'deployments');
+        res.status(200).send(response);
+      } else {
+        res.status(404).send(`deployments.apps ${deploymentName} not found`);
+      }
+    });
+
+    app.delete('/api/v1/namespaces/:name', jsonParser, (req, res) => {
+      const namespace = req.params.name;
+      logger.info(`Deleting namespace ${namespace}`);
+      const namespaceExist = this._createdNamespaces.get(namespace);
+      if (namespaceExist != null) {
+        const response = k8sResponseCreator.getDeletedNamespace(namespace);
+        res.status(200).send(response);
+      } else {
+        res.status(404).send(`namespace ${namespace} not found`);
+      }
+    });
+
+    app.delete('/api/v1/namespaces/:namespace/services/:name', jsonParser, (req, res) => {
+      const namespace = req.params.namespace;
+      const serviceName = req.params.name;
+      logger.info(`Deleting service ${serviceName} in namespace ${namespace}`);
+      const namespaceExist = this._createdServices.get(`${namespace}.${serviceName}`);
+      if (namespaceExist != null) {
+        const response = k8sResponseCreator.getSuccessStatus(serviceName, 'service');
+        res.status(200).send(response);
+      } else {
+        res.status(404).send(`services ${serviceName} not found`);
+      }
     });
 
     this._server = app.listen(this._port, () => logger.info(`Kubernetes Mock Server listening on port ${this._port}!`));

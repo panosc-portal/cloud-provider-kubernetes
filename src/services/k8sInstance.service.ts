@@ -6,6 +6,7 @@ import { K8sDeploymentManager } from './k8sDeployment.manager';
 import { KubernetesDataSource } from '../datasources';
 import { logger } from '../utils';
 import { K8sNamespaceManager } from './k8sNamespace.manager';
+import * as uuidv4 from 'uuid/v4';
 
 @lifeCycleObserver('server')
 @bind({ scope: BindingScope.SINGLETON })
@@ -45,17 +46,34 @@ export class K8sInstanceService {
 
   async createK8sInstance(instance: Instance): Promise<K8sInstance> {
     const image = instance.image;
-
-    const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instance.name, image.name);
+    const instanceComputeId = await this.UUIDgenerator();
+    const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instanceComputeId, image.name);
     logger.debug('Creating Deployment in Kubernetes');
     const deployment = await this._deploymentManager.createDeploymentIfNotExist(
       deploymentRequest,
       this._defaultNamespace
     );
-    const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instance.name);
+    const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceComputeId);
     logger.debug('Creating Service in Kubernetes');
     const service = await this._serviceManager.createServiceIfNotExist(serviceRequest, this._defaultNamespace);
+    instance.computId = instanceComputeId;
     return new K8sInstance(deployment, service);
+  }
+
+  async UUIDgenerator() {
+    let unique = false;
+    while (unique === false) {
+      const instanceComputeId = uuidv4();
+      const deployment = await this._deploymentManager.getDeploymentsWithName(
+        instanceComputeId,
+        this._defaultNamespace
+      );
+      const service = await this._serviceManager.getServiceWithName(instanceComputeId, this._defaultNamespace);
+      if (deployment == null && service == null) {
+        unique = true;
+        return instanceComputeId;
+      }
+    }
   }
 
   async start(): Promise<void> {

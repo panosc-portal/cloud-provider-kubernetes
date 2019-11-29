@@ -36,4 +36,35 @@ export default class K8SResponseCreator {
       }
     };
   }
+
+  getSuccessStatus(name, kind) {
+    return {
+      statusCode: 200,
+      body: {
+        kind: 'Status',
+        apiVersion: 'v1',
+        metadata: {},
+        status: 'Success',
+        details: {
+          name: name,
+          group: 'apps',
+          kind: kind,
+          uid: 'e61d06eb-11ee-11ea-bbcb-025000000001'
+        }
+      }
+    };
+  }
+
+  getDeletedNamespace(name) {
+    return {
+      statusCode: 200,
+      body: {
+        kind: 'Namespace',
+        apiVersion: 'v1',
+        metadata: {
+          name: name
+        }
+      }
+    };
+  };
 }
