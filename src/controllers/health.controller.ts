@@ -1,7 +1,7 @@
 import { inject } from '@loopback/context';
 import { HealthService } from '../services';
 import { get } from '@loopback/openapi-v3';
-import { Health } from '../models/enumerations/Health';
+import { Health } from '../models';
 
 export class HealthController {
   constructor(@inject('services.HealthService') private _healthservice: HealthService) {}

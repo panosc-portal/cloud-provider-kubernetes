@@ -14,11 +14,6 @@ export class InstanceService extends BaseService<Instance> {
     super(repo);
   }
 
-  updateById(id: number): Promise<Instance> {
-    // TODO
-    throw new Error('Method not implemented.');
-  }
-
   async create(instance: Instance): Promise<Instance> {
     instance = await this.save(instance);
 

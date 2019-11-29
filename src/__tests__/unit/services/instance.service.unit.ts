@@ -2,9 +2,7 @@ import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { getTestApplicationContext } from '../../helpers/context.helper';
 import { InstanceService, ImageService, FlavourService } from '../../../services';
-import { Instance, Protocol } from '../../../models';
-import { ProtocolName } from '../../../models/enumerations/ProtocolName';
-import { InstanceStatus } from '../../../models/enumerations/InstanceStatus';
+import { Instance, Protocol, ProtocolName, InstanceStatus } from '../../../models';
 
 describe('InstanceService', () => {
   let instanceService: InstanceService;

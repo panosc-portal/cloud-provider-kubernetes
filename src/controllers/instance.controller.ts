@@ -1,15 +1,16 @@
 import { del, get, getModelSchemaRef, param, post, requestBody, put } from '@loopback/openapi-v3';
-import { Image, Instance, InstanceState } from '../models';
+import { Image, Instance, InstanceState, InstanceCommand } from '../models';
 import { inject } from '@loopback/context';
-import { FlavourService, ImageService, InstanceService } from '../services';
-import { InstanceCreatorDto } from './dto/instanceCreatorDto';
-import { InstanceStatus } from '../models/enumerations/InstanceStatus';
-import { InstanceActionDto } from './dto/instanceActionDto';
+import { FlavourService, ImageService, InstanceService, InstanceActionService } from '../services';
+import { InstanceCreatorDto } from './dto/instance-creator-dto';
+import { InstanceStatus } from '../models';
+import { InstanceCommandDto } from './dto/instance-command-dto';
 import { BaseController } from './BaseController';
 
 export class InstanceController extends BaseController {
   constructor(
     @inject('services.InstanceService') private _instanceService: InstanceService,
+    @inject('services.InstanceActionService') private _instanceActionService: InstanceActionService,
     @inject('services.ImageService') private _imageservice: ImageService,
     @inject('services.FlavourService') private _flavourservice: FlavourService
   ) {
@@ -149,12 +150,17 @@ export class InstanceController extends BaseController {
       }
     }
   })
-  async actionById(@param.path.string('id') id: number, @requestBody() action: InstanceActionDto): Promise<void> {
+  async actionById(
+    @param.path.string('id') id: number,
+    @requestBody() command: InstanceCommandDto
+  ): Promise<InstanceCommand> {
     const instance = await this._instanceService.getById(id);
     this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
 
-    // TODO create action
+    // create and queue action
+    const instanceCommand = new InstanceCommand(instance, command.type);
+    this._instanceActionService.queueCommand(instanceCommand);
 
-    return this._instanceService.executeAction(instance);
+    return instanceCommand;
   }
 }
