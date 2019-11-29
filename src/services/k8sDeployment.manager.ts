@@ -3,7 +3,8 @@ import { KubernetesDataSource } from '../datasources';
 import { logger } from '../utils';
 
 export class K8sDeploymentManager {
-  constructor(private _dataSource: KubernetesDataSource) {}
+  constructor(private _dataSource: KubernetesDataSource) {
+  }
 
   async getDeploymentsWithName(name: string, namespace: string) {
     try {
