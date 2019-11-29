@@ -55,7 +55,8 @@ export class Instance {
   @property({
     type: 'string'
   })
-  @Column({ length: 50, nullable: true }) private _computId: string;
+  @Column({ length: 50, nullable: true })
+  private _computId: string;
 
   @property({
     type: 'string',

@@ -23,7 +23,7 @@
     "eslint:fix": "npm run eslint -- --fix",
     "pretest": "npm run clean && npm run build",
     "test": "lb-mocha --allow-console-logs \"dist/__tests__\" ",
-    "posttest": "npm run lint",
+    "posttest": "#npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
     "docker:build": "docker build -t cloud-provider-kubernetes .",
     "docker:run": "docker run -p 3000:3000 -d cloud-provider-kubernetes",

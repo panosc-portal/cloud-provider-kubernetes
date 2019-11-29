@@ -1,6 +1,6 @@
 import { expect } from '@loopback/testlab';
 import { getTestApplicationContext } from '../../helpers/context.helper';
-import { K8sNamespaceRequest, K8sServiceRequest } from '../../../models';
+import { K8sNamespaceRequest } from '../../../models';
 import { KubernetesMockServer } from '../../kubernetesMock/KubernetesMockServer';
 import { K8sNamespaceManager } from '../../../services';
 
@@ -47,16 +47,14 @@ describe('K8sNamespaceManager', () => {
     expect(k8sNamespace2).to.be.null();
   });
 
-  it('delete an inexistent namespace', async()=>{
-    const deletedDeployment =await k8sNamespaceManager.deleteNamespace('test');
+  it('delete an inexistent namespace', async () => {
+    const deletedDeployment = await k8sNamespaceManager.deleteNamespace('test');
     console.log(deletedDeployment);
   });
 
   it('create and delete a namespace', async () => {
     await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('test'));
-    const deletedDeployment =await k8sNamespaceManager.deleteNamespace('test');
+    const deletedDeployment = await k8sNamespaceManager.deleteNamespace('test');
     expect(deletedDeployment).to.not.be.null();
-
   });
-
 });

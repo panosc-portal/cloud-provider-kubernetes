@@ -10,5 +10,5 @@ export class K8sInstance {
     return this._service;
   }
 
-  constructor(private _deployment: K8sDeployment, private _service: K8sService) {}
+  constructor(private _deployment: K8sDeployment, private _service: K8sService, private _computeId: string) {}
 }

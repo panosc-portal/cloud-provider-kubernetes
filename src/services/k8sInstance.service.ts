@@ -46,7 +46,7 @@ export class K8sInstanceService {
 
   async createK8sInstance(instance: Instance): Promise<K8sInstance> {
     const image = instance.image;
-    const instanceComputeId = await this.UUIDgenerator();
+    const instanceComputeId = await this.UUIDGenerator(instance.name);
     const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instanceComputeId, image.name);
     logger.debug('Creating Deployment in Kubernetes');
     const deployment = await this._deploymentManager.createDeploymentIfNotExist(
@@ -56,24 +56,25 @@ export class K8sInstanceService {
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceComputeId);
     logger.debug('Creating Service in Kubernetes');
     const service = await this._serviceManager.createServiceIfNotExist(serviceRequest, this._defaultNamespace);
-    instance.computId = instanceComputeId;
-    return new K8sInstance(deployment, service);
+    if (service === null) {
+      await this._deploymentManager.deleteDeployment(deploymentRequest.name, this._defaultNamespace);
+    }
+    return new K8sInstance(deployment, service, instanceComputeId);
   }
 
-  async UUIDgenerator() {
+  async UUIDGenerator(name: string) {
     let unique = false;
-    while (unique === false) {
-      const instanceComputeId = uuidv4();
+    let instanceComputeId = '';
+    while (!unique) {
+      instanceComputeId = name + '-' + uuidv4();
       const deployment = await this._deploymentManager.getDeploymentsWithName(
         instanceComputeId,
         this._defaultNamespace
       );
       const service = await this._serviceManager.getServiceWithName(instanceComputeId, this._defaultNamespace);
-      if (deployment == null && service == null) {
-        unique = true;
-        return instanceComputeId;
-      }
+      unique = deployment == null && service == null;
     }
+    return instanceComputeId;
   }
 
   async start(): Promise<void> {

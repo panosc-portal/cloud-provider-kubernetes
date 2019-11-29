@@ -3,8 +3,7 @@ import { KubernetesDataSource } from '../datasources';
 import { logger } from '../utils';
 
 export class K8sServiceManager {
-  constructor(private _dataSource: KubernetesDataSource) {
-  }
+  constructor(private _dataSource: KubernetesDataSource) {}
 
   async getServiceWithName(name: string, namespace: string) {
     try {
@@ -59,7 +58,7 @@ export class K8sServiceManager {
         .services(name)
         .delete();
       logger.debug(`Service ` + name + ` has been deleted`);
-      return deletedService
+      return deletedService;
     } catch (error) {
       logger.error(error.message);
       return null;

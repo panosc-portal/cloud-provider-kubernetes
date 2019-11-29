@@ -5,8 +5,7 @@ import { logger } from '../utils';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class K8sNamespaceManager {
-  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {
-  }
+  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {}
 
   async getNamespaceWithName(name: string) {
     try {
@@ -52,9 +51,7 @@ export class K8sNamespaceManager {
 
   async deleteNamespace(name: string) {
     try {
-      const deletedNamespace = await this._dataSource.K8sClient.api.v1
-        .namespaces(name)
-        .delete();
+      const deletedNamespace = await this._dataSource.K8sClient.api.v1.namespaces(name).delete();
       logger.debug('Namespace ' + name + ' has been deleted');
       return deletedNamespace;
     } catch (error) {

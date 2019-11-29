@@ -1,7 +1,7 @@
 import { expect } from '@loopback/testlab';
 import { getTestApplicationContext } from '../../helpers/context.helper';
 import { K8sDeploymentManager, K8sNamespaceManager } from '../../../services';
-import { K8sDeploymentRequest, K8sNamespaceRequest, K8sServiceRequest } from '../../../models';
+import { K8sDeploymentRequest, K8sNamespaceRequest } from '../../../models';
 import { KubernetesMockServer } from '../../kubernetesMock/KubernetesMockServer';
 
 describe('K8sDeploymentManager', () => {
@@ -76,5 +76,4 @@ describe('K8sDeploymentManager', () => {
     const deletedService = await k8sDeploymentManager.deleteDeployment('testDeployment', 'panosc');
     expect(deletedService).to.be.not.null();
   });
-
 });
