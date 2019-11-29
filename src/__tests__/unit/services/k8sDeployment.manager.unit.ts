@@ -64,7 +64,7 @@ describe('K8sDeploymentManager', () => {
     expect(k8sNamespace).to.not.be.null();
 
     const deletedDeployment = await k8sDeploymentManager.deleteDeployment('test', 'panosc');
-    expect(deletedDeployment).to.be.null();
+    expect(deletedDeployment).to.be.false();
   });
 
   it('create and delete a deployment', async () => {

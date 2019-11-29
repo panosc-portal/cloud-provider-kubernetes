@@ -57,7 +57,7 @@ describe('K8sServiceManager', () => {
     expect(k8sNamespace).to.not.be.null();
 
     const deletedService = await k8sServiceManager.deleteService('test', 'panosc');
-    expect(deletedService).to.be.null();
+    expect(deletedService).to.be.false();
   });
 
   it('create and delete a service', async () => {

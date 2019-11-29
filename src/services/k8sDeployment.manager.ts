@@ -47,7 +47,6 @@ export class K8sDeploymentManager {
         logger.log(error.message);
         throw new Error(`Did not manage to create deployment ${deploymentRequest.name}`);
       }
-
     }
   }
 

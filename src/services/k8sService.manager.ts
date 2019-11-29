@@ -3,7 +3,8 @@ import { KubernetesDataSource } from '../datasources';
 import { logger } from '../utils';
 
 export class K8sServiceManager {
-  constructor(private _dataSource: KubernetesDataSource) {}
+  constructor(private _dataSource: KubernetesDataSource) {
+  }
 
   async getServiceWithName(name: string, namespace: string) {
     try {
@@ -18,8 +19,12 @@ export class K8sServiceManager {
         return null;
       }
     } catch (error) {
-      logger.error(error.message);
-      return null;
+      if (error.statusCode === 404) {
+        return null;
+      } else {
+        logger.error(error.message);
+        throw new Error(`Did not manage to get service ${name} `);
+      }
     }
   }
 
@@ -36,8 +41,12 @@ export class K8sServiceManager {
         logger.error('Did not manage to create a kubernetes service');
       }
     } catch (error) {
-      logger.error(error.message);
-      return null;
+      if (error.statusCode === 409) {
+        return null;
+      } else {
+        logger.log(error.message);
+        throw new Error(`Did not manage to create service ${serviceRequest.name}`);
+      }
     }
   }
 
@@ -60,8 +69,12 @@ export class K8sServiceManager {
       logger.debug(`Service ` + name + ` has been deleted`);
       return deletedService;
     } catch (error) {
-      logger.error(error.message);
-      return null;
+      if (error.statusCode === 404) {
+        return false;
+      } else {
+        logger.error(error.message);
+        throw new Error(`Did not manage to delete service ${name} `);
+      }
     }
   }
 }

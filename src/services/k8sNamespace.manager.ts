@@ -5,7 +5,8 @@ import { logger } from '../utils';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class K8sNamespaceManager {
-  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {}
+  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {
+  }
 
   async getNamespaceWithName(name: string) {
     try {
@@ -17,8 +18,12 @@ export class K8sNamespaceManager {
         return null;
       }
     } catch (error) {
-      logger.error(error.message);
-      return null;
+      if (error.statusCode === 404) {
+        return null;
+      } else {
+        logger.error(error.message);
+        throw new Error(`Did not manage to get deployment ${name}`);
+      }
     }
   }
 
@@ -34,8 +39,12 @@ export class K8sNamespaceManager {
         return null;
       }
     } catch (error) {
-      logger.error(error.message);
-      return null;
+      if (error.statusCode === 409) {
+        return null;
+      } else {
+        logger.log(error.message);
+        throw new Error(`Did not manage to create namespace ${namespaceRequest.name}`);
+      }
     }
   }
 
@@ -55,8 +64,12 @@ export class K8sNamespaceManager {
       logger.debug('Namespace ' + name + ' has been deleted');
       return deletedNamespace;
     } catch (error) {
-      logger.error(error.message);
-      return null;
+      if (error.statusCode === 404) {
+        return null;
+      } else {
+        logger.error(error.message);
+        throw new Error(`Did not manage to delete namespace ${name}`);
+      }
     }
   }
 }

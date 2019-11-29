@@ -55,6 +55,6 @@ describe('K8sNamespaceManager', () => {
   it('create and delete a namespace', async () => {
     await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('test'));
     const deletedDeployment = await k8sNamespaceManager.deleteNamespace('test');
-    expect(deletedDeployment).to.not.be.null();
+    expect(deletedDeployment).to.not.be.false()
   });
 });
