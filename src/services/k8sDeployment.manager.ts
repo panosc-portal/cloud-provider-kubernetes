@@ -19,8 +19,12 @@ export class K8sDeploymentManager {
         return null;
       }
     } catch (error) {
-      logger.error(error);
-      return null;
+      if (error.statusCode === 404) {
+        return null;
+      } else {
+        logger.error(error.message);
+        throw new Error(`Did not manage to get deployment ${name}`);
+      }
     }
   }
 
@@ -37,8 +41,13 @@ export class K8sDeploymentManager {
         logger.error('Did not manage to create a kubernetes deployment');
       }
     } catch (error) {
-      logger.log(error);
-      return null;
+      if (error.statusCode === 409) {
+        return null;
+      } else {
+        logger.log(error.message);
+        throw new Error(`Did not manage to create deployment ${deploymentRequest.name}`);
+      }
+
     }
   }
 
@@ -54,13 +63,18 @@ export class K8sDeploymentManager {
 
   async deleteDeployment(name: string, namespace: string) {
     try {
-      return await this._dataSource.K8sClient.apis.apps.v1
+      await this._dataSource.K8sClient.apis.apps.v1
         .namespaces(namespace)
         .deployments(name)
         .delete();
+      return true;
     } catch (error) {
-      logger.error(error.message);
-      return null;
+      if (error.statusCode === 404) {
+        return false;
+      } else {
+        logger.error(error.message);
+        throw new Error(`Did not manage to delete deployment ${name} `);
+      }
     }
   }
 }
