@@ -1,6 +1,7 @@
 import { Connection, createConnection, EntityManager, ObjectType, Repository } from 'typeorm';
-import { lifeCycleObserver, LifeCycleObserver } from '@loopback/core';
+import { lifeCycleObserver, LifeCycleObserver, inject, CoreBindings } from '@loopback/core';
 import { logger } from '../utils';
+import { CloudProviderKubernetesApplication } from '..';
 
 @lifeCycleObserver('datasource')
 export class TypeORMDataSource implements LifeCycleObserver {
@@ -9,7 +10,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
   private _config: any;
   private _connection: Connection;
 
-  constructor() {
+  constructor(/*@inject(CoreBindings.APPLICATION_INSTANCE) private application?: CloudProviderKubernetesApplication*/) {
     this._config = {
       type: process.env.CLOUD_PROVIDER_K8S_DATABASE_TYPE,
       host: process.env.CLOUD_PROVIDER_K8S_DATABASE_HOST,

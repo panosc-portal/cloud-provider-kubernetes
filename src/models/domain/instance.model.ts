@@ -56,7 +56,7 @@ export class Instance {
     type: 'string'
   })
   @Column({ length: 50, nullable: true })
-  private _computId: string;
+  computeId: string;
 
   @property({
     type: 'string',
@@ -123,9 +123,5 @@ export class Instance {
 
   addProtocol(protocol: Protocol) {
     this.protocols.push(protocol);
-  }
-
-  set computId(value: string) {
-    this._computId = value;
   }
 }

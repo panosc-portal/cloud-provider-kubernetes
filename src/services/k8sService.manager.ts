@@ -44,7 +44,7 @@ export class K8sServiceManager {
       if (error.statusCode === 409) {
         return null;
       } else {
-        logger.log(error.message);
+        logger.error(error.message);
         throw new Error(`Did not manage to create service ${serviceRequest.name}`);
       }
     }

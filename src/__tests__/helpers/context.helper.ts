@@ -31,7 +31,8 @@ export function getTestApplicationContext(): TestApplicationContext {
   const imageService: ImageService = new ImageService(imageRepository);
   const k8sInstanceService = new K8sInstanceService(kubernetesDataSource);
   const instanceService: InstanceService = new InstanceService(instanceRepository, k8sInstanceService);
-  const instanceActionService: InstanceActionService = new InstanceActionService();
+
+  const instanceActionService: InstanceActionService = new InstanceActionService(instanceService, k8sInstanceService);
 
   return {
     flavourRepository,

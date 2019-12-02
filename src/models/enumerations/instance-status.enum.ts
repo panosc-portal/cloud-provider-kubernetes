@@ -1,4 +1,5 @@
 export enum InstanceStatus {
+  PENDING = 'PENDING',
   UNKNOWN = 'UNKNOWN',
   BUILDING = 'BUILDING',
   STARTING = 'STARTING',

@@ -1,4 +1,6 @@
 import { InstanceCommand, Instance, InstanceCommandType } from '../../models';
+import { InstanceService } from '../instance.service';
+import { K8sInstanceService } from '../k8sInstance.service';
 
 export abstract class InstanceAction {
   private _onTerminatedCallback: () => void;
@@ -12,7 +14,15 @@ export abstract class InstanceAction {
     return this._instanceCommand.type;
   }
 
-  constructor(protected _instanceCommand: InstanceCommand) {}
+  get instanceService(): InstanceService {
+    return this._instanceService;
+  }
+
+  get k8sInstanceService(): K8sInstanceService {
+    return this._k8sInstanceService;
+  }
+
+  constructor(private _instanceCommand: InstanceCommand, private _instanceService: InstanceService, private _k8sInstanceService: K8sInstanceService) {}
 
   execute(): Promise<void> {
     return new Promise((resolve, reject) => {
