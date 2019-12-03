@@ -45,11 +45,11 @@ describe('K8sServiceManager', () => {
     const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const k8sServiceRequest = new K8sServiceRequest('testService');
+    const k8sServiceRequest = new K8sServiceRequest('test-service');
     await k8sServiceManager.createService(k8sServiceRequest, 'panosc');
-    const k8sService = await k8sServiceManager.getServiceWithName('testService', 'panosc');
+    const k8sService = await k8sServiceManager.getServiceWithName('test-service', 'panosc');
     expect(k8sService).to.not.be.null();
-    expect(k8sService.name).to.be.equal('testService');
+    expect(k8sService.name).to.be.equal('test-service');
   });
 
   it('delete an inexistent service', async () => {
@@ -64,9 +64,9 @@ describe('K8sServiceManager', () => {
     const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const k8sServiceRequest = new K8sServiceRequest('testService');
+    const k8sServiceRequest = new K8sServiceRequest('test-service');
     await k8sServiceManager.createService(k8sServiceRequest, 'panosc');
-    const deletedService = await k8sServiceManager.deleteService('testService', 'panosc');
+    const deletedService = await k8sServiceManager.deleteService('test-service', 'panosc');
     expect(deletedService).to.be.not.null();
   });
 });

@@ -33,15 +33,15 @@ describe('K8sNamespaceManager', () => {
   });
 
   it('create and get kubernetes namespace', async () => {
-    const k8sNamespaceRequest = new K8sNamespaceRequest('testNamespace');
+    const k8sNamespaceRequest = new K8sNamespaceRequest('testnamespace');
     await k8sNamespaceManager.createNamespace(k8sNamespaceRequest);
-    const k8sNamespace = await k8sNamespaceManager.getNamespaceWithName('testNamespace');
+    const k8sNamespace = await k8sNamespaceManager.getNamespaceWithName('testnamespace');
     expect(k8sNamespace).to.not.be.null();
-    expect(k8sNamespace.name).to.be.equal('testNamespace');
+    expect(k8sNamespace.name).to.be.equal('testnamespace');
   });
 
   it('create the same namespace twice', async () => {
-    const k8sNamespaceRequest = new K8sNamespaceRequest('testNamespace');
+    const k8sNamespaceRequest = new K8sNamespaceRequest('testnamespace');
     await k8sNamespaceManager.createNamespace(k8sNamespaceRequest);
     const k8sNamespace2 = await k8sNamespaceManager.createNamespace(k8sNamespaceRequest);
     expect(k8sNamespace2).to.be.null();
@@ -49,12 +49,12 @@ describe('K8sNamespaceManager', () => {
 
   it('delete an inexistent namespace', async () => {
     const deletedDeployment = await k8sNamespaceManager.deleteNamespace('test');
-    console.log(deletedDeployment);
+    expect(deletedDeployment).to.be.null();
   });
 
   it('create and delete a namespace', async () => {
     await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('test'));
     const deletedDeployment = await k8sNamespaceManager.deleteNamespace('test');
-    expect(deletedDeployment).to.not.be.false()
+    expect(deletedDeployment).to.not.be.false();
   });
 });

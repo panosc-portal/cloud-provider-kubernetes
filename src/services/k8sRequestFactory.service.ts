@@ -7,8 +7,15 @@ export class K8sRequestFactoryService {
     return new K8sServiceRequest(name);
   }
 
-  createK8sDeploymentRequest(name: string, image: string): K8sDeploymentRequest {
-    return new K8sDeploymentRequest(name, image);
+  createK8sDeploymentRequest(
+    name: string,
+    image: string,
+    cpuLimit: number,
+    cpuRequest: number,
+    memoryLimit: number,
+    memoryRequest: number
+  ): K8sDeploymentRequest {
+    return new K8sDeploymentRequest(name, image, cpuLimit, cpuRequest, memoryLimit, memoryRequest);
   }
 
   createK8sNamespaceRequest(name: string): K8sNamespaceRequest {

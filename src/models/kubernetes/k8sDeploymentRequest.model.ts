@@ -13,7 +13,14 @@ export class K8sDeploymentRequest {
     return this._model;
   }
 
-  constructor(private _name: string, private _image: string) {
+  constructor(
+    private _name: string,
+    private _image: string,
+    private _cpuLimit: number,
+    private _cpuRequest: number,
+    private _memoryLimit: number,
+    private _memoryRequest: number
+  ) {
     this._model = {
       apiVersion: 'apps/v1',
       kind: 'Deployment',
@@ -25,9 +32,7 @@ export class K8sDeploymentRequest {
       },
       spec: {
         selector: {
-          matchLabels: {
-            app: this._name
-          }
+          app: this._name
         },
         replicas: 1,
         template: {
@@ -45,7 +50,17 @@ export class K8sDeploymentRequest {
                   {
                     containerPort: 3389
                   }
-                ]
+                ],
+                resources: {
+                  limits: {
+                    cpu: `${this._cpuLimit}m`,
+                    memory: `${this._memoryLimit}Mi`
+                  },
+                  requests: {
+                    cpu: `${this._cpuRequest}m`,
+                    memory: `${this._memoryRequest}Mi`
+                  }
+                }
               }
             ]
           }

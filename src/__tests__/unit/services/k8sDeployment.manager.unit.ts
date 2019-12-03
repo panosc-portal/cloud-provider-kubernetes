@@ -26,7 +26,7 @@ describe('K8sDeploymentManager', () => {
     const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest('test', 'danielguerra/ubuntu-xrdp');
+    const k8sDeploymentRequest = new K8sDeploymentRequest('test', 'danielguerra/ubuntu-xrdp', 1, 1, 2, 2);
     const k8sDeployment = await k8sDeploymentManager.createDeployment(k8sDeploymentRequest, 'panosc');
     expect(k8sDeployment).to.not.be.null();
     expect(k8sDeployment.name).to.be.equal('test');
@@ -41,7 +41,7 @@ describe('K8sDeploymentManager', () => {
     const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest('test', 'danielguerra/ubuntu-xrdp');
+    const k8sDeploymentRequest = new K8sDeploymentRequest('test', 'danielguerra/ubuntu-xrdp', 1, 1, 2, 2);
     await k8sDeploymentManager.createDeployment(k8sDeploymentRequest, 'panosc');
     const k8sDeployment = await k8sDeploymentManager.getDeploymentsWithName('test', 'panosc');
     expect(k8sDeployment).to.not.be.null();
@@ -52,9 +52,9 @@ describe('K8sDeploymentManager', () => {
     const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest('test', 'danielguerra/ubuntu-xrdp');
+    const k8sDeploymentRequest = new K8sDeploymentRequest('test', 'danielguerra/ubuntu-xrdp', 1, 1, 2, 2);
     await k8sDeploymentManager.createDeployment(k8sDeploymentRequest, 'panosc');
-    const k8sDeploymentRequest2 = new K8sDeploymentRequest('test', 'danielguerra/ubuntu-xrdp');
+    const k8sDeploymentRequest2 = new K8sDeploymentRequest('test', 'danielguerra/ubuntu-xrdp', 1, 1, 2, 2);
     const k8sDeploument2 = await k8sDeploymentManager.createDeployment(k8sDeploymentRequest2, 'panosc');
     expect(k8sDeploument2).to.be.null();
   });
@@ -71,9 +71,9 @@ describe('K8sDeploymentManager', () => {
     const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest('testDeployment', 'test');
+    const k8sDeploymentRequest = new K8sDeploymentRequest('testdeployment', 'test', 1, 1, 2, 2);
     await k8sDeploymentManager.createDeployment(k8sDeploymentRequest, 'panosc');
-    const deletedService = await k8sDeploymentManager.deleteDeployment('testDeployment', 'panosc');
+    const deletedService = await k8sDeploymentManager.deleteDeployment('testdeployment', 'panosc');
     expect(deletedService).to.be.not.null();
   });
 });

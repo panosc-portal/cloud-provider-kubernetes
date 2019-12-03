@@ -5,8 +5,7 @@ import { logger } from '../utils';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class K8sNamespaceManager {
-  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {
-  }
+  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {}
 
   async getNamespaceWithName(name: string) {
     try {

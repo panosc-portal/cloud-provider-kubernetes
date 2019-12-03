@@ -20,7 +20,7 @@ describe('InstanceService', () => {
   it('gets all instances', async () => {
     const instances = await instanceService.getAll();
 
-    expect(instances.length).to.equal(2);
+    expect(instances.length).to.equal(3);
   });
 
   it('gets an instance', async () => {
@@ -32,7 +32,7 @@ describe('InstanceService', () => {
 
   it('saves an instance', async () => {
     const instances = await instanceService.getAll();
-    expect(instances.length).to.equal(2);
+    expect(instances.length).to.equal(3);
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
@@ -82,7 +82,7 @@ describe('InstanceService', () => {
     await instanceService.delete(instance);
 
     instances = await instanceService.getAll();
-    expect(instances.length).to.equal(1);
+    expect(instances.length).to.equal(2);
 
     // Make sure image not deleted
     const persistedImage = imageService.getById(image.id);

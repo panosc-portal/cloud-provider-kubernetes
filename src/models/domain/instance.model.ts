@@ -13,7 +13,7 @@ import {
   UpdateDateColumn
 } from 'typeorm';
 import { Image } from './image.model';
-import { InstanceStatus } from '../enumerations/instance-status.enum';
+import { InstanceStatus } from '../enumerations';
 import { InstanceState } from './instance-state.model';
 
 @Entity()

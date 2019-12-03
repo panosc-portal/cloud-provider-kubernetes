@@ -1,6 +1,6 @@
 import { bind, BindingScope, inject, lifeCycleObserver } from '@loopback/core';
 import { K8sServiceManager } from './k8sService.manager';
-import { K8sInstance, Instance } from '../models';
+import { K8sInstance, Instance, K8sServiceRequest, K8sDeploymentRequest } from '../models';
 import { K8sRequestFactoryService } from './k8sRequestFactory.service';
 import { K8sDeploymentManager } from './k8sDeployment.manager';
 import { KubernetesDataSource } from '../datasources';
@@ -46,20 +46,45 @@ export class K8sInstanceService {
 
   async createK8sInstance(instance: Instance): Promise<K8sInstance> {
     const image = instance.image;
+    const flavour = instance.flavour;
     const instanceComputeId = await this.UUIDGenerator(instance.name);
-    const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instanceComputeId, image.name);
-    logger.debug('Creating Deployment in Kubernetes');
-    const deployment = await this._deploymentManager.createDeploymentIfNotExist(
-      deploymentRequest,
-      this._defaultNamespace
+    // TODO: verify limits and request is applied on pod
+    const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(
+      instanceComputeId,
+      image.name,
+      flavour.cpu,
+      flavour.cpu,
+      flavour.memory,
+      flavour.memory
     );
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceComputeId);
-    logger.debug('Creating Service in Kubernetes');
-    const service = await this._serviceManager.createServiceIfNotExist(serviceRequest, this._defaultNamespace);
-    if (service === null) {
-      await this._deploymentManager.deleteDeployment(deploymentRequest.name, this._defaultNamespace);
+    const deploymentServiceConnection = this.verifyDeploymentServiceConnection(deploymentRequest, serviceRequest);
+    if (deploymentServiceConnection) {
+      logger.debug('Creating Deployment in Kubernetes');
+      const deployment = await this._deploymentManager.createDeploymentIfNotExist(
+        deploymentRequest,
+        this._defaultNamespace
+      );
+      logger.debug('Creating Service in Kubernetes');
+      const service = await this._serviceManager.createServiceIfNotExist(serviceRequest, this._defaultNamespace);
+      if (service === null) {
+        await this._deploymentManager.deleteDeployment(deploymentRequest.name, this._defaultNamespace);
+      }
+      return new K8sInstance(deployment, service, instanceComputeId);
+    } else {
+      throw new Error('Service and deployment are not connected');
     }
-    return new K8sInstance(deployment, service, instanceComputeId);
+  }
+
+  async deleteK8sInstance(instanceComputeId: string) {
+    try {
+      //TODO: verify usage with instanceService
+      await this._serviceManager.deleteService(instanceComputeId, this._defaultNamespace);
+      await this._deploymentManager.deleteDeployment(instanceComputeId, this._defaultNamespace);
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
   }
 
   async UUIDGenerator(name: string) {
@@ -75,6 +100,13 @@ export class K8sInstanceService {
       unique = deployment == null && service == null;
     }
     return instanceComputeId;
+  }
+
+  // Verify if deployment and service are connected
+  verifyDeploymentServiceConnection(deploymentRequest: K8sDeploymentRequest, serviceRequest: K8sServiceRequest) {
+    const deploymentAppLabel = deploymentRequest.model.spec.selector.app;
+    const serviceAppLabel = serviceRequest.model.spec.selector.app;
+    return deploymentAppLabel === serviceAppLabel;
   }
 
   async initDefaultNamespace(): Promise<void> {

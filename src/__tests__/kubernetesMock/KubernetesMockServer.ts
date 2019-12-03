@@ -67,6 +67,13 @@ export class KubernetesMockServer {
     app.post('/apis/apps/v1/namespaces/:namespace/deployments', jsonParser, (req, res) => {
       const namespace = req.params.namespace;
       const deploymentName = req.body.metadata.name;
+      try {
+        this.deploymentServiceValid(req.body);
+      } catch (error) {
+        logger.error(error.message);
+        res.sendStatus(500);
+      }
+
       logger.info(`Posting deployment ${deploymentName} in namespace ${namespace}`);
       if (this._createdNamespaces.get(namespace) != null) {
         const deploymentExist = this._createdDeployments.get(`${namespace}.${deploymentName}`);
@@ -86,6 +93,12 @@ export class KubernetesMockServer {
     app.post('/api/v1/namespaces', jsonParser, (req, res) => {
       const namespace = req.body.metadata.name;
       const namespaceExist = this._createdNamespaces.get(namespace);
+      try {
+        this.deploymentServiceValid(req.body);
+      } catch (error) {
+        logger.error(error.message);
+        res.sendStatus(500);
+      }
       logger.info(`Posting namespace ${namespace}`);
       if (namespaceExist == null) {
         const response = k8sResponseCreator.getNamespace(namespace);
@@ -99,6 +112,12 @@ export class KubernetesMockServer {
     app.post('/api/v1/namespaces/:namespace/services', jsonParser, (req, res) => {
       const namespace = req.params.namespace;
       const serviceName = req.body.metadata.name;
+      try {
+        this.deploymentServiceValid(req.body);
+      } catch (error) {
+        logger.error(error.message);
+        res.sendStatus(500);
+      }
       logger.info(`Posting service ${serviceName} in namespace ${namespace}`);
       if (this._createdNamespaces.get(namespace) != null) {
         const serviceExist = this._createdServices.get(`${namespace}.${serviceName}`);
@@ -178,4 +197,38 @@ export class KubernetesMockServer {
       logger.info(`Kubernetes Mock Server stopped`);
     }
   }
+
+  deploymentServiceValid(request) {
+    if (request.metadata.labels) {
+      const labelPattern = RegExp(/^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$/);
+      const labels = request.metadata.labels;
+      for (const label in labels) {
+        const validLabel = labelPattern.test(label);
+        if (!validLabel) {
+          throw new Error(`metadata.labels: Invalid value: ${label}: name part must consist of alphanumeric characters,
+           '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name', 
+            or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]')`);
+        }
+        const validLabelValue = labelPattern.test(labels[label]);
+        if (!validLabelValue) {
+          throw new Error(
+            `metadata.labels: Invalid value: ${labels[label]}: name part must consist of alphanumeric characters, '-', 
+            '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or 
+            '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]')`
+          );
+        }
+      }
+    }
+    if (request.metadata.name) {
+      const name = request.metadata.name;
+      const namePattern = RegExp(/^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/);
+      const validName = namePattern.test(name);
+      if (!validName) {
+        throw new Error(`metadata.name: Invalid value: ${name}: a DNS-1123 subdomain 
+        must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric 
+        character `);
+      }
+    }
+  }
+
 }

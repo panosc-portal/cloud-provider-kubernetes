@@ -3,8 +3,7 @@ import { KubernetesDataSource } from '../datasources';
 import { logger } from '../utils';
 
 export class K8sServiceManager {
-  constructor(private _dataSource: KubernetesDataSource) {
-  }
+  constructor(private _dataSource: KubernetesDataSource) {}
 
   async getServiceWithName(name: string, namespace: string) {
     try {
