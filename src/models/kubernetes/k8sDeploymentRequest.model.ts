@@ -31,10 +31,12 @@ export class K8sDeploymentRequest {
         }
       },
       spec: {
-        selector: {
-          app: this._name
-        },
         replicas: 1,
+        selector: {
+          matchLabels: {
+            app: this._name
+          }
+        },
         template: {
           metadata: {
             labels: {
@@ -44,7 +46,7 @@ export class K8sDeploymentRequest {
           spec: {
             containers: [
               {
-                name: 'test',
+                name: this._name,
                 image: this._image,
                 ports: [
                   {

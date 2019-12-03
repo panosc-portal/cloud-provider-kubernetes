@@ -3,9 +3,10 @@ import { KubernetesDataSource } from '../datasources';
 import { logger } from '../utils';
 
 export class K8sDeploymentManager {
-  constructor(private _dataSource: KubernetesDataSource) {}
+  constructor(private _dataSource: KubernetesDataSource) {
+  }
 
-  async getDeploymentsWithName(name: string, namespace: string) {
+  async getDeploymentsWithName(name: string, namespace: string): Promise<K8sDeployment> {
     try {
       const deployment = await this._dataSource.K8sClient.apis.apps.v1
         .namespace(namespace)

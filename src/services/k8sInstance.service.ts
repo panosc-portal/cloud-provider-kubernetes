@@ -104,7 +104,7 @@ export class K8sInstanceService {
 
   // Verify if deployment and service are connected
   verifyDeploymentServiceConnection(deploymentRequest: K8sDeploymentRequest, serviceRequest: K8sServiceRequest) {
-    const deploymentAppLabel = deploymentRequest.model.spec.selector.app;
+    const deploymentAppLabel = deploymentRequest.model.spec.template.metadata.labels.app;
     const serviceAppLabel = serviceRequest.model.spec.selector.app;
     return deploymentAppLabel === serviceAppLabel;
   }

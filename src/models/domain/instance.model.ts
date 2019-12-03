@@ -42,14 +42,14 @@ export class Instance {
   @Column({ length: 2500, nullable: true })
   description?: string;
 
-  @Column({ length: 250 })
+  @Column({ length: 250,nullable: true })
   namespace: string;
 
   @property({
     type: 'string',
     required: true
   })
-  @Column({ length: 128 })
+  @Column({ length: 128, nullable: true })
   hostname: string;
 
   @property({
@@ -69,14 +69,14 @@ export class Instance {
     type: 'number',
     required: true
   })
-  @Column({ name: 'current_cpu', type: 'float' })
+  @Column({ name: 'current_cpu', type: 'float', nullable: true })
   currentCPU: number;
 
   @property({
     type: 'number',
     required: true
   })
-  @Column({ name: 'current_memory' })
+  @Column({ name: 'current_memory', nullable: true })
   currentMemory: number;
 
   @property({

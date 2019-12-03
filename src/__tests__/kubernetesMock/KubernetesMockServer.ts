@@ -202,7 +202,7 @@ export class KubernetesMockServer {
     if (request.metadata.labels) {
       const labelPattern = RegExp(/^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$/);
       const labels = request.metadata.labels;
-      for (const label in labels) {
+      for (const label of labels) {
         const validLabel = labelPattern.test(label);
         if (!validLabel) {
           throw new Error(`metadata.labels: Invalid value: ${label}: name part must consist of alphanumeric characters,
