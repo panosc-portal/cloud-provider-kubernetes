@@ -1,11 +1,12 @@
 import { del, get, getModelSchemaRef, param, post, requestBody, put } from '@loopback/openapi-v3';
-import { Image, Instance, InstanceState, InstanceCommand } from '../models';
+import { Image, Instance, InstanceState, InstanceCommand, InstanceCommandType } from '../models';
 import { inject } from '@loopback/context';
 import { FlavourService, ImageService, InstanceService, InstanceActionService } from '../services';
 import { InstanceCreatorDto } from './dto/instance-creator-dto';
 import { InstanceStatus } from '../models';
 import { InstanceCommandDto } from './dto/instance-command-dto';
 import { BaseController } from './BaseController';
+import { InstanceUpdatorDto } from './dto/instance-updator-dto';
 
 export class InstanceController extends BaseController {
   constructor(
@@ -82,9 +83,12 @@ export class InstanceController extends BaseController {
       flavour: flavour
     });
 
-    // TODO actions to create instance here
+    await this._instanceService.save(instance);
 
-    return this._instanceService.create(instance);
+    const command: InstanceCommand = new InstanceCommand(instance, InstanceCommandType.CREATE);
+    this._instanceActionService.execute(command);
+
+    return instance;
   }
 
   @put('/instances/{id}', {
@@ -100,9 +104,14 @@ export class InstanceController extends BaseController {
       }
     }
   })
-  updateById(@param.path.number('id') id: number, @requestBody() instance: Instance): Promise<Image> {
-    this.throwBadRequestIfNull(instance, 'Invalid instance');
-    this.throwBadRequestIfNotEqual(id, instance.id, 'Id in path is not the same as body id');
+  async update(@param.path.number('id') id: number, @requestBody() instanceUpdatorDto: InstanceUpdatorDto): Promise<Instance> {
+    this.throwBadRequestIfNull(InstanceUpdatorDto, 'Invalid instance in request');
+
+    const instance = await this._instanceService.getById(id);
+    this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
+
+    instance.name = instanceUpdatorDto.name;
+    instance.description = instanceUpdatorDto.description
 
     return this._instanceService.update(instance);
   }
@@ -120,7 +129,7 @@ export class InstanceController extends BaseController {
       }
     }
   })
-  async getStateById(@param.path.string('id') id: number): Promise<InstanceState> {
+  async getState(@param.path.string('id') id: number): Promise<InstanceState> {
     const instance = await this._instanceService.getById(id);
     this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
 
@@ -135,11 +144,11 @@ export class InstanceController extends BaseController {
       }
     }
   })
-  async deleteById(@param.path.string('id') id: number): Promise<boolean> {
+  async delete(@param.path.string('id') id: number): Promise<Instance> {
     const instance = await this._instanceService.getById(id);
     this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
 
-    return this._instanceService.delete(instance);
+    return this._performAction(instance, InstanceCommandType.DELETE);
   }
 
   @post('/instances/{id}/actions', {
@@ -150,17 +159,34 @@ export class InstanceController extends BaseController {
       }
     }
   })
-  async actionById(
-    @param.path.string('id') id: number,
-    @requestBody() command: InstanceCommandDto
-  ): Promise<InstanceCommand> {
+  async executeAction(@param.path.string('id') id: number, @requestBody() command: InstanceCommandDto): Promise<Instance> {
     const instance = await this._instanceService.getById(id);
     this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
 
-    // create and queue action
-    const instanceCommand = new InstanceCommand(instance, command.type);
-    this._instanceActionService.queueCommand(instanceCommand);
+    return this._performAction(instance, command.type);
+  }
 
-    return instanceCommand;
+  private async _performAction(instance: Instance, instanceCommandType: InstanceCommandType): Promise<Instance> {
+    if (instanceCommandType == InstanceCommandType.START) {
+      instance.status = InstanceStatus.STARTING;
+
+    } else if (instanceCommandType == InstanceCommandType.REBOOT) {
+      instance.status = InstanceStatus.REBOOTING;
+
+    } else if (instanceCommandType == InstanceCommandType.SHUTDOWN) {
+      instance.status = InstanceStatus.STOPPING;
+
+    } else if (instanceCommandType == InstanceCommandType.DELETE) {
+      instance.status = InstanceStatus.DELETING;
+    }
+
+    // Save state of the instance
+    await this._instanceService.save(instance);
+
+    // create and queue action
+    const instanceCommand = new InstanceCommand(instance, instanceCommandType);
+    this._instanceActionService.execute(instanceCommand);
+
+    return instance;
   }
 }

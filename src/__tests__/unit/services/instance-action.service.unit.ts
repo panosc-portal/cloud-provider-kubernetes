@@ -30,7 +30,7 @@ describe('InstanceActionService', () => {
     expect(instance.status).to.equal(InstanceStatus.PENDING);
 
     const command = new InstanceCommand(instance, InstanceCommandType.CREATE);
-    await context.instanceActionService.queueCommand(command);
+    await context.instanceActionService.execute(command);
 
     instance = await context.instanceService.getById(1);
     expect(instance.status).to.be.equal(InstanceStatus.BUILDING);
@@ -44,8 +44,8 @@ describe('InstanceActionService', () => {
 
     const stateCommand = new InstanceCommand(instance, InstanceCommandType.STATE);
     const createCommand = new InstanceCommand(instance, InstanceCommandType.CREATE);
-    const statePromise = context.instanceActionService.queueCommand(stateCommand);
-    const createPromise = context.instanceActionService.queueCommand(createCommand);
+    const statePromise = context.instanceActionService.execute(stateCommand);
+    const createPromise = context.instanceActionService.execute(createCommand);
 
     await statePromise;
     instance = await context.instanceService.getById(1);
@@ -66,11 +66,11 @@ describe('InstanceActionService', () => {
 
     const command1 = new InstanceCommand(instance, InstanceCommandType.CREATE);
     const command2 = new InstanceCommand(instance, InstanceCommandType.CREATE);
-    const promise1 = context.instanceActionService.queueCommand(command1);
+    const promise1 = context.instanceActionService.execute(command1);
 
     let isError = false;
     try {
-      await context.instanceActionService.queueCommand(command2);
+      await context.instanceActionService.execute(command2);
 
     } catch (error) {
       isError = true;
