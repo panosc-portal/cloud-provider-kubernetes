@@ -27,7 +27,7 @@ describe('InstanceService', () => {
     const instance = await instanceService.getById(1);
 
     expect(instance).to.not.be.null();
-    expect(instance.name).to.equal('instance 1');
+    expect(instance.name).to.equal('instance1');
   });
 
   it('saves an instance', async () => {

@@ -49,14 +49,8 @@ export class K8sInstanceService {
     const flavour = instance.flavour;
     const instanceComputeId = await this.UUIDGenerator(instance.name);
     // TODO: verify limits and request is applied on pod
-    const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(
-      instanceComputeId,
-      image.name,
-      flavour.cpu,
-      flavour.cpu,
-      flavour.memory,
-      flavour.memory
-    );
+    const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instanceComputeId, image.name,
+      flavour.cpu, flavour.memory);
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceComputeId);
     const deploymentServiceConnection = this.verifyDeploymentServiceConnection(deploymentRequest, serviceRequest);
     if (deploymentServiceConnection) {

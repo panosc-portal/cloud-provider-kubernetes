@@ -40,6 +40,6 @@ describe('InstanceController', () => {
     const instance = res.body as Instance;
     expect(instance).to.not.be.null();
     expect(instance.id).to.equal(1);
-    expect(instance.name).to.equal('instance 1');
+    expect(instance.name).to.equal('instance1');
   });
 });
