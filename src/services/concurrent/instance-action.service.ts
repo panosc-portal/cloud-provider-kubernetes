@@ -3,7 +3,7 @@ import { InstanceCommand, InstanceCommandType } from '../../models';
 import { InstanceAction, InstanceActionListener } from './instance.action';
 import { logger } from '../../utils';
 import { InstanceService } from '../instance.service';
-import { K8sInstanceService } from '../k8sInstance.service';
+import { K8sInstanceService } from '../kubernetes/k8sInstance.service';
 import { InstanceActionPromiseQueue } from './instance-action-promise-queue';
 import { CreateInstanceAction } from './create-instance.action';
 import { StateInstanceAction } from './state-instance.action';
@@ -24,19 +24,19 @@ export class InstanceActionService implements InstanceActionListener {
     let action: InstanceAction = null;
     if (instanceCommand.type === InstanceCommandType.CREATE) {
       action = new CreateInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
-    
+
     } else if (instanceCommand.type === InstanceCommandType.STATE) {
       action = new StateInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
-    
+
     } else if (instanceCommand.type === InstanceCommandType.START) {
       action = new StartInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
-    
+
     } else if (instanceCommand.type === InstanceCommandType.SHUTDOWN) {
       action = new ShutdownInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
-    
+
     } else if (instanceCommand.type === InstanceCommandType.REBOOT) {
       action = new RebootInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
-    
+
     } else if (instanceCommand.type === InstanceCommandType.DELETE) {
       action = new DeleteInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
     }

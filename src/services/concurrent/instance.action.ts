@@ -1,6 +1,6 @@
 import { InstanceCommand, Instance, InstanceCommandType } from '../../models';
 import { InstanceService } from '../instance.service';
-import { K8sInstanceService } from '../k8sInstance.service';
+import { K8sInstanceService } from '../kubernetes/k8sInstance.service';
 
 const noop = function() {};
 

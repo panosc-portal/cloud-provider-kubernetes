@@ -1,13 +1,13 @@
 import { bind, BindingScope, inject } from '@loopback/core';
-import { K8sNamespace, K8sNamespaceRequest } from '../models';
-import { KubernetesDataSource } from '../datasources';
-import { logger } from '../utils';
+import { K8sNamespace, K8sNamespaceRequest } from '../../models';
+import { KubernetesDataSource } from '../../datasources';
+import { logger } from '../../utils';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class K8sNamespaceManager {
   constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {}
 
-  async getNamespaceWithName(name: string) {
+  async getWithComputeId(name: string) {
     try {
       const namespace = await this._dataSource.K8sClient.api.v1.namespaces(name).get();
       const k8sNamespace = new K8sNamespace(namespace.body);
@@ -26,7 +26,7 @@ export class K8sNamespaceManager {
     }
   }
 
-  async createNamespace(namespaceRequest: K8sNamespaceRequest): Promise<K8sNamespace> {
+  async create(namespaceRequest: K8sNamespaceRequest): Promise<K8sNamespace> {
     try {
       const namespace = await this._dataSource.K8sClient.api.v1.namespaces.post({ body: namespaceRequest.model });
       const newNamespace = new K8sNamespace(namespace.body);
@@ -47,17 +47,17 @@ export class K8sNamespaceManager {
     }
   }
 
-  async createNamespaceIfNotExist(namespaceRequest: K8sNamespaceRequest): Promise<K8sNamespace> {
+  async createIfNotExist(namespaceRequest: K8sNamespaceRequest): Promise<K8sNamespace> {
     const namespaceName = namespaceRequest.name;
-    const existingNamespace = await this.getNamespaceWithName(namespaceName);
+    const existingNamespace = await this.getWithComputeId(namespaceName);
     if (existingNamespace == null) {
-      return this.createNamespace(namespaceRequest);
+      return this.create(namespaceRequest);
     } else {
       return existingNamespace;
     }
   }
 
-  async deleteNamespace(name: string) {
+  async delete(name: string) {
     try {
       const deletedNamespace = await this._dataSource.K8sClient.api.v1.namespaces(name).delete();
       logger.debug('Namespace ' + name + ' has been deleted');

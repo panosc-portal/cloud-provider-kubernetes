@@ -1,4 +1,4 @@
-import { K8sDeploymentRequest, K8sNamespaceRequest, K8sServiceRequest } from '../models';
+import { K8sDeploymentRequest, K8sNamespaceRequest, K8sServiceRequest } from '../../models';
 
 export class K8sRequestFactoryService {
   constructor() {

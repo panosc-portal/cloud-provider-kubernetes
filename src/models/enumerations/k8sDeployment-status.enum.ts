@@ -1,4 +1,4 @@
-export enum K8sInstanceStatus {
+export enum K8sDeploymentStatus {
   PENDING = 'PENDING',
   UNKNOWN = 'UNKNOWN',
   BUILDING = 'BUILDING',

@@ -1,12 +1,13 @@
-import { K8sDeployment, K8sDeploymentRequest } from '../models';
-import { KubernetesDataSource } from '../datasources';
-import { logger } from '../utils';
+import { K8sDeployment, K8sDeploymentRequest } from '../../models';
+import { KubernetesDataSource } from '../../datasources';
+import { logger } from '../../utils';
+import { K8sDeploymentStatus } from '../../models/enumerations/k8sDeployment-status.enum';
 
 export class K8sDeploymentManager {
   constructor(private _dataSource: KubernetesDataSource) {
   }
 
-  async getDeploymentsWithName(name: string, namespace: string): Promise<K8sDeployment> {
+  async getWithComputeId(name: string, namespace: string): Promise<K8sDeployment> {
     try {
       const deployment = await this._dataSource.K8sClient.apis.apps.v1
         .namespace(namespace)
@@ -28,7 +29,7 @@ export class K8sDeploymentManager {
     }
   }
 
-  async createDeployment(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
+  async create(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
     try {
       const deployment = await this._dataSource.K8sClient.apis.apps.v1
         .namespaces(namespace)
@@ -50,17 +51,17 @@ export class K8sDeploymentManager {
     }
   }
 
-  async createDeploymentIfNotExist(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
+  async createIfNotExist(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
     const deploymentName = deploymentRequest.name;
-    const existingDeployment = await this.getDeploymentsWithName(deploymentName, namespace);
+    const existingDeployment = await this.getWithComputeId(deploymentName, namespace);
     if (existingDeployment == null) {
-      return this.createDeployment(deploymentRequest, namespace);
+      return this.create(deploymentRequest, namespace);
     } else {
       return existingDeployment;
     }
   }
 
-  async deleteDeployment(name: string, namespace: string) {
+  async delete(name: string, namespace: string) {
     try {
       await this._dataSource.K8sClient.apis.apps.v1
         .namespaces(namespace)

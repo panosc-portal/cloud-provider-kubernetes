@@ -1,11 +1,13 @@
-import { K8sService, K8sServiceRequest } from '../models';
-import { KubernetesDataSource } from '../datasources';
-import { logger } from '../utils';
+import { K8sService, K8sServiceRequest } from '../../models';
+import { KubernetesDataSource } from '../../datasources';
+import { logger } from '../../utils';
+import { K8sServiceStatus } from '../../models/enumerations/k8sService-status.enum';
 
 export class K8sServiceManager {
-  constructor(private _dataSource: KubernetesDataSource) {}
+  constructor(private _dataSource: KubernetesDataSource) {
+  }
 
-  async getServiceWithName(name: string, namespace: string) {
+  async getWithComputeId(name: string, namespace: string) {
     try {
       const service = await this._dataSource.K8sClient.api.v1
         .namespaces(namespace)
@@ -27,14 +29,15 @@ export class K8sServiceManager {
     }
   }
 
-  async createService(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
+
+  async create(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
     try {
       const service = await this._dataSource.K8sClient.api.v1
         .namespace(namespace)
         .services.post({ body: serviceRequest.model });
       const newService = new K8sService(service.body);
       if (newService.isValid()) {
-        logger.debug('Service ', newService.name, ' has been created');
+        logger.debug(`Service  ${newService.name}  has been created`);
         return newService;
       } else {
         logger.error('Did not manage to create a kubernetes service');
@@ -49,23 +52,23 @@ export class K8sServiceManager {
     }
   }
 
-  async createServiceIfNotExist(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
+  async createIfNotExist(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
     const serviceName = serviceRequest.name;
-    const existingService = await this.getServiceWithName(serviceName, namespace);
+    const existingService = await this.getWithComputeId(serviceName, namespace);
     if (existingService == null) {
-      return this.createService(serviceRequest, namespace);
+      return this.create(serviceRequest, namespace);
     } else {
       return existingService;
     }
   }
 
-  async deleteService(name: string, namespace: string) {
+  async delete(name: string, namespace: string) {
     try {
       const deletedService = await this._dataSource.K8sClient.api.v1
         .namespaces(namespace)
         .services(name)
         .delete();
-      logger.debug(`Service ` + name + ` has been deleted`);
+      logger.debug(`Service  ${name} has been deleted`);
       return deletedService;
     } catch (error) {
       if (error.statusCode === 404) {
