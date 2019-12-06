@@ -5,7 +5,7 @@ import { FlavourService, ImageService, InstanceService, InstanceActionService } 
 import { InstanceCreatorDto } from './dto/instance-creator-dto';
 import { InstanceStatus } from '../models';
 import { InstanceCommandDto } from './dto/instance-command-dto';
-import { BaseController } from './BaseController';
+import { BaseController } from './base.controller';
 import { InstanceUpdatorDto } from './dto/instance-updator-dto';
 
 export class InstanceController extends BaseController {

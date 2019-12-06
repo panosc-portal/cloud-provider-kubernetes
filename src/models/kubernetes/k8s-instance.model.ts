@@ -1,5 +1,5 @@
-import { K8sDeployment } from './k8sDeployment.model';
-import { K8sService } from './k8sService.model';
+import { K8sDeployment } from './k8s-deployment.model';
+import { K8sService } from './k8s-service.model';
 
 export class K8sInstance {
   get deployment(): K8sDeployment {

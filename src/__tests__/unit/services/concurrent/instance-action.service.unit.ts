@@ -1,9 +1,8 @@
 import { expect } from '@loopback/testlab';
-import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
-import { getTestApplicationContext, TestApplicationContext } from '../../helpers/context.helper';
-import { InstanceActionService, InstanceService } from '../../../services';
-import { InstanceCommand, InstanceCommandType, InstanceStatus } from '../../../models';
-import { KubernetesMockServer } from '../../kubernetesMock/KubernetesMockServer';
+import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
+import { getTestApplicationContext, TestApplicationContext } from '../../../helpers/context.helper';
+import { InstanceCommand, InstanceCommandType, InstanceStatus } from '../../../../models';
+import { KubernetesMockServer } from '../../../kubernetesMock/KubernetesMockServer';
 
 describe('InstanceActionService', () => {
   let context: TestApplicationContext;

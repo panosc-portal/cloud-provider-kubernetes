@@ -1,7 +1,7 @@
 import { InstanceCommand, K8sInstance, InstanceStatus } from '../../models';
 import { InstanceAction, InstanceActionListener } from './instance.action';
 import { InstanceService } from '../instance.service';
-import { K8sInstanceService } from '../kubernetes/k8sInstance.service';
+import { K8sInstanceService } from '../kubernetes/k8s-instance.service';
 
 export class DeleteInstanceAction extends InstanceAction {
   constructor(instanceCommand: InstanceCommand, instanceService: InstanceService, k8sInstanceService: K8sInstanceService, listener: InstanceActionListener) {

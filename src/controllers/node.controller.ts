@@ -2,7 +2,7 @@ import { get, getModelSchemaRef, param } from '@loopback/openapi-v3';
 import { Instance, Node } from '../models';
 import { inject } from '@loopback/context';
 import { NodeService } from '../services';
-import { BaseController } from './BaseController';
+import { BaseController } from './base.controller';
 
 export class NodeController extends BaseController {
   constructor(@inject('services.NodeService') private _nodeService: NodeService) {

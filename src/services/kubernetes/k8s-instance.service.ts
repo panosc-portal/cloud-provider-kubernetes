@@ -1,11 +1,11 @@
 import { bind, BindingScope, inject, lifeCycleObserver } from '@loopback/core';
-import { K8sServiceManager } from './k8sService.manager';
+import { K8sServiceManager } from './k8s-service.manager';
 import { K8sInstance, Instance, K8sServiceRequest, K8sDeploymentRequest } from '../../models';
-import { K8sRequestFactoryService } from './k8sRequestFactory.service';
-import { K8sDeploymentManager } from './k8sDeployment.manager';
+import { K8sRequestFactoryService } from './k8s-request-factory.service';
+import { K8sDeploymentManager } from './k8s-deployment.manager';
 import { KubernetesDataSource } from '../../datasources';
 import { logger } from '../../utils';
-import { K8sNamespaceManager } from './k8sNamespace.manager';
+import { K8sNamespaceManager } from './k8s-namespace.manager';
 import * as uuidv4 from 'uuid/v4';
 
 @lifeCycleObserver('server')

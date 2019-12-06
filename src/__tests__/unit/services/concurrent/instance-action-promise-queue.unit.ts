@@ -1,8 +1,8 @@
 import { expect } from '@loopback/testlab';
-import { InstanceActionPromiseQueue } from '../../../services/concurrent/instance-action-promise-queue';
-import { InstanceAction, InstanceActionListener } from '../../../services';
-import { logger } from '../../../utils';
-import { InstanceCommandType, Instance } from '../../../models';
+import { InstanceActionPromiseQueue } from '../../../../services/concurrent/instance-action-promise-queue';
+import { InstanceAction, InstanceActionListener } from '../../../../services';
+import { logger } from '../../../../utils';
+import { InstanceCommandType, Instance } from '../../../../models';
 
 class DummyInstanceAction extends InstanceAction {
 

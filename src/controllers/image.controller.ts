@@ -2,7 +2,7 @@ import { get, getModelSchemaRef, param, put, requestBody } from '@loopback/opena
 import { Image } from '../models';
 import { inject } from '@loopback/context';
 import { ImageService } from '../services';
-import { BaseController } from './BaseController';
+import { BaseController } from './base.controller';
 
 export class ImageController extends BaseController {
   constructor(@inject('services.ImageService') private _imageService: ImageService) {

@@ -3,7 +3,7 @@ import { InstanceCommand, InstanceCommandType } from '../../models';
 import { InstanceAction, InstanceActionListener } from './instance.action';
 import { logger } from '../../utils';
 import { InstanceService } from '../instance.service';
-import { K8sInstanceService } from '../kubernetes/k8sInstance.service';
+import { K8sInstanceService } from '../kubernetes/k8s-instance.service';
 import { InstanceActionPromiseQueue } from './instance-action-promise-queue';
 import { CreateInstanceAction } from './create-instance.action';
 import { StateInstanceAction } from './state-instance.action';

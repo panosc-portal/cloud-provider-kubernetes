@@ -1,17 +1,17 @@
 import { expect } from '@loopback/testlab';
-import { getTestApplicationContext } from '../../helpers/context.helper';
-import { KubernetesMockServer } from '../../kubernetesMock/KubernetesMockServer';
+import { getTestApplicationContext } from '../../../helpers/context.helper';
+import { KubernetesMockServer } from '../../../kubernetesMock/KubernetesMockServer';
 import {
   FlavourService,
   ImageService,
   InstanceService,
   K8sInstanceService,
   K8sNamespaceManager
-} from '../../../services';
-import { K8sNamespaceRequest } from '../../../models/kubernetes';
-import { Instance, Protocol } from '../../../models/domain';
-import { InstanceStatus, ProtocolName } from '../../../models/enumerations';
-import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
+} from '../../../../services';
+import { K8sNamespaceRequest } from '../../../../models/kubernetes';
+import { Instance, Protocol } from '../../../../models/domain';
+import { InstanceStatus, ProtocolName } from '../../../../models/enumerations';
+import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
 
 describe('K8sInstanceService', () => {
   let k8sInstanceService: K8sInstanceService;

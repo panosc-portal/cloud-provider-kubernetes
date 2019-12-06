@@ -1,4 +1,4 @@
-import { K8sInstanceStatus } from '../enumerations/k8sInstance-status.enum';
+import { K8sInstanceStatus } from '../enumerations/k8s-instance-status.enum';
 
 export class K8sInstanceState {
 
@@ -9,15 +9,7 @@ export class K8sInstanceState {
     return this._status;
   }
 
-  set status(value: K8sInstanceStatus) {
-    this._status = value;
-  }
-
   get message(): string {
     return this._message;
-  }
-
-  set message(value: string) {
-    this._message = value;
   }
 }

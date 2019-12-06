@@ -2,7 +2,7 @@ import { get, getModelSchemaRef, param, put, requestBody } from '@loopback/rest'
 import { Flavour } from '../models';
 import { inject } from '@loopback/context';
 import { FlavourService } from '../services';
-import { BaseController } from './BaseController';
+import { BaseController } from './base.controller';
 
 export class FlavourController extends BaseController {
   constructor(@inject('services.FlavourService') private _flavourService: FlavourService) {

@@ -1,8 +1,8 @@
 import { expect } from '@loopback/testlab';
-import { getTestApplicationContext } from '../../helpers/context.helper';
-import { K8sServiceManager, K8sNamespaceManager } from '../../../services';
-import { K8sServiceRequest, K8sNamespaceRequest } from '../../../models';
-import { KubernetesMockServer } from '../../kubernetesMock/KubernetesMockServer';
+import { getTestApplicationContext } from '../../../helpers/context.helper';
+import { K8sServiceManager, K8sNamespaceManager } from '../../../../services';
+import { K8sServiceRequest, K8sNamespaceRequest } from '../../../../models';
+import { KubernetesMockServer } from '../../../kubernetesMock/KubernetesMockServer';
 
 describe('K8sServiceManager', () => {
   let k8sNamespaceManager: K8sNamespaceManager;

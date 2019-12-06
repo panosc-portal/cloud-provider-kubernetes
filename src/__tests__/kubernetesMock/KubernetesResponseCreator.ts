@@ -24,6 +24,15 @@ export default class K8SResponseCreator {
       metadata: {
         name: name,
         namespace: namespace
+      },
+      spec: {
+        template: {
+          spec: {
+            container: [
+              
+            ]
+          }
+        }
       }
     };
   }

@@ -1,8 +1,8 @@
 import { K8sDeployment } from '../../models/kubernetes';
-import { K8sEndpoints } from '../../models/kubernetes/k8sEndpoints.model';
-import { K8sInstanceState } from '../../models/kubernetes/k8sInstanceState.model';
+import { K8sEndpoints } from '../../models/kubernetes/k8s-endpoints.model';
+import { K8sInstanceState } from '../../models/kubernetes/k8s-instanceState.model';
 import { logger } from '../../utils';
-import { K8sInstanceStatus } from '../../models/enumerations/k8sInstance-status.enum';
+import { K8sInstanceStatus } from '../../models/enumerations/k8s-instance-status.enum';
 
 enum K8sDeploymentStatus {
   UNKNOWN = 'UNKNOWN',

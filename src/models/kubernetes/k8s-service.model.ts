@@ -23,7 +23,7 @@ export class K8sService {
 
   getPort(name: string): any {
     if (this.isValid()) {
-      const portSpec = this._k8sResponse.spec.ports.find(port => port.name === name);
+      const portSpec = this._k8sResponse.spec.ports.find((port: any) => port.name === name);
       return portSpec;
     } else {
       return null;

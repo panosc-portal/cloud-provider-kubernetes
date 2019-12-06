@@ -10,6 +10,7 @@ export class K8sEndpoints {
       this._k8sResponse.kind === 'Endpoints' &&
       this._k8sResponse.metadata != null &&
       this._k8sResponse.metadata.name != null &&
+      this._k8sResponse.subsets != null &&
       this._k8sResponse.subsets[0] != null &&
       this._k8sResponse.subsets[0].ports != null &&
       this._k8sResponse.subsets[0].addresses != null
