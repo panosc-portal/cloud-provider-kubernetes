@@ -40,7 +40,7 @@ describe('K8sInstanceService', () => {
   });
 
   it('create kubernetes instance', async () => {
-    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(3);
@@ -49,7 +49,7 @@ describe('K8sInstanceService', () => {
   });
 
   it('create and delete kubernetes instance', async () => {
-    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(3);

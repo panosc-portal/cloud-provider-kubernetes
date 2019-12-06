@@ -7,7 +7,7 @@ import { logger } from '../../utils';
 export class K8sNamespaceManager {
   constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {}
 
-  async getWithComputeId(name: string) {
+  async getWithName(name: string) {
     try {
       const namespace = await this._dataSource.K8sClient.api.v1.namespaces(name).get();
       const k8sNamespace = new K8sNamespace(namespace.body);
@@ -49,7 +49,7 @@ export class K8sNamespaceManager {
 
   async createIfNotExist(namespaceRequest: K8sNamespaceRequest): Promise<K8sNamespace> {
     const namespaceName = namespaceRequest.name;
-    const existingNamespace = await this.getWithComputeId(namespaceName);
+    const existingNamespace = await this.getWithName(namespaceName);
     if (existingNamespace == null) {
       return this.create(namespaceRequest);
     } else {

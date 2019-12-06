@@ -23,7 +23,7 @@ describe('K8sDeploymentManager', () => {
   });
 
   it('create kubernetes deployment', async () => {
-    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
     const k8sDeploymentRequest = new K8sDeploymentRequest({
@@ -32,18 +32,18 @@ describe('K8sDeploymentManager', () => {
       memory: 10,
       cpu: 1
     });
-    const k8sDeployment = await k8sDeploymentManager.createDeployment(k8sDeploymentRequest, 'panosc');
+    const k8sDeployment = await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
     expect(k8sDeployment).to.not.be.null();
     expect(k8sDeployment.name).to.be.equal('test');
   });
 
   it('get a non existing deployment', async () => {
-    const k8sDeployment = await k8sDeploymentManager.getDeploymentsWithName('test', 'panosc');
+    const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc');
     expect(k8sDeployment).to.be.null();
   });
 
   it('create and get kubernetes deployment', async () => {
-    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
     const k8sDeploymentRequest = new K8sDeploymentRequest({
@@ -52,14 +52,14 @@ describe('K8sDeploymentManager', () => {
       memory: 10,
       cpu: 1
     });
-    await k8sDeploymentManager.createDeployment(k8sDeploymentRequest, 'panosc');
-    const k8sDeployment = await k8sDeploymentManager.getDeploymentsWithName('test', 'panosc');
+    await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
+    const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc');
     expect(k8sDeployment).to.not.be.null();
     expect(k8sDeployment.name).to.be.equal('test');
   });
 
   it('create two kubernetes deployment with same name', async () => {
-    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
     const k8sDeploymentRequest = new K8sDeploymentRequest({
@@ -68,27 +68,27 @@ describe('K8sDeploymentManager', () => {
       memory: 10,
       cpu: 1
     });
-    await k8sDeploymentManager.createDeployment(k8sDeploymentRequest, 'panosc');
+    await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
     const k8sDeploymentRequest2 = new K8sDeploymentRequest({
       name: 'test',
       image: 'danielguerra/ubuntu-xrdp',
       memory: 10,
       cpu: 1
     });
-    const k8sDeploument2 = await k8sDeploymentManager.createDeployment(k8sDeploymentRequest2, 'panosc');
+    const k8sDeploument2 = await k8sDeploymentManager.create(k8sDeploymentRequest2, 'panosc');
     expect(k8sDeploument2).to.be.null();
   });
 
   it('delete an inexistent deployment', async () => {
-    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const deletedDeployment = await k8sDeploymentManager.deleteDeployment('test', 'panosc');
+    const deletedDeployment = await k8sDeploymentManager.delete('test', 'panosc');
     expect(deletedDeployment).to.be.false();
   });
 
   it('create and delete a deployment', async () => {
-    const k8sNamespace = await k8sNamespaceManager.createNamespace(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
     const k8sDeploymentRequest = new K8sDeploymentRequest({
@@ -97,8 +97,8 @@ describe('K8sDeploymentManager', () => {
       memory: 10,
       cpu: 1
     });
-    await k8sDeploymentManager.createDeployment(k8sDeploymentRequest, 'panosc');
-    const deletedService = await k8sDeploymentManager.deleteDeployment('testdeployment', 'panosc');
+    await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
+    const deletedService = await k8sDeploymentManager.delete('testdeployment', 'panosc');
     expect(deletedService).to.be.not.null();
   });
 });

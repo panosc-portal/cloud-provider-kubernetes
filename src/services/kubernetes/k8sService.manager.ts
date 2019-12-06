@@ -1,17 +1,16 @@
 import { K8sService, K8sServiceRequest } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
 import { logger } from '../../utils';
-import { K8sServiceStatus } from '../../models/enumerations/k8sService-status.enum';
 
 export class K8sServiceManager {
   constructor(private _dataSource: KubernetesDataSource) {
   }
 
-  async getWithComputeId(name: string, namespace: string) {
+  async getWithComputeId(computeId: string, namespace: string) {
     try {
       const service = await this._dataSource.K8sClient.api.v1
         .namespaces(namespace)
-        .services(name)
+        .services(computeId)
         .get();
       const k8sService = new K8sService(service.body);
       if (k8sService.isValid()) {
@@ -24,7 +23,7 @@ export class K8sServiceManager {
         return null;
       } else {
         logger.error(error.message);
-        throw new Error(`Did not manage to get service ${name} `);
+        throw new Error(`Did not manage to get service ${computeId} `);
       }
     }
   }

@@ -1,17 +1,16 @@
 import { K8sDeployment, K8sDeploymentRequest } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
 import { logger } from '../../utils';
-import { K8sDeploymentStatus } from '../../models/enumerations/k8sDeployment-status.enum';
 
 export class K8sDeploymentManager {
   constructor(private _dataSource: KubernetesDataSource) {
   }
 
-  async getWithComputeId(name: string, namespace: string): Promise<K8sDeployment> {
+  async getWithComputeId(computeId: string, namespace: string): Promise<K8sDeployment> {
     try {
       const deployment = await this._dataSource.K8sClient.apis.apps.v1
         .namespace(namespace)
-        .deployments(name)
+        .deployments(computeId)
         .get();
       const k8sDeployment = new K8sDeployment(deployment.body);
       if (k8sDeployment.isValid()) {
@@ -24,7 +23,7 @@ export class K8sDeploymentManager {
         return null;
       } else {
         logger.error(error.message);
-        throw new Error(`Did not manage to get deployment ${name}`);
+        throw new Error(`Did not manage to get deployment ${computeId}`);
       }
     }
   }

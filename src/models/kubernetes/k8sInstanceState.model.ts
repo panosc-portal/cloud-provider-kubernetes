@@ -1,26 +1,20 @@
-import { K8sServiceStatus } from '../enumerations/k8sService-status.enum';
+import { K8sInstanceStatus } from '../enumerations/k8sInstance-status.enum';
 
 export class K8sInstanceState {
 
-  constructor(status, message?) {
-    this._status = status;
-    this._message = message;
+  constructor(private _status: K8sInstanceStatus, private _message?: string) {
   }
 
-  private _status: K8sServiceStatus;
-
-  private _message: string;
-
-  get status(): K8sServiceStatus {
+  get status(): K8sInstanceStatus {
     return this._status;
+  }
+
+  set status(value: K8sInstanceStatus) {
+    this._status = value;
   }
 
   get message(): string {
     return this._message;
-  }
-
-  set status(value: K8sServiceStatus) {
-    this._status = value;
   }
 
   set message(value: string) {
