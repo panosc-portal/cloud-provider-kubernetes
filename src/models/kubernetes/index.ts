@@ -6,4 +6,4 @@ export * from './k8s-namespace.model';
 export * from './k8s-namespace-request.model';
 export * from './k8s-service.model';
 export * from './k8s-service-request.model';
-export * from './k8s-instanceState.model';
+export * from './k8s-instance-state.model';

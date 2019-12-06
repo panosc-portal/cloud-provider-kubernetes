@@ -1,6 +1,6 @@
 import { K8sDeployment } from '../../models/kubernetes';
 import { K8sEndpoints } from '../../models/kubernetes/k8s-endpoints.model';
-import { K8sInstanceState } from '../../models/kubernetes/k8s-instanceState.model';
+import { K8sInstanceState } from '../../models/kubernetes/k8s-instance-state.model';
 import { logger } from '../../utils';
 import { K8sInstanceStatus } from '../../models/enumerations/k8s-instance-status.enum';
 
@@ -28,7 +28,7 @@ interface K8sDeploymentState {
 
 export class K8sInstanceStatusHelper {
 
-  getK8sInstanceStatus(deployment: K8sDeployment, endpoints: K8sEndpoints): K8sInstanceState {
+  getK8sInstanceState(deployment: K8sDeployment, endpoints: K8sEndpoints): K8sInstanceState {
     const sameInstance = this.verifySameInstance(deployment, endpoints);
     if (sameInstance) {
       const deploymentState = this.getK8sDeploymentState(deployment);
