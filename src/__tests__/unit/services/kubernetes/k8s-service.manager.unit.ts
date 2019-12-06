@@ -1,8 +1,8 @@
 import { expect } from '@loopback/testlab';
-import { getTestApplicationContext } from '../../../helpers/context.helper';
+import { createTestApplicationContext } from '../../../helpers/context.helper';
 import { K8sServiceManager, K8sNamespaceManager } from '../../../../services';
 import { K8sServiceRequest, K8sNamespaceRequest } from '../../../../models';
-import { KubernetesMockServer } from '../../../kubernetesMock/KubernetesMockServer';
+import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 
 describe('K8sServiceManager', () => {
   let k8sNamespaceManager: K8sNamespaceManager;
@@ -10,8 +10,9 @@ describe('K8sServiceManager', () => {
   const kubernetesMockServer = new KubernetesMockServer();
 
   before('getK8sDeploymentManager', async () => {
-    k8sNamespaceManager = getTestApplicationContext().k8sInstanceService.namespaceManager;
-    k8sServiceManager = getTestApplicationContext().k8sInstanceService.serviceManager;
+    const testApplicationContext = createTestApplicationContext();
+    k8sNamespaceManager = testApplicationContext.k8sInstanceService.namespaceManager;
+    k8sServiceManager = testApplicationContext.k8sInstanceService.serviceManager;
   });
 
   beforeEach('startMockServer', async () => {

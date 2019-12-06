@@ -1,6 +1,6 @@
 import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
-import { getTestApplicationContext } from '../../helpers/context.helper';
+import { createTestApplicationContext } from '../../helpers/context.helper';
 import { FlavourService } from '../../../services';
 import { Flavour } from '../../../models';
 
@@ -8,7 +8,8 @@ describe('FlavourService', () => {
   let flavourService: FlavourService;
 
   before('getFlavourService', async () => {
-    flavourService = getTestApplicationContext().flavourService;
+    const testApplicationContext = createTestApplicationContext();
+    flavourService = testApplicationContext.flavourService;
   });
 
   beforeEach('Initialise Database', givenInitialisedTestDatabase);

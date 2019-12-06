@@ -1,16 +1,10 @@
 import { bind, BindingScope, inject } from '@loopback/core';
-import { InstanceCommand, InstanceCommandType } from '../../models';
-import { InstanceAction, InstanceActionListener } from './instance.action';
-import { logger } from '../../utils';
+import { InstanceAction, InstanceActionListener, CreateInstanceAction, StateInstanceAction, StartInstanceAction, ShutdownInstanceAction, RebootInstanceAction, DeleteInstanceAction } from './actions';
 import { InstanceService } from '../instance.service';
-import { K8sInstanceService } from '../kubernetes/k8s-instance.service';
+import { K8sInstanceService } from '../kubernetes';
 import { InstanceActionPromiseQueue } from './instance-action-promise-queue';
-import { CreateInstanceAction } from './create-instance.action';
-import { StateInstanceAction } from './state-instance.action';
-import { StartInstanceAction } from './start-instance.action';
-import { ShutdownInstanceAction } from './shutdown-instance.action';
-import { RebootInstanceAction } from './reboot-instance.action';
-import { DeleteInstanceAction } from './delete-instance.action';
+import { InstanceCommand, InstanceCommandType } from '../../models';
+import { logger } from '../../utils';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class InstanceActionService implements InstanceActionListener {

@@ -1,32 +1,25 @@
 import { expect } from '@loopback/testlab';
-import { getTestApplicationContext } from '../../../helpers/context.helper';
-import { KubernetesMockServer } from '../../../kubernetesMock/KubernetesMockServer';
+import { createTestApplicationContext } from '../../../helpers/context.helper';
 import {
-  FlavourService,
-  ImageService,
   InstanceService,
   K8sInstanceService,
   K8sNamespaceManager
 } from '../../../../services';
 import { K8sNamespaceRequest } from '../../../../models/kubernetes';
-import { Instance, Protocol } from '../../../../models/domain';
-import { InstanceStatus, ProtocolName } from '../../../../models/enumerations';
 import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
+import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 
 describe('K8sInstanceService', () => {
   let k8sInstanceService: K8sInstanceService;
   let k8sNamespaceManager: K8sNamespaceManager;
-  let imageService: ImageService;
-  let flavourService: FlavourService;
   let instanceService: InstanceService;
   const kubernetesMockServer = new KubernetesMockServer();
 
   before('getK8sNamespaceManager', async () => {
-    k8sNamespaceManager = getTestApplicationContext().k8sInstanceService.namespaceManager;
-    k8sInstanceService = getTestApplicationContext().k8sInstanceService;
-    imageService = getTestApplicationContext().imageService;
-    flavourService = getTestApplicationContext().flavourService;
-    instanceService = getTestApplicationContext().instanceService;
+    const testApplicationContext = createTestApplicationContext();
+    k8sNamespaceManager = testApplicationContext.k8sInstanceService.namespaceManager;
+    k8sInstanceService = testApplicationContext.k8sInstanceService;
+    instanceService = testApplicationContext.instanceService;
   });
 
   beforeEach('Initialise Database', givenInitialisedTestDatabase);

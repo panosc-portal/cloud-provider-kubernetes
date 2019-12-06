@@ -1,7 +1,7 @@
-import { InstanceCommand, K8sInstance, InstanceStatus } from '../../models';
+import { InstanceCommand } from '../../../models';
 import { InstanceAction, InstanceActionListener } from './instance.action';
-import { InstanceService } from '../instance.service';
-import { K8sInstanceService } from '../kubernetes/k8s-instance.service';
+import { InstanceService } from '../../instance.service';
+import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
 
 export class StartInstanceAction extends InstanceAction {
   constructor(instanceCommand: InstanceCommand, instanceService: InstanceService, k8sInstanceService: K8sInstanceService, listener: InstanceActionListener) {

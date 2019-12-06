@@ -20,7 +20,7 @@ export interface TestApplicationContext {
   k8sInstanceService: K8sInstanceService;
 }
 
-export function getTestApplicationContext(): TestApplicationContext {
+export function createTestApplicationContext(): TestApplicationContext {
   const kubernetesDataSource = new KubernetesDataSource();
 
   const flavourRepository: FlavourRepository = new FlavourRepository(testDataSource);

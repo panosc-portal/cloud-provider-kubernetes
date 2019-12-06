@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import KubernetesResponseCreator from './KubernetesResponseCreator';
+import KubernetesResponseCreator from './kubernetes-response-creator';
 import { lifeCycleObserver } from '@loopback/core';
 import { buildLogger } from '../../utils';
 

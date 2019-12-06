@@ -1,8 +1,8 @@
 import { CloudProviderKubernetesApplication } from '../..';
 import { createRestAppClient, givenHttpServerConfig, Client } from '@loopback/testlab';
 import { TypeORMDataSource } from '../../datasources';
-import { KubernetesMockServer } from '../kubernetesMock/KubernetesMockServer';
 import { createBindingFromClass } from '@loopback/core';
+import { KubernetesMockServer } from '../mock/kubernetes-mock-server';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const restConfig = givenHttpServerConfig({

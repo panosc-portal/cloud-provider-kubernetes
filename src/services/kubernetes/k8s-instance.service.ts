@@ -108,9 +108,6 @@ export class K8sInstanceService {
 
   async initDefaultNamespace(): Promise<void> {
     this._defaultNamespace = process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE || this.defaultNamespace;
-    const defaultNamespaceRequest = this.requestFactoryService.createK8sNamespaceRequest(this._defaultNamespace);
-    logger.debug(`Initialising default kubernetes namespace: ${this._defaultNamespace}`);
-    await this.namespaceManager.createIfNotExist(defaultNamespaceRequest);
   }
 
   async start(): Promise<void> {

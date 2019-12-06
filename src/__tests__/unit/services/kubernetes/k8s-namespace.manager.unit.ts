@@ -1,15 +1,16 @@
 import { expect } from '@loopback/testlab';
-import { getTestApplicationContext } from '../../../helpers/context.helper';
+import { createTestApplicationContext } from '../../../helpers/context.helper';
 import { K8sNamespaceRequest } from '../../../../models';
-import { KubernetesMockServer } from '../../../kubernetesMock/KubernetesMockServer';
 import { K8sNamespaceManager } from '../../../../services';
+import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 
 describe('K8sNamespaceManager', () => {
   let k8sNamespaceManager: K8sNamespaceManager;
   const kubernetesMockServer = new KubernetesMockServer();
 
   before('getK8sNamespaceManager', async () => {
-    k8sNamespaceManager = getTestApplicationContext().k8sInstanceService.namespaceManager;
+    const testApplicationContext = createTestApplicationContext();
+    k8sNamespaceManager = testApplicationContext.k8sInstanceService.namespaceManager;
   });
 
   beforeEach('startMockServer', async () => {

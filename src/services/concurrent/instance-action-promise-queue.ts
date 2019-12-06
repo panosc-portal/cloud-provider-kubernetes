@@ -1,5 +1,5 @@
-import { InstanceAction } from "./instance.action";
 import { logger } from "../../utils";
+import { InstanceAction } from "./actions";
 
 interface InstanceActionPromiseQueueItem {
     instanceAction: InstanceAction;

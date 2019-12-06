@@ -1,6 +1,6 @@
 import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
-import { getTestApplicationContext } from '../../helpers/context.helper';
+import { createTestApplicationContext } from '../../helpers/context.helper';
 import { InstanceService, ImageService, FlavourService } from '../../../services';
 import { Instance, Protocol, ProtocolName, InstanceStatus } from '../../../models';
 
@@ -10,9 +10,10 @@ describe('InstanceService', () => {
   let flavourService: FlavourService;
 
   before('getInstanceService', async () => {
-    imageService = getTestApplicationContext().imageService;
-    instanceService = getTestApplicationContext().instanceService;
-    flavourService = getTestApplicationContext().flavourService;
+    const testApplicationContext = createTestApplicationContext();
+    imageService = testApplicationContext.imageService;
+    instanceService = testApplicationContext.instanceService;
+    flavourService = testApplicationContext.flavourService;
   });
 
   beforeEach('Initialise Database', givenInitialisedTestDatabase);
