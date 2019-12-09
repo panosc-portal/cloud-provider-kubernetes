@@ -2,6 +2,7 @@ import { InstanceCommand } from '../../../models';
 import { InstanceAction, InstanceActionListener } from './instance.action';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
+import { logger } from '../../../utils';
 
 export class StartInstanceAction extends InstanceAction {
   constructor(instanceCommand: InstanceCommand, instanceService: InstanceService, k8sInstanceService: K8sInstanceService, listener: InstanceActionListener) {
@@ -13,11 +14,18 @@ export class StartInstanceAction extends InstanceAction {
 
     try {
       const computeId = instance.computeId;
-      // const k8sInstance = await this.k8sInstanceService.getByComputeId(computeId);
 
+      // Check that compute Id is null (not running)
+      if (computeId == null) {
+        logger.info(`Starting instance ${instance.id}: creating new k8s instance`);
+        await this._createK8sInstance();
 
-      await this.instanceService.save(instance);
+      } else {
+        logger.info(`Instance with id ${instance.id} is already running. Ignoring start action`);
+      }
+
     } catch (error) {
+      logger.error(`Error starting instance with Id ${instance.id}: ${error.message}`);
       throw error;
     }
   }

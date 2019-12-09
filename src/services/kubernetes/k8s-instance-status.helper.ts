@@ -53,11 +53,11 @@ export class K8sInstanceStatusHelper {
 
   getK8sServiceState(endpoints: K8sEndpoints, deployment: K8sDeployment): K8sServiceState {
     const endpointSubsets = endpoints.subsets;
-    if (endpointSubsets && endpointSubsets.length == 1) {
+    if (endpointSubsets && endpointSubsets.length === 1) {
       const deploymentPorts = deployment.ports;
       const endpointsPorts = endpointSubsets[0].ports;
       for (const deploymentPort of deploymentPorts) {
-        if (endpointsPorts.find((p: any) => p.name == deploymentPort.name) == null) {
+        if (endpointsPorts.find((p: any) => p.name === deploymentPort.name) == null) {
           return {
             status: K8sServiceStatus.ERROR,
             message: `port ${deploymentPort.name} has not been mapped to the service`

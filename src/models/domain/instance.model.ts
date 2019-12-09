@@ -66,6 +66,12 @@ export class Instance {
   status: InstanceStatus;
 
   @property({
+    type: 'string',
+  })
+  @Column({ length: 250, nullable: true })
+  statusMessage: string;
+
+  @property({
     type: 'number',
     required: true
   })
@@ -116,6 +122,13 @@ export class Instance {
       memory: this.currentMemory
     });
   }
+
+  set state(value: InstanceState) {
+    this.status = value.status;
+    this.statusMessage = value.message;
+    this.currentCPU = value.cpu;
+    this.currentMemory = value.memory;
+  } 
 
   constructor(data?: Partial<Instance>) {
     Object.assign(this, data);

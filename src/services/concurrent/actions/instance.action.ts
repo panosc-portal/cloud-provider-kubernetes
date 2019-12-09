@@ -1,4 +1,4 @@
-import { InstanceCommand, Instance, InstanceCommandType } from '../../../models';
+import { InstanceCommand, Instance, InstanceCommandType, InstanceState, InstanceStatus, K8sInstance } from '../../../models';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
 
@@ -45,6 +45,44 @@ export abstract class InstanceAction {
           reject(error);
         });
     });
+  }
+
+  protected async _updateInstanceState(nextState: InstanceState) {
+    const currentState = this.instance.state;
+    
+    const state = new InstanceState({
+      status: nextState.status ? nextState.status : currentState.status,
+      message: nextState.message ? nextState.message : currentState.message,
+      cpu: nextState.cpu ? nextState.cpu : currentState.cpu,
+      memory: nextState.memory ? nextState.memory : currentState.memory
+    });
+
+    this.instance.state = state;
+
+    await this.instanceService.save(this.instance);
+  }
+
+  protected async _createK8sInstance(): Promise<K8sInstance> {
+    const instance = this.instance;
+    const k8sInstance = await this.k8sInstanceService.createK8sInstance(instance);
+    instance.computeId = k8sInstance.computeId;
+
+    // TODO Get status of k8sInstance and set in instance
+    // instance.state = new InstanceState({status: InstanceStatus[k8sInstance.state.status], message: k8sInstance.state.message});
+
+    // TODO Get IP Address
+    // instance.hostname = k8sInstance.hostname;
+
+    // TODO Get protocols
+    // instance.protocols = k8sInstance.protocols.map(k8sProtocol => new Protocol({name: k8sProtocol.name, port: k8sProtocol.externalPort}));
+
+    await this.instanceService.save(instance);
+
+    return k8sInstance;
+  }
+
+  protected async _deleteK8sInstance(computeId: string) {
+    await this.k8sInstanceService.deleteK8sInstance(computeId);
   }
 
   protected abstract _run(): Promise<void>;

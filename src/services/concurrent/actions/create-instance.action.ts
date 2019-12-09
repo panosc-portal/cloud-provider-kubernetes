@@ -1,7 +1,8 @@
 import { InstanceAction, InstanceActionListener } from './instance.action';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes';
-import { InstanceCommand, InstanceStatus } from '../../../models';
+import { InstanceCommand, InstanceStatus, Protocol, InstanceState } from '../../../models';
+import { logger } from '../../../utils';
 
 export class CreateInstanceAction extends InstanceAction {
   constructor(instanceCommand: InstanceCommand, instanceService: InstanceService, k8sInstanceService: K8sInstanceService, listener: InstanceActionListener) {
@@ -12,17 +13,15 @@ export class CreateInstanceAction extends InstanceAction {
     const instance = this.instance;
 
     try {
+      logger.info(`Creating instance ${instance.id}`)
+
       // Update instance state
-      instance.status = InstanceStatus.BUILDING;
-      await this.instanceService.save(instance);
+      await this._updateInstanceState(new InstanceState({status: InstanceStatus.BUILDING, message: '', cpu: 0, memory: 0}));
 
-      const k8sInstance = await this.k8sInstanceService.createK8sInstance(instance);
-      instance.computeId = k8sInstance.computeId;
+      await this._createK8sInstance();
 
-      // TODO Get status of k8sInstance and set in instance
-
-      await this.instanceService.save(instance);
     } catch (error) {
+      logger.error(`Error creating instance with Id ${instance.id}: ${error.message}`);
       throw error;
     }
   }

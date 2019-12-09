@@ -167,16 +167,16 @@ export class InstanceController extends BaseController {
   }
 
   private async _performAction(instance: Instance, instanceCommandType: InstanceCommandType): Promise<Instance> {
-    if (instanceCommandType == InstanceCommandType.START) {
+    if (instanceCommandType === InstanceCommandType.START) {
       instance.status = InstanceStatus.STARTING;
 
-    } else if (instanceCommandType == InstanceCommandType.REBOOT) {
+    } else if (instanceCommandType === InstanceCommandType.REBOOT) {
       instance.status = InstanceStatus.REBOOTING;
 
-    } else if (instanceCommandType == InstanceCommandType.SHUTDOWN) {
+    } else if (instanceCommandType === InstanceCommandType.SHUTDOWN) {
       instance.status = InstanceStatus.STOPPING;
 
-    } else if (instanceCommandType == InstanceCommandType.DELETE) {
+    } else if (instanceCommandType === InstanceCommandType.DELETE) {
       instance.status = InstanceStatus.DELETING;
     }
 

@@ -10,6 +10,12 @@ export class InstanceState {
   status: InstanceStatus;
 
   @property({
+    type: 'string',
+    required: false
+  })
+  message: string;
+
+  @property({
     type: 'number',
     required: true
   })
