@@ -3,6 +3,7 @@ import { InstanceAction, InstanceActionListener } from './instance.action';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
 import { logger } from '../../../utils';
+import * as isPortReachable from 'is-port-reachable';
 
 export class StateInstanceAction extends InstanceAction {
   constructor(instanceCommand: InstanceCommand, instanceService: InstanceService, k8sInstanceService: K8sInstanceService, listener: InstanceActionListener) {
@@ -54,11 +55,21 @@ export class StateInstanceAction extends InstanceAction {
       
       } else if (currentInstanceStatus === InstanceStatus.BUILDING && nextInstanceState.status === InstanceStatus.ACTIVE) {
         // TODO Check ports are open
+        const portsOpenPromises = [];
+        this.instance.protocols.forEach(protocol => {
+          portsOpenPromises.push(isPortReachable(protocol.port, {host: instance.hostname }));
+        });
+
+        const portsOpen = await Promise.all(portsOpenPromises);
+        if (portsOpen.find(isOpen => !isOpen) != null) {
+          nextInstanceState.status = InstanceStatus.STARTING;
+        }
       }
 
       this._updateInstanceState(nextInstanceState);
 
     } catch (error) {
+      logger.error(`Error getting state instance with Id ${instance.id}: ${error.message}`);
       throw error;
     }
   }

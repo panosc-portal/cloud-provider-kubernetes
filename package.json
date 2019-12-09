@@ -58,6 +58,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/winston": "^2.4.4",
     "dotenv": "^8.2.0",
+    "is-port-reachable": "^3.0.0",
     "kubernetes-client": "^8.3.5",
     "loopback-connector-postgresql": "^3.8.0",
     "loopback-connector-rest": "^3.6.0",
