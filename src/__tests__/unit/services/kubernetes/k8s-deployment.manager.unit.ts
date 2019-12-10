@@ -84,7 +84,7 @@ describe('K8sDeploymentManager', () => {
     const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const deletedDeployment = await k8sDeploymentManager.delete('test', 'panosc');
+    const deletedDeployment = await k8sDeploymentManager.deleteWithComputeId('test', 'panosc');
     expect(deletedDeployment).to.be.false();
   });
 
@@ -99,7 +99,7 @@ describe('K8sDeploymentManager', () => {
       cpu: 1
     });
     await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
-    const deletedService = await k8sDeploymentManager.delete('testdeployment', 'panosc');
+    const deletedService = await k8sDeploymentManager.deleteWithComputeId('testdeployment', 'panosc');
     expect(deletedService).to.be.not.null();
   });
 });

@@ -44,13 +44,29 @@ export class K8sInstanceService {
     this._namespaceManager = new K8sNamespaceManager(dataSource);
   }
 
-  async createK8sInstance(instance: Instance): Promise<K8sInstance> {
+
+  async getWithComputeId(computeId): Promise<K8sInstance> {
+    try {
+      const deployment = await this._deploymentManager.getWithComputeId(computeId, this.defaultNamespace);
+      const service = await this._serviceManager.getWithComputeId(computeId, this.defaultNamespace);
+      const endpoints = await this._serviceManager.getServiceEndpointsWithComputeId(computeId, this.defaultNamespace);
+      const k8sInstance = new K8sInstance(deployment, service, endpoints, computeId);
+      if (k8sInstance.isValid()) {
+        return k8sInstance;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      throw(error);
+    }
+  }
+
+  async create(instance: Instance): Promise<K8sInstance> {
     const image = instance.image;
     const flavour = instance.flavour;
     const defaultNamespaceRequest = this.requestFactoryService.createK8sNamespaceRequest(this._defaultNamespace);
     await this.namespaceManager.createIfNotExist(defaultNamespaceRequest);
     const instanceComputeId = await this.UUIDGenerator(instance.name);
-    // TODO: verify limits and request is applied on pod
     const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instanceComputeId, image.name,
       flavour.cpu, flavour.memory);
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceComputeId);
@@ -63,20 +79,31 @@ export class K8sInstanceService {
       );
       logger.debug('Creating Service in Kubernetes');
       const service = await this._serviceManager.create(serviceRequest, this._defaultNamespace);
-      if (service === null) {
-        await this._deploymentManager.delete(deploymentRequest.name, this._defaultNamespace);
+      const endpoints = await this._serviceManager.getServiceEndpointsWithComputeId(instanceComputeId, this.defaultNamespace);
+      const k8sInstance = new K8sInstance(deployment, service, endpoints, instanceComputeId);
+
+      if (k8sInstance.isValid()) {
+        return k8sInstance;
+      } else {
+        logger.debug('k8sInstance was not valid');
+        if (service) {
+          await this._serviceManager.deleteWithComputeId(deploymentRequest.name, this._defaultNamespace);
+        }
+        if (deployment) {
+          await this._deploymentManager.deleteWithComputeId(deploymentRequest.name, this._defaultNamespace);
+        }
+        return null;
       }
-      return new K8sInstance(deployment, service, instanceComputeId);
     } else {
       throw new Error('Service and deployment are not connected');
     }
   }
 
-  async deleteK8sInstance(instanceComputeId: string) {
+  async deleteWithComputeId(instanceComputeId: string) {
     try {
       //TODO: verify usage with instanceService
-      await this._serviceManager.delete(instanceComputeId, this._defaultNamespace);
-      await this._deploymentManager.delete(instanceComputeId, this._defaultNamespace);
+      await this._serviceManager.deleteWithComputeId(instanceComputeId, this._defaultNamespace);
+      await this._deploymentManager.deleteWithComputeId(instanceComputeId, this._defaultNamespace);
     } catch (error) {
       logger.error(error);
       throw error;

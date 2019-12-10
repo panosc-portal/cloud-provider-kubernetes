@@ -57,7 +57,7 @@ describe('K8sServiceManager', () => {
     const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
-    const deletedService = await k8sServiceManager.delete('test', 'panosc');
+    const deletedService = await k8sServiceManager.deleteWithComputeId('test', 'panosc');
     expect(deletedService).to.be.false();
   });
 
@@ -67,7 +67,7 @@ describe('K8sServiceManager', () => {
 
     const k8sServiceRequest = new K8sServiceRequest('test-service');
     await k8sServiceManager.create(k8sServiceRequest, 'panosc');
-    const deletedService = await k8sServiceManager.delete('test-service', 'panosc');
+    const deletedService = await k8sServiceManager.deleteWithComputeId('test-service', 'panosc');
     expect(deletedService).to.be.not.null();
   });
 });

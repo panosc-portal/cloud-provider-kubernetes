@@ -1,4 +1,4 @@
-import { K8sInstanceStatus } from '../enumerations/k8s-instance-status.enum';
+import { K8sInstanceStatus } from '../enumerations';
 
 export class K8sInstanceState {
 

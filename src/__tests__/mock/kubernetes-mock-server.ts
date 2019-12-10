@@ -13,6 +13,19 @@ export class KubernetesMockServer {
   private _createdDeployments = new Map();
   private _createdServices = new Map();
   private _createdNamespaces = new Map();
+  private _nodes = [{
+    name: 'k8s-test-master-1',
+    master: true,
+    cpu: 2,
+    memory: '4039460Ki',
+    address: '10.0.0.1'
+  }, {
+    name: 'k8s-test-worker-1',
+    master: false,
+    cpu: 2,
+    memory: '4039460Ki',
+    address: '10.0.0.2'
+  }];
 
   start() {
     if (this._server != null) {
@@ -52,6 +65,29 @@ export class KubernetesMockServer {
       const namespace = req.params.namespace;
       logger.info(`Getting namespace ${namespace}`);
       const response = this._createdNamespaces.get(namespace);
+      if (response != null) {
+        res.status(200).send(response);
+      } else {
+        res.sendStatus(404);
+      }
+    });
+
+    app.get('/api/v1/namespaces/:namespace/endpoints/:service', (req, res) => {
+      const namespace = req.params.namespace;
+      const serviceName = req.params.service;
+      logger.info(`Getting endpoint for service ${serviceName} from namespace ${namespace}`);
+      const service = this._createdServices.get(`${namespace}.${serviceName}`);
+      const response = k8sResponseCreator.getEndpoint(service);
+      if (response != null) {
+        res.status(200).send(response);
+      } else {
+        res.sendStatus(404);
+      }
+    });
+
+    app.get('/api/v1/nodes', (req, res) => {
+      logger.info(`Getting nodes`);
+      const response = k8sResponseCreator.getNodeList(this._nodes);
       if (response != null) {
         res.status(200).send(response);
       } else {
@@ -125,8 +161,8 @@ export class KubernetesMockServer {
           const response = k8sResponseCreator.getService(
             serviceName,
             namespace,
-            req.body.spec.name,
-            req.body.spec.port
+            req.body.spec.ports[0].name,
+            req.body.spec.ports[0].port
           );
           this._createdServices.set(`${namespace}.${serviceName}`, response);
           res.status(200).send(response);

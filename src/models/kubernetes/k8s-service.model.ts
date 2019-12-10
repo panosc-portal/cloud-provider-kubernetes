@@ -7,7 +7,8 @@ export class K8sService {
     return this.isValid() ? this._k8sResponse.spec.ports : null;
   }
 
-  constructor(private _k8sResponse: any) {}
+  constructor(private _k8sResponse: any) {
+  }
 
   isValid() {
     return (
@@ -17,7 +18,11 @@ export class K8sService {
       this._k8sResponse.metadata != null &&
       this._k8sResponse.metadata.name != null &&
       this._k8sResponse.spec != null &&
-      this._k8sResponse.spec.ports != null
+      this._k8sResponse.spec.ports != null &&
+      this._k8sResponse.spec.ports[0].name != null &&
+      this._k8sResponse.spec.ports[0].port != null &&
+      this._k8sResponse.spec.ports[0].nodePort != null
+
     );
   }
 
@@ -29,8 +34,6 @@ export class K8sService {
       return null;
     }
   }
-
-
 
 
 }

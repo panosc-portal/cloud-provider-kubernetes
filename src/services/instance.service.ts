@@ -1,6 +1,5 @@
 import { bind, BindingScope, inject } from '@loopback/core';
 import { Instance } from '../models';
-import { K8sInstanceService } from './kubernetes/k8s-instance.service';
 import { InstanceRepository, QueryOptions } from '../repositories';
 import { repository } from '@loopback/repository';
 import { BaseService } from './base.service';

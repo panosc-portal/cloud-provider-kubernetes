@@ -1,8 +1,8 @@
 import { K8sDeployment } from '../../models/kubernetes';
-import { K8sEndpoints } from '../../models/kubernetes/k8s-endpoints.model';
-import { K8sInstanceState } from '../../models/kubernetes/k8s-instance-state.model';
+import { K8sEndpoints } from '../../models/kubernetes';
+import { K8sInstanceState } from '../../models/kubernetes';
 import { logger } from '../../utils';
-import { K8sInstanceStatus } from '../../models/enumerations/k8s-instance-status.enum';
+import { K8sInstanceStatus } from '../../models/enumerations';
 
 enum K8sDeploymentStatus {
   UNKNOWN = 'UNKNOWN',
@@ -28,10 +28,10 @@ interface K8sDeploymentState {
 
 export class K8sInstanceStatusHelper {
 
-  getK8sInstanceState(deployment: K8sDeployment, endpoints: K8sEndpoints): K8sInstanceState {
-    const sameInstance = this.verifySameInstance(deployment, endpoints);
+  static getK8sInstanceState(deployment: K8sDeployment, endpoints: K8sEndpoints): K8sInstanceState {
+    const sameInstance = K8sInstanceStatusHelper.verifySameInstance(deployment, endpoints);
     if (sameInstance) {
-      const deploymentState = this.getK8sDeploymentState(deployment);
+      const deploymentState = K8sInstanceStatusHelper.getK8sDeploymentState(deployment);
       const deploymentStatus = deploymentState.status;
       if (deploymentStatus === 'ERROR') {
         return new K8sInstanceState(K8sInstanceStatus.ERROR, deploymentState.message);
@@ -40,7 +40,7 @@ export class K8sInstanceStatusHelper {
       } else if (deploymentStatus === 'UNKNOWN') {
         return new K8sInstanceState(K8sInstanceStatus.UNKNOWN);
       } else if (deploymentStatus === 'ACTIVE') {
-        const serviceState = this.getK8sServiceState(endpoints, deployment);
+        const serviceState = K8sInstanceStatusHelper.getK8sServiceState(endpoints, deployment);
         const serviceStatus = serviceState.status;
         if (serviceStatus === 'ERROR') {
           return new K8sInstanceState(K8sInstanceStatus.ERROR, serviceState.message);
@@ -51,7 +51,7 @@ export class K8sInstanceStatusHelper {
     }
   }
 
-  getK8sServiceState(endpoints: K8sEndpoints, deployment: K8sDeployment): K8sServiceState {
+  static getK8sServiceState(endpoints: K8sEndpoints, deployment: K8sDeployment): K8sServiceState {
     const endpointSubsets = endpoints.subsets;
     if (endpointSubsets && endpointSubsets.length === 1) {
       const deploymentPorts = deployment.ports;
@@ -71,17 +71,17 @@ export class K8sInstanceStatusHelper {
   }
 
 
-  getK8sDeploymentState(deployment: K8sDeployment): K8sDeploymentState {
-    const statuses = deployment.statuses();
-
-    const mostRecentObjects = statuses.filter((e: any) => {
-      const d = new Date(e.lastTransitionTime);
-      return d.getTime() == mostRecentDate.getTime();
-    });
+  static getK8sDeploymentState(deployment: K8sDeployment): K8sDeploymentState {
+    const statuses = deployment.statuses;
 
     const mostRecentDate = new Date(Math.max.apply(null, statuses.map((e: any) => {
       return new Date(e.lastTransitionTime);
     })));
+
+    const mostRecentObjects = statuses.filter((e: any) => {
+      const d = new Date(e.lastTransitionTime);
+      return d.getTime() === mostRecentDate.getTime();
+    });
 
     const currentStatus = mostRecentObjects.find((object: any) => object.status === 'True');
     if (currentStatus != null) {
@@ -103,7 +103,7 @@ export class K8sInstanceStatusHelper {
     }
   }
   
-  verifySameInstance(deployment: K8sDeployment, endpoints: K8sEndpoints) {
+  static verifySameInstance(deployment: K8sDeployment, endpoints: K8sEndpoints) {
     const deploymentName = deployment.name;
     const endpointsName = endpoints.name;
 

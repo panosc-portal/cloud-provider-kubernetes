@@ -42,7 +42,7 @@ export class K8sDeployment {
       this._k8sResponse.spec != null &&
       this._k8sResponse.spec.template != null &&
       this._k8sResponse.spec.template.spec != null &&
-      this._k8sResponse.spec.template.spec.container != null
+      this._k8sResponse.spec.template.spec.containers != null
     );
   }
 }

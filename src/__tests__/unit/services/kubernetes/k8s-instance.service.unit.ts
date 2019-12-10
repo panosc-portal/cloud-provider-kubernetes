@@ -37,7 +37,7 @@ describe('K8sInstanceService', () => {
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(3);
-    const k8sInstance = await k8sInstanceService.createK8sInstance(instance);
+    const k8sInstance = await k8sInstanceService.create(instance);
     expect(k8sInstance).to.be.not.null();
   });
 
@@ -46,8 +46,8 @@ describe('K8sInstanceService', () => {
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(3);
-    const k8sInstance = await k8sInstanceService.createK8sInstance(instance);
-    const deleteInstance = await k8sInstanceService.deleteK8sInstance(k8sInstance.computeId);
+    const k8sInstance = await k8sInstanceService.create(instance);
+    const deleteInstance = await k8sInstanceService.deleteWithComputeId(k8sInstance.computeId);
     console.log(deleteInstance);
   });
 });

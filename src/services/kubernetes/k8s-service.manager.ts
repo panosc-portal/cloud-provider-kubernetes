@@ -1,4 +1,4 @@
-import { K8sService, K8sServiceRequest } from '../../models';
+import { K8sEndpoints, K8sService, K8sServiceRequest } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
 import { logger } from '../../utils';
 
@@ -24,6 +24,27 @@ export class K8sServiceManager {
       } else {
         logger.error(error.message);
         throw new Error(`Did not manage to get service ${computeId} `);
+      }
+    }
+  }
+
+  async getServiceEndpointsWithComputeId(computeId: string, namespace) {
+    try {
+      const serviceEndpoints = await this._dataSource.K8sClient.api.v1
+        .namespaces(namespace)
+        .endpoint(computeId).get();
+      const k8sEndpoints = new K8sEndpoints(serviceEndpoints.body);
+      if (k8sEndpoints.isValid()) {
+        return k8sEndpoints;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      if (error.statusCode === 404) {
+        return null;
+      } else {
+        logger.error(error.message);
+        throw new Error(`Did not manage to get service endpoints ${computeId} `);
       }
     }
   }
@@ -61,20 +82,20 @@ export class K8sServiceManager {
     }
   }
 
-  async delete(name: string, namespace: string) {
+  async deleteWithComputeId(computeId: string, namespace: string) {
     try {
       const deletedService = await this._dataSource.K8sClient.api.v1
         .namespaces(namespace)
-        .services(name)
+        .services(computeId)
         .delete();
-      logger.debug(`Service  ${name} has been deleted`);
+      logger.debug(`Service  ${computeId} has been deleted`);
       return deletedService;
     } catch (error) {
       if (error.statusCode === 404) {
         return false;
       } else {
         logger.error(error.message);
-        throw new Error(`Did not manage to delete service ${name} `);
+        throw new Error(`Did not manage to delete service ${computeId} `);
       }
     }
   }

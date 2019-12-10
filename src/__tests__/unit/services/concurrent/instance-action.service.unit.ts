@@ -59,7 +59,7 @@ describe('InstanceActionService', () => {
 
 
   it('Refuses a deplicated command', async () => {
-    let instance = await context.instanceService.getById(1);
+    const instance = await context.instanceService.getById(1);
     expect(instance).to.not.be.null();
     expect(instance.status).to.equal(InstanceStatus.PENDING);
 

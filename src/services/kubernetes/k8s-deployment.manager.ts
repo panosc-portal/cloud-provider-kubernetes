@@ -60,19 +60,20 @@ export class K8sDeploymentManager {
     }
   }
 
-  async delete(name: string, namespace: string) {
+  async deleteWithComputeId(computeId: string, namespace: string) {
     try {
       await this._dataSource.K8sClient.apis.apps.v1
         .namespaces(namespace)
-        .deployments(name)
+        .deployments(computeId)
         .delete();
+      logger.debug(`Deployment  ${computeId} has been deleted`);
       return true;
     } catch (error) {
       if (error.statusCode === 404) {
         return false;
       } else {
         logger.error(error.message);
-        throw new Error(`Did not manage to delete deployment ${name} `);
+        throw new Error(`Did not manage to delete deployment ${computeId} `);
       }
     }
   }

@@ -64,7 +64,7 @@ export abstract class InstanceAction {
 
   protected async _createK8sInstance(): Promise<K8sInstance> {
     const instance = this.instance;
-    const k8sInstance = await this.k8sInstanceService.createK8sInstance(instance);
+    const k8sInstance = await this.k8sInstanceService.create(instance);
     instance.computeId = k8sInstance.computeId;
 
     // TODO Get status of k8sInstance and set in instance
@@ -82,7 +82,7 @@ export abstract class InstanceAction {
   }
 
   protected async _deleteK8sInstance(computeId: string) {
-    await this.k8sInstanceService.deleteK8sInstance(computeId);
+    await this.k8sInstanceService.deleteWithComputeId(computeId);
   }
 
   protected abstract _run(): Promise<void>;
