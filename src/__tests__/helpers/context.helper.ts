@@ -4,7 +4,8 @@ import {
   ImageService,
   InstanceService,
   K8sInstanceService,
-  InstanceActionService
+  InstanceActionService,
+  SchedulerService
 } from '../../services';
 import { testDataSource } from '../fixtures/datasources/testdb.datasource';
 import { KubernetesDataSource } from '../../datasources';
