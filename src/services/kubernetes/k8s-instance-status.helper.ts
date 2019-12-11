@@ -57,7 +57,7 @@ export class K8sInstanceStatusHelper {
       const deploymentPorts = deployment.ports;
       const endpointsPorts = endpointSubsets[0].ports;
       for (const deploymentPort of deploymentPorts) {
-        if (endpointsPorts.find((p: any) => p.name === deploymentPort.name) == null) {
+        if (endpointsPorts.find((p: any) => p.port === deploymentPort.containerPort) == null) {
           return {
             status: K8sServiceStatus.ERROR,
             message: `port ${deploymentPort.name} has not been mapped to the service`
@@ -66,7 +66,7 @@ export class K8sInstanceStatusHelper {
       }
       return { status: K8sServiceStatus.ACTIVE };
     } else {
-      return { status: K8sServiceStatus.ERROR, message: 'Service has no or to many endpoints ' };
+      return { status: K8sServiceStatus.ERROR, message: 'Service has no or too many endpoints ' };
     }
   }
 
