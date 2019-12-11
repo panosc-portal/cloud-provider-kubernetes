@@ -23,7 +23,7 @@ export class K8sServiceRequest {
         type: 'NodePort',
         ports: [
           {
-            name: 'xrdp',
+            name: 'rdp',
             port: 3389
           }
         ],

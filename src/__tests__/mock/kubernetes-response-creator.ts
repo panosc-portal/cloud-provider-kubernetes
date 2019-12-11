@@ -1,5 +1,5 @@
 export default class K8SResponseCreator {
-  getService(name, namespace, portName, portNumber) {
+  getService(name: string, namespace: string, portName: string, portNumber: number) {
 
     return {
       kind: 'Service',
@@ -19,7 +19,7 @@ export default class K8SResponseCreator {
     };
   }
 
-  getDeployment(name, namespace) {
+  getDeployment(name: string, namespace: string) {
     return {
       kind: 'Deployment',
       metadata: {
@@ -48,7 +48,7 @@ export default class K8SResponseCreator {
     };
   }
 
-  getNamespace(name) {
+  getNamespace(name: string) {
     return {
       kind: 'Namespace',
       metadata: {
@@ -57,7 +57,7 @@ export default class K8SResponseCreator {
     };
   }
 
-  getSuccessStatus(name, kind) {
+  getSuccessStatus(name: string, kind: string) {
     return {
       statusCode: 200,
       body: {

@@ -82,6 +82,7 @@ export class SchedulerService {
         });
       
       } else {
+        logger.warn(`No scheduler config file has been provided`);
         resolve(null);
       }
     });
