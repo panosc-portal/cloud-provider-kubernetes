@@ -1,8 +1,9 @@
+import { Image, Flavour } from "../domain";
+
 export interface K8sDeploymentRequestConfig {
   name: string,
-  image: string,
-  memory: number,
-  cpu: number
+  image: Image,
+  flavour: Flavour
 }
 
 export class K8sDeploymentRequest {
@@ -10,10 +11,6 @@ export class K8sDeploymentRequest {
 
   get name(): string {
     return this._config.name;
-  }
-
-  get image(): string {
-    return this._config.image;
   }
 
   get model(): any {
@@ -47,20 +44,16 @@ export class K8sDeploymentRequest {
             containers: [
               {
                 name: this._config.name,
-                image: this._config.image,
-                ports: [
-                  {
-                    containerPort: 3389
-                  }
-                ],
+                image: this._config.image.path,
+                ports: this._config.image.protocols.map(protocol => {return {containerPort: protocol.port}}),
                 resources: {
                   limits: {
-                    cpu: `${this._config.cpu}m`,
-                    memory: `${this._config.memory}Mi`
+                    cpu: `${this._config.flavour.cpu}m`,
+                    memory: `${this._config.flavour.memory}Mi`
                   },
                   requests: {
-                    cpu: `${this._config.cpu}m`,
-                    memory: `${this._config.memory}Mi`
+                    cpu: `${this._config.flavour.cpu}m`,
+                    memory: `${this._config.flavour.memory}Mi`
                   }
                 }
               }

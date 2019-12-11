@@ -69,9 +69,8 @@ export class K8sInstanceService {
     const instanceComputeId = await this.UUIDGenerator(instance.name);
     const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest({
       name: instanceComputeId, 
-      image: image.path,
-      cpu: flavour.cpu, 
-      memory: flavour.memory});
+      image: image,
+      flavour: flavour});
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceComputeId);
     const deploymentServiceConnection = this.verifyDeploymentServiceConnection(deploymentRequest, serviceRequest);
     if (deploymentServiceConnection) {

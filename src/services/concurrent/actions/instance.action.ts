@@ -1,4 +1,4 @@
-import { InstanceCommand, Instance, InstanceCommandType, InstanceState, InstanceStatus, K8sInstance, Protocol, ProtocolName } from '../../../models';
+import { InstanceCommand, Instance, InstanceCommandType, InstanceState, InstanceStatus, K8sInstance, ProtocolName, InstanceProtocol } from '../../../models';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
 
@@ -77,7 +77,7 @@ export abstract class InstanceAction {
 
     // Get protocols
     instance.protocols = k8sInstance.protocols.map(k8sProtocol => 
-      new Protocol({name: ProtocolName[k8sProtocol.name.toUpperCase()], port: k8sProtocol.externalPort}));
+      new InstanceProtocol({name: ProtocolName[k8sProtocol.name.toUpperCase()], port: k8sProtocol.externalPort}));
 
     await this.instanceService.save(instance);
 

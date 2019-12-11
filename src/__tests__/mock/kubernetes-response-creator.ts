@@ -19,7 +19,7 @@ export default class K8SResponseCreator {
     };
   }
 
-  getDeployment(name: string, namespace: string) {
+  getDeployment(name: string, namespace: string, ports: number[]) {
     return {
       kind: 'Deployment',
       metadata: {
@@ -31,7 +31,7 @@ export default class K8SResponseCreator {
           spec: {
             containers: [{
               name: name,
-              ports: [{ containerPort: 3389 }]
+              ports: ports.map(port => {return {containerPort: port}})
             }]
           }
         }

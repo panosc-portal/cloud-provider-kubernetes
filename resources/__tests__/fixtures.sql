@@ -1,9 +1,31 @@
+insert into protocol (id, name, port) 
+values (1, "RDP", 3389);
+insert into protocol (id, name, port) 
+values (2, "SSH", 22);
+insert into protocol (id, name, port) 
+values (3, "HTTPS", 443);
+insert into protocol (id, name, port) 
+values (4, "GUACD", 4822);
+
 insert into image (id, name, path, description) 
 values (1, "image 1", "repo1/image-name1", "An image");
 insert into image (id, name, path, description) 
 values (2, "image 2", "repo2/image-name2", "Another image");
 insert into image (id, name, path, description) 
 values (3, "image 3", "repo3/image-name3", "A image not associated to an instance");
+
+insert into image_protocol (image_id, protocol_id)
+values (1, 1);
+insert into image_protocol (image_id, protocol_id)
+values (1, 2);
+insert into image_protocol (image_id, protocol_id)
+values (2, 1);
+insert into image_protocol (image_id, protocol_id)
+values (2, 3);
+insert into image_protocol (image_id, protocol_id)
+values (3, 1);
+insert into image_protocol (image_id, protocol_id)
+values (3, 4);
 
 insert into flavour(id, name, description, cpu, memory)
 values (1, "flavour 1", "A flavour", 1.5, 2048);

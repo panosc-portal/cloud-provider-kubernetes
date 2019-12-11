@@ -1,14 +1,19 @@
-import { FlavourRepository, ImageRepository, InstanceRepository, ProtocolRepository } from '../../repositories';
 import { testDataSource } from '../fixtures/datasources/testdb.datasource';
 import * as fs from 'fs';
 import { TypeORMDataSource } from '../../datasources';
 import { logger } from '../../utils';
+import { EntityManager } from 'typeorm';
 
-async function emptyDatabase(datasource: TypeORMDataSource) {
-  await new ProtocolRepository(datasource).deleteAll();
-  await new InstanceRepository(datasource).deleteAll();
-  await new FlavourRepository(datasource).deleteAll();
-  await new ImageRepository(datasource).deleteAll();
+async function emptyDatabase(entityManager: EntityManager) {
+  const tables = ['instance_protocol', 'image_protocol', 'protocol', 'instance', 'flavour', 'image'];
+  for (let table of tables) {
+    try {
+      await entityManager.query(`delete from ${table};`);
+    
+    } catch (error) {
+      logger.error(error.message);
+    }
+  }
 }
 
 export function givenInitialisedTestDatabase() {
@@ -16,9 +21,9 @@ export function givenInitialisedTestDatabase() {
 }
 
 export async function givenInitialisedDatabase(datasource: TypeORMDataSource) {
-  await emptyDatabase(datasource);
-
   const entityManager = await datasource.entityManager();
+
+  await emptyDatabase(entityManager);
 
   const fixtures = fs.readFileSync('./resources/__tests__/fixtures.sql', 'utf8');
   const sqlQueries = fixtures
