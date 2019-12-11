@@ -1,14 +1,6 @@
 import { TypeORMDataSource } from '../datasources';
 import { Repository, ObjectType, OrderByCondition, SelectQueryBuilder } from 'typeorm';
-import {
-  Filter,
-  Where,
-  Command,
-  NamedParameters,
-  PositionalParameters,
-  WhereBuilder,
-  AnyObject
-} from '@loopback/repository';
+import { Filter, Where, Command, NamedParameters, PositionalParameters, WhereBuilder, AnyObject } from '@loopback/repository';
 
 interface ParamterizedClause {
   clause: string;

@@ -102,14 +102,16 @@ export class K8sInstanceService {
     }
   }
 
-  async deleteWithComputeId(instanceComputeId: string) {
+  async deleteWithComputeId(instanceComputeId: string): Promise<boolean> {
     try {
       //TODO: verify usage with instanceService
       await this._serviceManager.deleteWithComputeId(instanceComputeId, this._defaultNamespace);
       await this._deploymentManager.deleteWithComputeId(instanceComputeId, this._defaultNamespace);
+      return true;
+    
     } catch (error) {
       logger.error(error);
-      throw error;
+      return false;
     }
   }
 

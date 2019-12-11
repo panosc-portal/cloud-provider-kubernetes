@@ -57,14 +57,16 @@ export class K8sNamespaceManager {
     }
   }
 
-  async delete(name: string) {
+  async delete(name: string): Promise<boolean> {
     try {
       const deletedNamespace = await this._dataSource.K8sClient.api.v1.namespaces(name).delete();
       logger.debug('Namespace ' + name + ' has been deleted');
-      return deletedNamespace;
+      return true;
+
     } catch (error) {
       if (error.statusCode === 404) {
-        return null;
+        return false;
+        
       } else {
         logger.error(error.message);
         throw new Error(`Did not manage to delete namespace ${name}`);

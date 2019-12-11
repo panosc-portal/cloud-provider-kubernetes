@@ -47,7 +47,8 @@ describe('K8sInstanceService', () => {
 
     const instance = await instanceService.getById(3);
     const k8sInstance = await k8sInstanceService.create(instance);
-    const deleteInstance = await k8sInstanceService.deleteWithComputeId(k8sInstance.computeId);
-    console.log(deleteInstance);
+    const instanceDeleted = await k8sInstanceService.deleteWithComputeId(k8sInstance.computeId);
+
+    expect(instanceDeleted).to.be.true();
   });
 });

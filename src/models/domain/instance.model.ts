@@ -1,17 +1,7 @@
 import { model, property } from '@loopback/repository';
 import { Protocol } from './protocol.model';
 import { Flavour } from './flavour.model';
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  OneToMany,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Image } from './image.model';
 import { InstanceStatus } from '../enumerations';
 import { InstanceState } from './instance-state.model';
@@ -94,6 +84,9 @@ export class Instance {
 
   @UpdateDateColumn({ name: 'updated_at', type: process.env.NODE_ENV === 'test' ? 'date' : 'timestamp' })
   updatedAt: Date;
+
+  @Column({ name: 'deleted', nullable: false, default: false })
+  deleted: boolean;
 
   @OneToMany(type => Protocol, protocol => protocol.instance, {
     eager: true,

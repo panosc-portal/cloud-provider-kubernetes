@@ -82,17 +82,19 @@ export class K8sServiceManager {
     }
   }
 
-  async deleteWithComputeId(computeId: string, namespace: string) {
+  async deleteWithComputeId(computeId: string, namespace: string): Promise<boolean> {
     try {
       const deletedService = await this._dataSource.K8sClient.api.v1
         .namespaces(namespace)
         .services(computeId)
         .delete();
       logger.debug(`Service  ${computeId} has been deleted`);
-      return deletedService;
+      return true;
+
     } catch (error) {
       if (error.statusCode === 404) {
         return false;
+        
       } else {
         logger.error(error.message);
         throw new Error(`Did not manage to delete service ${computeId} `);

@@ -54,7 +54,7 @@ export class InstanceActionService implements InstanceActionListener {
   }
 
   onTerminated(instanceAction: InstanceAction) {
-    logger.info(`Action ${instanceAction.type} successfully ran on instance ${instanceAction.instance.id}`);
+    logger.debug(`Action ${instanceAction.type} successfully ran on instance ${instanceAction.instance.id}`);
   }
 
   onError(instanceAction: InstanceAction, error: any) {
