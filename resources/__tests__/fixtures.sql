@@ -1,9 +1,9 @@
-insert into image (id, name, description) 
-values (1, "image 1", "An image");
-insert into image (id, name, description) 
-values (2, "image 2", "Another image");
-insert into image (id, name, description) 
-values (3, "image 3", "A image not associated to an instance");
+insert into image (id, name, path, description) 
+values (1, "image 1", "repo1/image-name1", "An image");
+insert into image (id, name, path, description) 
+values (2, "image 2", "repo2/image-name2", "Another image");
+insert into image (id, name, path, description) 
+values (3, "image 3", "repo3/image-name3", "A image not associated to an instance");
 
 insert into flavour(id, name, description, cpu, memory)
 values (1, "flavour 1", "A flavour", 1.5, 2048);

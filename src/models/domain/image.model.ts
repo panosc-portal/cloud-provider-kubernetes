@@ -22,6 +22,14 @@ export class Image {
   name: string;
 
   @property({
+    type: 'string',
+    required: true
+  })
+  @Index('image_path_index')
+  @Column({ length: 250 })
+  path: string;
+
+  @property({
     type: 'string'
   })
   @Column({ length: 2500, nullable: true })

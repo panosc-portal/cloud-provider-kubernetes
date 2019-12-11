@@ -29,6 +29,7 @@ describe('ImageService', () => {
   it('saves an image', async () => {
     const image = new Image({
       name: 'image 3',
+      path: 'repo/image',
       description: 'A new image'
     });
     await imageService.save(image);
