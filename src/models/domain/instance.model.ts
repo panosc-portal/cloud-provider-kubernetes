@@ -1,5 +1,5 @@
 import { model, property } from '@loopback/repository';
-import { Protocol } from './protocol.model';
+import { InstanceProtocol } from './instance-protocol.model';
 import { Flavour } from './flavour.model';
 import { Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Image } from './image.model';
@@ -88,11 +88,11 @@ export class Instance {
   @Column({ name: 'deleted', nullable: false, default: false })
   deleted: boolean;
 
-  @OneToMany(type => Protocol, protocol => protocol.instance, {
+  @OneToMany(type => InstanceProtocol, protocol => protocol.instance, {
     eager: true,
     cascade: true
   })
-  protocols: Protocol[];
+  protocols: InstanceProtocol[];
 
   @property({ type: 'number' })
   @ManyToOne(type => Flavour, {
@@ -127,7 +127,7 @@ export class Instance {
     Object.assign(this, data);
   }
 
-  addProtocol(protocol: Protocol) {
+  addProtocol(protocol: InstanceProtocol) {
     this.protocols.push(protocol);
   }
 }

@@ -1,10 +1,11 @@
 import { model, property } from '@loopback/repository';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Instance } from './instance.model';
 import { ProtocolName } from '../enumerations';
 
 @Entity()
 @model()
-export class Protocol {
+export class InstanceProtocol {
   @property({
     type: 'number',
     id: true,
@@ -17,7 +18,7 @@ export class Protocol {
   @property({
     type: 'string'
   })
-  @Index('protocol_name_index')
+  @Index('instance_protocol_name_index')
   @Column({ length: 250 })
   name: ProtocolName;
 
@@ -28,7 +29,14 @@ export class Protocol {
   @Column()
   port: number;
 
-  constructor(data?: Partial<Protocol>) {
+  @property({
+    type: 'number'
+  })
+  @ManyToOne(type => Instance, instance => instance.protocols)
+  @JoinColumn({ name: 'instance_id' })
+  instance?: Instance;
+
+  constructor(data?: Partial<InstanceProtocol>) {
     Object.assign(this, data);
   }
 }

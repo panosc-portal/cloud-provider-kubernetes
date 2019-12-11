@@ -2,6 +2,7 @@ export * from './flavour.model';
 export * from './image.model';
 export * from './info.model';
 export * from './instance-command.model';
+export * from './instance-protocol.model';
 export * from './instance-state.model';
 export * from './instance.model';
 export * from './metrics.model';

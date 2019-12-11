@@ -1,5 +1,6 @@
 import { model, property } from '@loopback/repository';
-import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable } from 'typeorm';
+import { Protocol } from './protocol.model';
 
 @Entity()
 @model()
@@ -34,6 +35,13 @@ export class Image {
   })
   @Column({ length: 2500, nullable: true })
   description?: string;
+
+  @ManyToMany(type => Protocol, {
+    eager: true,
+    cascade: true
+  })
+  @JoinTable({name: 'image_protocol', joinColumns: [{name: 'image_id'}], inverseJoinColumns: [{name: 'protocol_id' }]})
+  protocols: Protocol[];
 
   constructor(data?: Partial<Image>) {
     Object.assign(this, data);

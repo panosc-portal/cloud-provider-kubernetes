@@ -40,11 +40,13 @@ export class InstanceStateJob extends Job {
     });
 
     // Create a state action for all running instances and wait for them to run
-    await Promise.all(runningInstances.map(instance => {
-      const command = new InstanceCommand(instance, InstanceCommandType.STATE);
-      return this._instanceActionService.execute(command);
-    }));
-    logger.info(`Finished updating states of ${runningInstances.length} instances`);
+    if (runningInstances.length > 0) {
+      await Promise.all(runningInstances.map(instance => {
+        const command = new InstanceCommand(instance, InstanceCommandType.STATE);
+        return this._instanceActionService.execute(command);
+      }));
+      logger.info(`Finished updating states of ${runningInstances.length} instances`);
+    }
 
     return runningInstances.length;
   }

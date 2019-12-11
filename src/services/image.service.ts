@@ -1,6 +1,6 @@
 import { bind, BindingScope } from '@loopback/core';
 import { Image } from '../models';
-import { ImageRepository } from '../repositories';
+import { ImageRepository, QueryOptions } from '../repositories';
 import { repository } from '@loopback/repository';
 import { BaseService } from './base.service';
 
@@ -8,5 +8,9 @@ import { BaseService } from './base.service';
 export class ImageService extends BaseService<Image> {
   constructor(@repository(ImageRepository) repo: ImageRepository) {
     super(repo);
+  }
+
+  getAll(): Promise<Image[]> {
+    return this._repository.find(null, { leftJoins: ['protocols'] } as QueryOptions);
   }
 }
