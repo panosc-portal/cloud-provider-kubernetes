@@ -1,4 +1,4 @@
-import { InstanceCommand, Instance, InstanceCommandType, InstanceState, InstanceStatus, K8sInstance } from '../../../models';
+import { InstanceCommand, Instance, InstanceCommandType, InstanceState, InstanceStatus, K8sInstance, Protocol, ProtocolName } from '../../../models';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
 
@@ -65,16 +65,19 @@ export abstract class InstanceAction {
   protected async _createK8sInstance(): Promise<K8sInstance> {
     const instance = this.instance;
     const k8sInstance = await this.k8sInstanceService.create(instance);
+
+    // Get compute Id
     instance.computeId = k8sInstance.computeId;
 
-    // TODO Get status of k8sInstance and set in instance
-    // instance.state = new InstanceState({status: InstanceStatus[k8sInstance.state.status], message: k8sInstance.state.message});
+    // Get status of k8sInstance and set in instance
+    instance.state = new InstanceState({status: InstanceStatus[k8sInstance.state.status], message: k8sInstance.state.message});
 
-    // TODO Get IP Address
-    // instance.hostname = k8sInstance.hostname;
+    // Get IP Address
+    instance.hostname = k8sInstance.hostname;
 
-    // TODO Get protocols
-    // instance.protocols = k8sInstance.protocols.map(k8sProtocol => new Protocol({name: k8sProtocol.name, port: k8sProtocol.externalPort}));
+    // Get protocols
+    instance.protocols = k8sInstance.protocols.map(k8sProtocol => 
+      new Protocol({name: ProtocolName[k8sProtocol.name.toUpperCase()], port: k8sProtocol.externalPort}));
 
     await this.instanceService.save(instance);
 

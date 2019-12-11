@@ -45,7 +45,7 @@ export class K8sInstanceService {
   }
 
 
-  async getWithComputeId(computeId): Promise<K8sInstance> {
+  async getWithComputeId(computeId: string): Promise<K8sInstance> {
     try {
       const deployment = await this._deploymentManager.getWithComputeId(computeId, this.defaultNamespace);
       const service = await this._serviceManager.getWithComputeId(computeId, this.defaultNamespace);
@@ -67,8 +67,11 @@ export class K8sInstanceService {
     const defaultNamespaceRequest = this.requestFactoryService.createK8sNamespaceRequest(this._defaultNamespace);
     await this.namespaceManager.createIfNotExist(defaultNamespaceRequest);
     const instanceComputeId = await this.UUIDGenerator(instance.name);
-    const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest(instanceComputeId, image.name,
-      flavour.cpu, flavour.memory);
+    const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest({
+      name: instanceComputeId, 
+      image: image.name,
+      cpu: flavour.cpu, 
+      memory: flavour.memory});
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceComputeId);
     const deploymentServiceConnection = this.verifyDeploymentServiceConnection(deploymentRequest, serviceRequest);
     if (deploymentServiceConnection) {

@@ -15,8 +15,7 @@ export class DeleteInstanceAction extends InstanceAction {
     try {
       const computeId = instance.computeId;
       if (computeId != null) {
-        // const k8sInstance = await this.k8sInstanceService.getByComputeId(computeId);
-        const k8sInstance = null;
+        const k8sInstance = await this.k8sInstanceService.getWithComputeId(computeId);
         if (k8sInstance != null) {
           logger.info(`Deleting instance ${instance.id}`)
           await this._deleteK8sInstance(computeId);

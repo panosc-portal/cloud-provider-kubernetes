@@ -21,8 +21,7 @@ export class StateInstanceAction extends InstanceAction {
         return;
       }
 
-      // const k8sInstance = await this.k8sInstanceService.getByComputeId(computeId);
-      const k8sInstance = null;
+      const k8sInstance = await this.k8sInstanceService.getWithComputeId(computeId);
       let nextInstanceState: InstanceState;
       if (k8sInstance == null) {
         if (currentInstanceStatus !== InstanceStatus.REBOOTING && currentInstanceStatus !== InstanceStatus.STOPPING) {
@@ -35,8 +34,8 @@ export class StateInstanceAction extends InstanceAction {
         nextInstanceState = new InstanceState({
           status: InstanceStatus[k8sInstance.state.status], 
           message: k8sInstance.state.message,
-          // cpu: k8sInstance.currentCpu,
-          // memory: k8sInstance.currentMemory
+          cpu: k8sInstance.currentCpu,
+          memory: k8sInstance.currentMemory
         });
       }
 

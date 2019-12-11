@@ -15,8 +15,7 @@ export class ShutdownInstanceAction extends InstanceAction {
     try {
       const computeId = instance.computeId;
       if (computeId != null) {
-        // const k8sInstance = await this.k8sInstanceService.getByComputeId(computeId);
-        let k8sInstance = null;
+        const k8sInstance = await this.k8sInstanceService.getWithComputeId(computeId);
         if (k8sInstance != null) {
           logger.info(`Shutting down instance ${instance.id}: deleting current k8s instance`);
           await this._deleteK8sInstance(computeId);

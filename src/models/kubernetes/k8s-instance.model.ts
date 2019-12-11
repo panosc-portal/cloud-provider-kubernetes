@@ -25,6 +25,21 @@ export class K8sInstance {
     return this._state;
   }
 
+  get hostname(): string {
+    // TODO : get ip address of node master through node service
+    return '';
+  }
+
+  get currentCpu(): number {
+    // TODO : get current CPU 
+    return 0;
+  }
+
+  get currentMemory(): number {
+    // TODO : get current Memory 
+    return 0;
+  }
+
   get protocols(): K8sProtocol[] {
     const protocols = [];
     const servicePorts = this._service.ports;
@@ -43,8 +58,6 @@ export class K8sInstance {
 
     );
   }
-
-  // TODO : get ip address of node master through node service
 
   constructor(private _deployment: K8sDeployment, private _service: K8sService, private _endpoints: K8sEndpoints, private _computeId: string) {
     this._state = K8sInstanceStatusHelper.getK8sInstanceState(this._deployment, this._endpoints);

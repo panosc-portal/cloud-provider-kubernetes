@@ -28,7 +28,7 @@ export class K8sServiceManager {
     }
   }
 
-  async getServiceEndpointsWithComputeId(computeId: string, namespace) {
+  async getServiceEndpointsWithComputeId(computeId: string, namespace: string) {
     try {
       const serviceEndpoints = await this._dataSource.K8sClient.api.v1
         .namespaces(namespace)
