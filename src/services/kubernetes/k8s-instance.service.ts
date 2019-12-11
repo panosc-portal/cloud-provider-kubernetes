@@ -71,7 +71,9 @@ export class K8sInstanceService {
       name: instanceComputeId, 
       image: image,
       flavour: flavour});
-    const serviceRequest = this._requestFactoryService.createK8sServiceRequest(instanceComputeId);
+    const serviceRequest = this._requestFactoryService.createK8sServiceRequest({
+      name: instanceComputeId, 
+      image: image});
     const deploymentServiceConnection = this.verifyDeploymentServiceConnection(deploymentRequest, serviceRequest);
     if (deploymentServiceConnection) {
       logger.debug('Creating Deployment in Kubernetes');

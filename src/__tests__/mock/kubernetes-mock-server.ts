@@ -162,8 +162,7 @@ export class KubernetesMockServer {
           const response = k8sResponseCreator.getService(
             serviceName,
             namespace,
-            req.body.spec.ports[0].name,
-            req.body.spec.ports[0].port
+            req.body.spec.ports
           );
           this._createdServices.set(`${namespace}.${serviceName}`, response);
           res.status(200).send(response);

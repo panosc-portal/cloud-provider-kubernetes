@@ -1,5 +1,5 @@
 export default class K8SResponseCreator {
-  getService(name: string, namespace: string, portName: string, portNumber: number) {
+  getService(name: string, namespace: string, ports: {name: string, port: number}[]) {
 
     return {
       kind: 'Service',
@@ -8,13 +8,7 @@ export default class K8SResponseCreator {
         namespace: namespace
       },
       spec: {
-        ports: [
-          {
-            name: portName,
-            port: portNumber,
-            nodePort: 32417
-          }
-        ]
+        ports: ports.map(port => { return {name: port.name, port: port.port, nodePort: 32000 + Math.random() * 2767}}),
       }
     };
   }
@@ -121,7 +115,7 @@ export default class K8SResponseCreator {
     };
   };
 
-  getEndpoint(service) {
+  getEndpoint(service: any) {
     return {
       kind: 'Endpoints',
       apiVersion: 'v1',
@@ -134,16 +128,13 @@ export default class K8SResponseCreator {
             ip: '192.168.140.1'
           }
         ],
-        ports: [{
-          name: service.spec.ports[0].name,
-          port: service.spec.ports[0].port
-        }]
+        ports: service.spec.ports.map(port => {return {name: port.name, port: port.port}}),
       }]
     };
   }
 
 
-  getDeletedNamespace(name) {
+  getDeletedNamespace(name: string) {
     return {
       kind: 'Namespace',
       apiVersion: 'v1',

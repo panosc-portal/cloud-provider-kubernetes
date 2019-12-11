@@ -1,34 +1,36 @@
+import { Image } from "../domain";
+
+export interface K8sServiceRequestConfig {
+  name: string,
+  image: Image,
+}
+
 export class K8sServiceRequest {
   private _model: object;
 
   get name(): string {
-    return this._name;
+    return this._config.name;
   }
 
   get model(): any {
     return this._model;
   }
 
-  constructor(private _name: string) {
+  constructor(private _config: K8sServiceRequestConfig) {
     this._model = {
       apiVersion: 'v1',
       kind: 'Service',
       metadata: {
-        name: this._name,
+        name: this._config.name,
         labels: {
-          app: this._name
+          app: this._config.name
         }
       },
       spec: {
         type: 'NodePort',
-        ports: [
-          {
-            name: 'rdp',
-            port: 3389
-          }
-        ],
+        ports: _config.image.protocols.map(protocol => { return {name: protocol.name, port: protocol.port}}),
         selector: {
-          app: this._name
+          app: this._config.name
         }
       }
     };

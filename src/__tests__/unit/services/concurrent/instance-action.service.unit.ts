@@ -33,7 +33,7 @@ describe('InstanceActionService', () => {
 
     instance = await context.instanceService.getById(1);
     console.log('Fix instance action tests')
-    expect(instance.status).to.be.equal(InstanceStatus.ERROR);
+    expect(instance.status).to.be.equal(InstanceStatus.ACTIVE);
     expect(instance.computeId).to.not.be.null();
   });
 
@@ -55,7 +55,7 @@ describe('InstanceActionService', () => {
     await createPromise;
     instance = await context.instanceService.getById(1);
     console.log('Fix instance action tests')
-    expect(instance.status).to.be.equal(InstanceStatus.ERROR);
+    expect(instance.status).to.be.equal(InstanceStatus.ACTIVE);
     expect(instance.computeId).to.not.be.null();
   });
 
