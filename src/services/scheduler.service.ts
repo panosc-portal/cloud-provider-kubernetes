@@ -32,7 +32,10 @@ export class SchedulerService {
   }
 
   async stop(): Promise<void> {
-    // TODO remove all jobs
+    this._jobs.forEach((cronJob, jobName) => {
+      cronJob.stop();
+    });
+    this._jobs.clear();
   }
 
   async init(): Promise<void> {
@@ -44,18 +47,32 @@ export class SchedulerService {
 
           // Instantiate job runner
           const jobClass = JOB_PROVIDER.get(jobConfig.jobClass);
-          const jobRunner = new jobClass.class() as Job;
+          if (jobClass != null) {
+            const jobRunner = new jobClass.class() as Job;
+            let jobIsOk = true;
   
-          // Inject dependencies
-          for (var dependency in jobClass.dependencies) {
-            const injectionIdentifier = jobClass.dependencies[dependency];
-            const injection = await this._application.get(injectionIdentifier);
-            jobRunner[dependency] = injection;
+            // Inject dependencies
+            for (var dependency in jobClass.dependencies) {
+              const injectionIdentifier = jobClass.dependencies[dependency];
+              const injection = await this._application.get(injectionIdentifier);
+              if (injection != null) {
+                jobRunner[dependency] = injection;
+
+              } else {
+                jobIsOk = false;
+                console.error(`Dependency '${injectionIdentifier}' in Job class '${jobConfig.jobClass}' could not be found`);
+              }
+            }
+    
+            if (jobIsOk) {
+              const cronJob = new CronJob(jobConfig.cronExpression, () => jobRunner.run(jobConfig.params));
+              this._jobs.set(jobConfig.name, cronJob);
+              cronJob.start();
+            }
+          
+          } else {
+            console.error(`Job class '${jobConfig.jobClass}' specified in scheduler config does not exist`);
           }
-  
-          const cronJob = new CronJob(jobConfig.cronExpression, () => jobRunner.run(jobConfig.params));
-          this._jobs.set(jobConfig.name, cronJob);
-          cronJob.start();
         });
       }
 
