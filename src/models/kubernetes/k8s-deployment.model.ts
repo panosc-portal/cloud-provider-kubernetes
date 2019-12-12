@@ -1,21 +1,21 @@
 export class K8sDeployment {
   get name(): string {
-    return this.isValid() ? this._k8sResponse.metadata.name : null;
+    return this.isValid() ? this._k8sDeploymentResponse.metadata.name : null;
   }
 
   get statuses(): any {
-    return this.isValid() ? this._k8sResponse.status.conditions : null;
+    return this.isValid() ? this._k8sDeploymentResponse.status.conditions : null;
   }
 
   get containers(): any {
-    return this.isValid() ? this._k8sResponse.spec.template.spec.containers : null;
+    return this.isValid() ? this._k8sDeploymentResponse.spec.template.spec.containers : null;
   }
 
 
   get ports() {
     if (this.isValid()) {
       const deploymentPorts = [];
-      const containers = this._k8sResponse.spec.template.spec.containers;
+      const containers = this._k8sDeploymentResponse.spec.template.spec.containers;
       for (const container of containers) {
         const ports = container.ports;
         for (const port of ports) {
@@ -28,27 +28,51 @@ export class K8sDeployment {
     }
   }
 
-  get labels(){
-    return this.isValid() ? this._k8sResponse.spec.template.metadata.labels : null;
+  get labels() {
+    return this.isValid() ? this._k8sDeploymentResponse.spec.template.metadata.labels : null;
   }
 
 
-  constructor(private _k8sResponse: any) {
+  constructor(private _k8sDeploymentResponse: any, private _k8sPodListResponse: any) {
   }
 
   isValid() {
     return (
-      this._k8sResponse != null &&
-      this._k8sResponse.kind != null &&
-      this._k8sResponse.kind === 'Deployment' &&
-      this._k8sResponse.metadata != null &&
-      this._k8sResponse.metadata.name != null &&
-      this._k8sResponse.spec != null &&
-      this._k8sResponse.spec.template != null &&
-      this._k8sResponse.spec.template.spec != null &&
-      this._k8sResponse.spec.template.spec.containers != null &&
-      this._k8sResponse.spec.template.metadata != null &&
-      this._k8sResponse.spec.template.metadata.labels != null
+      this.isValidDeployment() &&
+      this.isValidPods()
+    );
+
+  }
+
+  isValidDeployment() {
+    return (
+      this._k8sDeploymentResponse != null &&
+      this._k8sDeploymentResponse.kind != null &&
+      this._k8sDeploymentResponse.kind === 'Deployment' &&
+      this._k8sDeploymentResponse.metadata != null &&
+      this._k8sDeploymentResponse.metadata.name != null &&
+      this._k8sDeploymentResponse.spec != null &&
+      this._k8sDeploymentResponse.spec.template != null &&
+      this._k8sDeploymentResponse.spec.template.spec != null &&
+      this._k8sDeploymentResponse.spec.template.spec.containers != null &&
+      this._k8sDeploymentResponse.spec.template.metadata != null &&
+      this._k8sDeploymentResponse.spec.template.metadata.labels != null
     );
   }
+
+  isValidPods() {
+    return (
+      this._k8sPodListResponse != null &&
+      this._k8sPodListResponse.kind != null &&
+      this._k8sPodListResponse.kind === 'PodList' &&
+      this._k8sPodListResponse.items != null &&
+      this._k8sPodListResponse.items[0] != null &&
+      this._k8sPodListResponse.items.length == 1 &&
+      this._k8sPodListResponse.items[0].metadata != null &&
+      this._k8sPodListResponse.items[0].metadata.name != null &&
+      this._k8sPodListResponse.items[0].status != null &&
+      this._k8sPodListResponse.items[0].status.phase != null
+    );
+  }
+
 }

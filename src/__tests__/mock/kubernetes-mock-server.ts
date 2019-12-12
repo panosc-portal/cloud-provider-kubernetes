@@ -10,6 +10,7 @@ const logger = buildLogger('[K8S Mock Server]');
 export class KubernetesMockServer {
   private _server = null;
   private _port = 3001;
+  //private _defaultObjectName ='defaultNameInstance';
   private _createdDeployments = new Map();
   private _createdServices = new Map();
   private _createdNamespaces = new Map();
@@ -48,6 +49,20 @@ export class KubernetesMockServer {
       }
     });
 
+    app.get('/api/v1/namespaces/:namespace/pods', (req, res) => {
+      const labelSelector = req.query.labelSelector;
+      const namespace = req.params.namespace;
+      const label = labelSelector.split('=')[1];
+      logger.info(`Getting pods with label ${labelSelector} from namespace ${namespace}`);
+      const deployment = this._createdDeployments.get(`${namespace}.${label}`);
+      const response = k8sResponseCreator.getPodList(deployment);
+      if (response != null) {
+        res.status(200).send(response);
+      } else {
+        res.sendStatus(404);
+      }
+    });
+
     app.get('/api/v1/namespaces/:namespace/services/:service', (req, res) => {
       const serviceName = req.params.service;
       const namespace = req.params.namespace;
@@ -74,11 +89,23 @@ export class KubernetesMockServer {
 
     app.get('/api/v1/namespaces/:namespace/endpoints/:service', (req, res) => {
       const namespace = req.params.namespace;
-      const serviceName = req.params.service;
-      logger.info(`Getting endpoint for service ${serviceName} from namespace ${namespace}`);
+      let serviceName = req.params.service;
+      let response;
+      let endpointError = false;
+      if (serviceName === 'error-service') {
+        logger.info(`Getting error endpoint for service ${serviceName} from namespace ${namespace}`);
+        serviceName = 'default-instance';
+        endpointError = true;
+      } else {
+        logger.info(`Getting endpoint for service ${serviceName} from namespace ${namespace}`);
+      }
       const service = this._createdServices.get(`${namespace}.${serviceName}`);
       if (service != null) {
-        const response = k8sResponseCreator.getEndpoint(service);
+        if (endpointError) {
+          response = k8sResponseCreator.getErrorEndpoint(service);
+        } else {
+          response = k8sResponseCreator.getEndpoint(service);
+        }
         if (response != null) {
           res.status(200).send(response);
         } else {
@@ -113,8 +140,6 @@ export class KubernetesMockServer {
       } else {
         res.sendStatus(404);
       }
-
-
     });
 
     app.get('*', (req, res) => {
@@ -124,19 +149,30 @@ export class KubernetesMockServer {
 
     app.post('/apis/apps/v1/namespaces/:namespace/deployments', jsonParser, (req, res) => {
       const namespace = req.params.namespace;
-      const deploymentName = req.body.metadata.name;
+      let deploymentName = req.body.metadata.name;
+      let deploymentError = false;
+      let response;
+
       try {
         this.deploymentServiceValid(req.body);
       } catch (error) {
         logger.error(error.message);
         res.sendStatus(500);
       }
-
       logger.info(`Posting deployment ${deploymentName} in namespace ${namespace}`);
       if (this._createdNamespaces.get(namespace) != null) {
+        if (deploymentName == 'error-deployment') {
+          logger.info(`Getting error endpoint for service ${deploymentName} from namespace ${namespace}`);
+          deploymentName = 'default-instance';
+          deploymentError = true;
+        }
         const deploymentExist = this._createdDeployments.get(`${namespace}.${deploymentName}`);
         if (deploymentExist == null) {
-          const response = k8sResponseCreator.getDeployment(req.body);
+          if (deploymentError) {
+            response = k8sResponseCreator.getErrorDeployment(req.body);
+          } else {
+            response = k8sResponseCreator.getDeployment(req.body);
+          }
           this._createdDeployments.set(`${namespace}.${deploymentName}`, response);
           res.status(200).send(response);
         } else {
@@ -169,7 +205,7 @@ export class KubernetesMockServer {
 
     app.post('/api/v1/namespaces/:namespace/services', jsonParser, (req, res) => {
       const namespace = req.params.namespace;
-      const serviceName = req.body.metadata.name;
+      let serviceName = req.body.metadata.name;
       try {
         this.deploymentServiceValid(req.body);
       } catch (error) {
@@ -178,6 +214,9 @@ export class KubernetesMockServer {
       }
       logger.info(`Posting service ${serviceName} in namespace ${namespace}`);
       if (this._createdNamespaces.get(namespace) != null) {
+        if (serviceName.startsWith('error')) {
+          serviceName = 'default-instance';
+        }
         const serviceExist = this._createdServices.get(`${namespace}.${serviceName}`);
         if (serviceExist == null) {
           const response = k8sResponseCreator.getService(
@@ -254,6 +293,10 @@ export class KubernetesMockServer {
 
       logger.info(`Kubernetes Mock Server stopped`);
     }
+  }
+
+  errorManager(object) {
+
   }
 
   deploymentServiceValid(request) {

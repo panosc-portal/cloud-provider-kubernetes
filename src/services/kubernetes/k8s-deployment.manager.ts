@@ -12,7 +12,8 @@ export class K8sDeploymentManager {
         .namespace(namespace)
         .deployments(computeId)
         .get();
-      const k8sDeployment = new K8sDeployment(deployment.body);
+      const podList = await this._dataSource.K8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${computeId}` } });
+      const k8sDeployment = new K8sDeployment(deployment.body,podList.body);
       if (k8sDeployment.isValid()) {
         return k8sDeployment;
       } else {
@@ -33,7 +34,8 @@ export class K8sDeploymentManager {
       const deployment = await this._dataSource.K8sClient.apis.apps.v1
         .namespaces(namespace)
         .deployments.post({ body: deploymentRequest.model });
-      const newDeployment = new K8sDeployment(deployment.body);
+      const podList = await this._dataSource.K8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${deploymentRequest.name}` } });
+      const newDeployment = new K8sDeployment(deployment.body, podList.body);
       if (newDeployment.isValid()) {
         logger.debug('Deployment ' + newDeployment.name + ' has been created');
         return newDeployment;
@@ -72,7 +74,7 @@ export class K8sDeploymentManager {
     } catch (error) {
       if (error.statusCode === 404) {
         return false;
-        
+
       } else {
         logger.error(error.message);
         throw new Error(`Did not manage to delete deployment ${computeId} `);

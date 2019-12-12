@@ -10,8 +10,8 @@ export class K8sNode {
       this._k8sResponse.metadata.name != null &&
       this._k8sResponse.status != null &&
       this._k8sResponse.status.addresses != null &&
-      this._k8sResponse.status.addresses[1] != null &&
-      this._k8sResponse.status.addresses[1].address != null
+      this._k8sResponse.status.addresses[0] != null &&
+      this._k8sResponse.status.addresses[0].address != null
     );
   }
 
@@ -29,7 +29,7 @@ export class K8sNode {
 
 
   get hostname() {
-    return this.isValid() ? this._k8sResponse.status.addresses[1].address : null;
+    return this.isValid() ? this._k8sResponse.status.addresses[0].address : null;
   }
 
   get cpuCapacity() {

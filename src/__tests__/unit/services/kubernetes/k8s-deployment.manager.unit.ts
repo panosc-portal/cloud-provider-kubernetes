@@ -123,8 +123,8 @@ describe('K8sDeploymentManager', () => {
       image: instance.image,
       flavour: instance.flavour
     });
-    const k8sDeploument2 = await k8sDeploymentManager.create(k8sDeploymentRequest2, 'panosc');
-    expect(k8sDeploument2).to.be.null();
+    const k8sDeployment2 = await k8sDeploymentManager.create(k8sDeploymentRequest2, 'panosc');
+    expect(k8sDeployment2).to.be.null();
   });
 
   it('delete an inexistent deployment', async () => {

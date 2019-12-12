@@ -97,8 +97,14 @@ export class K8sInstanceService {
       await this.delete(instanceComputeId);
       return null;
     }
-    const masterNode = await this._nodeService.getMaster();
-    return new K8sInstance(deployment, service, instanceComputeId, masterNode.hostname);
+    if (service.name === deployment.name) {
+      const masterNode = await this._nodeService.getMaster();
+      return new K8sInstance(deployment, service, instanceComputeId, masterNode.hostname);
+    } else {
+      logger.error('Instance has not same service and deployment name');
+      return null;
+    }
+
 
   }
 

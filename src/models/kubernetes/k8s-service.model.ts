@@ -16,6 +16,14 @@ export class K8sService {
 
   isValid() {
     return (
+      this.isEndpointValid() &&
+      this.isServiceValid() &&
+      this._k8sServiceResponse.metadata.name === this._k8sEndpointResponse.metadata.name
+    );
+  }
+
+  isServiceValid() {
+    return (
       this._k8sServiceResponse != null &&
       this._k8sServiceResponse.kind != null &&
       this._k8sServiceResponse.kind === 'Service' &&
@@ -25,17 +33,17 @@ export class K8sService {
       this._k8sServiceResponse.spec.ports != null &&
       this._k8sServiceResponse.spec.ports[0].name != null &&
       this._k8sServiceResponse.spec.ports[0].port != null &&
-      this._k8sServiceResponse.spec.ports[0].nodePort != null &&
+      this._k8sServiceResponse.spec.ports[0].nodePort != null
+    );
+  }
+
+  isEndpointValid() {
+    return (
       this._k8sEndpointResponse != null &&
       this._k8sEndpointResponse.kind != null &&
       this._k8sEndpointResponse.kind === 'Endpoints' &&
       this._k8sEndpointResponse.metadata != null &&
-      this._k8sEndpointResponse.metadata.name != null &&
-      this._k8sEndpointResponse.subsets != null &&
-      this._k8sEndpointResponse.subsets[0] != null &&
-      this._k8sEndpointResponse.subsets[0].ports != null &&
-      this._k8sEndpointResponse.subsets[0].addresses != null
-
+      this._k8sEndpointResponse.metadata.name != null
     );
   }
 
@@ -48,7 +56,7 @@ export class K8sService {
     }
   }
 
-  get endpoints(): any {
+  get endpoint(): any {
     return this.isValid() ? this._k8sEndpointResponse.subsets : null;
   }
 

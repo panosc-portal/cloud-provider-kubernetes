@@ -161,6 +161,20 @@ export default class K8SResponseCreator {
     };
   }
 
+  getErrorEndpoint(service: any) {
+    return {
+      kind: 'Endpoints',
+      apiVersion: 'v1',
+      metadata: {
+        name: service.metadata.name
+      }
+    };
+  }
+
+  getErrorDeployment(deployment: any) {
+
+  }
+
 
   getDeletedNamespace(name: string) {
     return {
@@ -170,6 +184,17 @@ export default class K8SResponseCreator {
         name: name
       }
     };
+  }
+
+  getPodList(deployment) {
+    return {
+      kind: 'PodList',
+      items: [{
+        metadata: { name: `${deployment.metadata.name}-12DD-46FV` },
+        status: { phase: 'Running' }
+      }]
+    };
+
   }
 
 }
