@@ -28,6 +28,10 @@ export class K8sDeployment {
     }
   }
 
+  get labels(){
+    return this.isValid() ? this._k8sResponse.spec.template.metadata.labels : null;
+  }
+
 
   constructor(private _k8sResponse: any) {
   }
@@ -42,7 +46,9 @@ export class K8sDeployment {
       this._k8sResponse.spec != null &&
       this._k8sResponse.spec.template != null &&
       this._k8sResponse.spec.template.spec != null &&
-      this._k8sResponse.spec.template.spec.containers != null
+      this._k8sResponse.spec.template.spec.containers != null &&
+      this._k8sResponse.spec.template.metadata != null &&
+      this._k8sResponse.spec.template.metadata.labels != null
     );
   }
 }

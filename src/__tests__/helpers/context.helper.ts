@@ -9,7 +9,6 @@ import {
 } from '../../services';
 import { testDataSource } from '../fixtures/datasources/testdb.datasource';
 import { KubernetesDataSource } from '../../datasources';
-import { K8sNodeService } from '../../services/kubernetes/k8s-node.service';
 
 export interface TestApplicationContext {
   flavourRepository: FlavourRepository;
@@ -20,7 +19,6 @@ export interface TestApplicationContext {
   instanceService: InstanceService;
   instanceActionService: InstanceActionService;
   k8sInstanceService: K8sInstanceService;
-  k8sNodeService: K8sNodeService
 }
 
 export function createTestApplicationContext(): TestApplicationContext {
@@ -36,7 +34,6 @@ export function createTestApplicationContext(): TestApplicationContext {
   const instanceService: InstanceService = new InstanceService(instanceRepository);
 
   const instanceActionService: InstanceActionService = new InstanceActionService(instanceService, k8sInstanceService);
-  const k8sNodeService = new K8sNodeService(kubernetesDataSource);
   return {
     flavourRepository,
     imageRepository,
@@ -46,6 +43,5 @@ export function createTestApplicationContext(): TestApplicationContext {
     instanceService,
     instanceActionService,
     k8sInstanceService,
-    k8sNodeService
   };
 }

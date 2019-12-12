@@ -1,4 +1,4 @@
-import { Image, Flavour } from "../domain";
+import { Image, Flavour } from '../domain';
 
 export interface K8sDeploymentRequestConfig {
   name: string,
@@ -45,7 +45,9 @@ export class K8sDeploymentRequest {
               {
                 name: this._config.name,
                 image: this._config.image.path,
-                ports: this._config.image.protocols.map(protocol => {return {containerPort: protocol.port}}),
+                ports: this._config.image.protocols.map(protocol => {
+                  return { name: protocol.name, containerPort: protocol.port };
+                }),
                 resources: {
                   limits: {
                     cpu: `${this._config.flavour.cpu}m`,

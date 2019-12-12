@@ -15,7 +15,7 @@ export class RebootInstanceAction extends InstanceAction {
     try {
       const computeId = instance.computeId;
       if (computeId != null) {
-        const k8sInstance = await this.k8sInstanceService.getWithComputeId(computeId);
+        const k8sInstance = await this.k8sInstanceService.get(computeId);
         if (k8sInstance != null) {
           logger.info(`Rebooting instance ${instance.id}: deleting current k8s instance`);
           await this._deleteK8sInstance(computeId);

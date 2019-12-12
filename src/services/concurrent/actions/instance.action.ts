@@ -85,7 +85,7 @@ export abstract class InstanceAction {
   }
 
   protected async _deleteK8sInstance(computeId: string) {
-    await this.k8sInstanceService.deleteWithComputeId(computeId);
+    await this.k8sInstanceService.delete(computeId);
   }
 
   protected abstract _run(): Promise<void>;

@@ -5,7 +5,7 @@ import {
   K8sInstanceService,
   K8sNamespaceManager
 } from '../../../../services';
-import { K8sNamespaceRequest } from '../../../../models/kubernetes';
+import { K8sDeploymentRequest, K8sNamespaceRequest, K8sServiceRequest } from '../../../../models/kubernetes';
 import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 
@@ -47,8 +47,23 @@ describe('K8sInstanceService', () => {
 
     const instance = await instanceService.getById(3);
     const k8sInstance = await k8sInstanceService.create(instance);
-    const instanceDeleted = await k8sInstanceService.deleteWithComputeId(k8sInstance.computeId);
+    const instanceDeleted = await k8sInstanceService.delete(k8sInstance.computeId);
 
     expect(instanceDeleted).to.be.true();
   });
+
+  it('create instance and verify label connection', async()=>{
+    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    expect(k8sNamespace).to.not.be.null();
+    const instance = await instanceService.getById(3);
+    const k8sInstance = await k8sInstanceService.create(instance);
+    const deploymentLabels= k8sInstance.deployment.labels;
+    const serviceLabels = k8sInstance.service.selectorLabel;
+    expect(deploymentLabels.app).to.be.equal(serviceLabels.app)
+
+  });
+
+
+
+
 });

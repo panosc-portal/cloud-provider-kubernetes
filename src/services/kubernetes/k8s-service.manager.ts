@@ -1,4 +1,4 @@
-import { K8sEndpoints, K8sService, K8sServiceRequest } from '../../models';
+import { K8sService, K8sServiceRequest } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
 import { logger } from '../../utils';
 
@@ -12,7 +12,10 @@ export class K8sServiceManager {
         .namespaces(namespace)
         .services(computeId)
         .get();
-      const k8sService = new K8sService(service.body);
+      const serviceEndpoint = await this._dataSource.K8sClient.api.v1
+        .namespaces(namespace)
+        .endpoint(computeId).get();
+      const k8sService = new K8sService(service.body, serviceEndpoint.body);
       if (k8sService.isValid()) {
         return k8sService;
       } else {
@@ -28,34 +31,16 @@ export class K8sServiceManager {
     }
   }
 
-  async getServiceEndpointsWithComputeId(computeId: string, namespace: string) {
-    try {
-      const serviceEndpoints = await this._dataSource.K8sClient.api.v1
-        .namespaces(namespace)
-        .endpoint(computeId).get();
-      const k8sEndpoints = new K8sEndpoints(serviceEndpoints.body);
-      if (k8sEndpoints.isValid()) {
-        return k8sEndpoints;
-      } else {
-        return null;
-      }
-    } catch (error) {
-      if (error.statusCode === 404) {
-        return null;
-      } else {
-        logger.error(error.message);
-        throw new Error(`Did not manage to get service endpoints ${computeId} `);
-      }
-    }
-  }
-
 
   async create(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
     try {
       const service = await this._dataSource.K8sClient.api.v1
         .namespace(namespace)
         .services.post({ body: serviceRequest.model });
-      const newService = new K8sService(service.body);
+      const serviceEndpoint = await this._dataSource.K8sClient.api.v1
+        .namespaces(namespace)
+        .endpoint(serviceRequest.name).get();
+      const newService = new K8sService(service.body, serviceEndpoint.body);
       if (newService.isValid()) {
         logger.debug(`Service  ${newService.name}  has been created`);
         return newService;
@@ -94,7 +79,7 @@ export class K8sServiceManager {
     } catch (error) {
       if (error.statusCode === 404) {
         return false;
-        
+
       } else {
         logger.error(error.message);
         throw new Error(`Did not manage to delete service ${computeId} `);

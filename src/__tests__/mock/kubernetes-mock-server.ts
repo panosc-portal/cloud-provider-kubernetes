@@ -77,9 +77,13 @@ export class KubernetesMockServer {
       const serviceName = req.params.service;
       logger.info(`Getting endpoint for service ${serviceName} from namespace ${namespace}`);
       const service = this._createdServices.get(`${namespace}.${serviceName}`);
-      const response = k8sResponseCreator.getEndpoint(service);
-      if (response != null) {
-        res.status(200).send(response);
+      if (service != null) {
+        const response = k8sResponseCreator.getEndpoint(service);
+        if (response != null) {
+          res.status(200).send(response);
+        } else {
+          res.sendStatus(500);
+        }
       } else {
         res.sendStatus(404);
       }
@@ -87,12 +91,30 @@ export class KubernetesMockServer {
 
     app.get('/api/v1/nodes', (req, res) => {
       logger.info(`Getting nodes`);
-      const response = k8sResponseCreator.getNodeList(this._nodes);
+      const response = k8sResponseCreator.getNodeListResponse(this._nodes);
       if (response != null) {
         res.status(200).send(response);
       } else {
         res.sendStatus(404);
       }
+    });
+
+    app.get('/api/v1/nodes/:node', (req, res) => {
+      const nodeName = req.params.node;
+      logger.info(`Getting node ${nodeName}`);
+      const node = this._nodes.find(node => node.name === nodeName);
+      if (node) {
+        const response = k8sResponseCreator.getNode(node);
+        if (response != null) {
+          res.status(200).send(response);
+        } else {
+          res.sendStatus(500);
+        }
+      } else {
+        res.sendStatus(404);
+      }
+
+
     });
 
     app.get('*', (req, res) => {
@@ -114,8 +136,7 @@ export class KubernetesMockServer {
       if (this._createdNamespaces.get(namespace) != null) {
         const deploymentExist = this._createdDeployments.get(`${namespace}.${deploymentName}`);
         if (deploymentExist == null) {
-          const ports = req.body.spec.template.spec.containers[0].ports;
-          const response = k8sResponseCreator.getDeployment(req.body.metadata.name, namespace, ports.map(port => port.containerPort));
+          const response = k8sResponseCreator.getDeployment(req.body);
           this._createdDeployments.set(`${namespace}.${deploymentName}`, response);
           res.status(200).send(response);
         } else {
@@ -162,7 +183,8 @@ export class KubernetesMockServer {
           const response = k8sResponseCreator.getService(
             serviceName,
             namespace,
-            req.body.spec.ports
+            req.body.spec.ports,
+            req.body.spec.selector
           );
           this._createdServices.set(`${namespace}.${serviceName}`, response);
           res.status(200).send(response);

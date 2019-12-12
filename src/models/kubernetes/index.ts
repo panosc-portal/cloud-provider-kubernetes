@@ -1,6 +1,5 @@
 export * from './k8s-deployment.model';
 export * from './k8s-deployment-request.model';
-export * from './k8s-endpoints.model';
 export * from './k8s-instance.model';
 export * from './k8s-namespace.model';
 export * from './k8s-namespace-request.model';

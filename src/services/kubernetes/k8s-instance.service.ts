@@ -1,12 +1,13 @@
 import { bind, BindingScope, inject, lifeCycleObserver } from '@loopback/core';
 import { K8sServiceManager } from './k8s-service.manager';
-import { K8sInstance, Instance, K8sServiceRequest, K8sDeploymentRequest } from '../../models';
+import { Instance, K8sDeploymentRequest, K8sInstance, K8sServiceRequest } from '../../models';
 import { K8sRequestFactoryService } from './k8s-request-factory.service';
 import { K8sDeploymentManager } from './k8s-deployment.manager';
 import { KubernetesDataSource } from '../../datasources';
 import { logger } from '../../utils';
 import { K8sNamespaceManager } from './k8s-namespace.manager';
 import * as uuidv4 from 'uuid/v4';
+import { K8sNodeService } from './k8s-node.service';
 
 @lifeCycleObserver('server')
 @bind({ scope: BindingScope.SINGLETON })
@@ -15,6 +16,7 @@ export class K8sInstanceService {
   private _deploymentManager: K8sDeploymentManager;
   private _serviceManager: K8sServiceManager;
   private _namespaceManager: K8sNamespaceManager;
+  private _nodeService: K8sNodeService;
 
   private _defaultNamespace = 'panosc';
 
@@ -34,6 +36,10 @@ export class K8sInstanceService {
     return this._namespaceManager;
   }
 
+  get nodeService(): K8sNodeService {
+    return this._nodeService;
+  }
+
   get requestFactoryService(): K8sRequestFactoryService {
     return this._requestFactoryService;
   }
@@ -42,23 +48,23 @@ export class K8sInstanceService {
     this._deploymentManager = new K8sDeploymentManager(dataSource);
     this._serviceManager = new K8sServiceManager(dataSource);
     this._namespaceManager = new K8sNamespaceManager(dataSource);
+    this._nodeService = new K8sNodeService(dataSource);
   }
 
 
-  async getWithComputeId(computeId: string): Promise<K8sInstance> {
-    try {
-      const deployment = await this._deploymentManager.getWithComputeId(computeId, this.defaultNamespace);
-      const service = await this._serviceManager.getWithComputeId(computeId, this.defaultNamespace);
-      const endpoints = await this._serviceManager.getServiceEndpointsWithComputeId(computeId, this.defaultNamespace);
-      const k8sInstance = new K8sInstance(deployment, service, endpoints, computeId);
-      if (k8sInstance.isValid()) {
-        return k8sInstance;
-      } else {
-        return null;
-      }
-    } catch (error) {
-      throw(error);
+  async get(computeId: string): Promise<K8sInstance> {
+    const deployment = await this._deploymentManager.getWithComputeId(computeId, this.defaultNamespace);
+    if (deployment == null) {
+      await this.delete(computeId);
+      return null;
     }
+    const service = await this._serviceManager.getWithComputeId(computeId, this.defaultNamespace);
+    if (service == null) {
+      await this.delete(computeId);
+      return null;
+    }
+    const masterNode = await this._nodeService.getMaster();
+    return new K8sInstance(deployment, service, computeId, masterNode.hostname);
   }
 
   async create(instance: Instance): Promise<K8sInstance> {
@@ -68,48 +74,40 @@ export class K8sInstanceService {
     await this.namespaceManager.createIfNotExist(defaultNamespaceRequest);
     const instanceComputeId = await this.UUIDGenerator(instance.name);
     const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest({
-      name: instanceComputeId, 
+      name: instanceComputeId,
       image: image,
-      flavour: flavour});
+      flavour: flavour
+    });
     const serviceRequest = this._requestFactoryService.createK8sServiceRequest({
-      name: instanceComputeId, 
-      image: image});
-    const deploymentServiceConnection = this.verifyDeploymentServiceConnection(deploymentRequest, serviceRequest);
-    if (deploymentServiceConnection) {
-      logger.debug('Creating Deployment in Kubernetes');
-      const deployment = await this._deploymentManager.create(
-        deploymentRequest,
-        this._defaultNamespace
-      );
-      logger.debug('Creating Service in Kubernetes');
-      const service = await this._serviceManager.create(serviceRequest, this._defaultNamespace);
-      const endpoints = await this._serviceManager.getServiceEndpointsWithComputeId(instanceComputeId, this.defaultNamespace);
-      const k8sInstance = new K8sInstance(deployment, service, endpoints, instanceComputeId);
-
-      if (k8sInstance.isValid()) {
-        return k8sInstance;
-      } else {
-        logger.debug('k8sInstance was not valid');
-        if (service) {
-          await this._serviceManager.deleteWithComputeId(deploymentRequest.name, this._defaultNamespace);
-        }
-        if (deployment) {
-          await this._deploymentManager.deleteWithComputeId(deploymentRequest.name, this._defaultNamespace);
-        }
-        return null;
-      }
-    } else {
-      throw new Error('Service and deployment are not connected');
+      name: instanceComputeId,
+      image: image
+    });
+    logger.debug('Creating Deployment in Kubernetes');
+    const deployment = await this._deploymentManager.create(
+      deploymentRequest,
+      this._defaultNamespace
+    );
+    if (deployment == null) {
+      await this.delete(instanceComputeId);
+      return null;
     }
+    logger.debug('Creating Service in Kubernetes');
+    const service = await this._serviceManager.create(serviceRequest, this._defaultNamespace);
+    if (service === null) {
+      await this.delete(instanceComputeId);
+      return null;
+    }
+    const masterNode = await this._nodeService.getMaster();
+    return new K8sInstance(deployment, service, instanceComputeId, masterNode.hostname);
+
   }
 
-  async deleteWithComputeId(instanceComputeId: string): Promise<boolean> {
+  async delete(instanceComputeId: string) {
     try {
-      //TODO: verify usage with instanceService
       await this._serviceManager.deleteWithComputeId(instanceComputeId, this._defaultNamespace);
       await this._deploymentManager.deleteWithComputeId(instanceComputeId, this._defaultNamespace);
       return true;
-    
+
     } catch (error) {
       logger.error(error);
       return false;
@@ -130,13 +128,6 @@ export class K8sInstanceService {
       unique = deployment == null && service == null;
     }
     return instanceComputeId;
-  }
-
-  // Verify if deployment and service are connected
-  verifyDeploymentServiceConnection(deploymentRequest: K8sDeploymentRequest, serviceRequest: K8sServiceRequest) {
-    const deploymentAppLabel = deploymentRequest.model.spec.template.metadata.labels.app;
-    const serviceAppLabel = serviceRequest.model.spec.selector.app;
-    return deploymentAppLabel === serviceAppLabel;
   }
 
   async initDefaultNamespace(): Promise<void> {

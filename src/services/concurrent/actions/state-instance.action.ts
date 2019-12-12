@@ -21,7 +21,7 @@ export class StateInstanceAction extends InstanceAction {
         return;
       }
 
-      const k8sInstance = await this.k8sInstanceService.getWithComputeId(computeId);
+      const k8sInstance = await this.k8sInstanceService.get(computeId);
       let nextInstanceState: InstanceState;
       if (k8sInstance == null) {
         if (currentInstanceStatus !== InstanceStatus.REBOOTING && currentInstanceStatus !== InstanceStatus.STOPPING) {

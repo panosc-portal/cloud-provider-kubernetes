@@ -1,7 +1,5 @@
 import { expect } from '@loopback/testlab';
 import { createTestApplicationContext } from '../../../helpers/context.helper';
-import { K8sDeploymentManager, K8sNamespaceManager } from '../../../../services';
-import { K8sDeploymentRequest, K8sNamespaceRequest } from '../../../../models';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 import { K8sNodeService } from '../../../../services/kubernetes/k8s-node.service';
 
@@ -11,7 +9,7 @@ describe('K8sNodeService', () => {
 
   before('getK8sDeploymentManager', async () => {
     const testApplicationContext = createTestApplicationContext();
-    k8sNodeService = testApplicationContext.k8sNodeService;
+    k8sNodeService = testApplicationContext.k8sInstanceService.nodeService;
   });
 
   beforeEach('startMockServer', async () => {
@@ -26,4 +24,21 @@ describe('K8sNodeService', () => {
     const k8sNodes = await k8sNodeService.getAll();
     expect(k8sNodes).to.not.be.null();
   });
+
+  it('get master node', async () => {
+    const k8sMaster = await k8sNodeService.getMaster();
+    expect(k8sMaster).to.not.be.null();
+  });
+
+  it('get specific node', async () => {
+    const k8sNode = await k8sNodeService.get('k8s-test-master-1');
+    expect(k8sNode).to.not.be.null();
+  });
+
+  it('get specific non existent node', async () => {
+    const k8sNode = await k8sNodeService.get('k8s-test-no-1');
+    expect(k8sNode).to.be.null();
+  });
+
+
 });

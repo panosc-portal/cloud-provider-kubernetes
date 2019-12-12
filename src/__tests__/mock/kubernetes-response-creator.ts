@@ -1,5 +1,24 @@
 export default class K8SResponseCreator {
-  getService(name: string, namespace: string, ports: {name: string, port: number}[]) {
+  _usedNodePorts = [];
+
+  chooseRandomNodePort() {
+    const minNodePort = 30000;
+    const maxNodePort = 32767;
+    const freeNodePortFound = false;
+    while (freeNodePortFound === false) {
+      const nodePort = Math.floor(Math.random() * (maxNodePort - minNodePort + 1) + minNodePort);
+      if (this._usedNodePorts.includes(nodePort) === false) {
+        this._usedNodePorts.push(nodePort);
+        return nodePort;
+      }
+    }
+  }
+
+
+  getService(name, namespace, ports, selector) {
+    for (const port of ports) {
+      port['nodePort'] = this.chooseRandomNodePort();
+    }
 
     return {
       kind: 'Service',
@@ -8,27 +27,21 @@ export default class K8SResponseCreator {
         namespace: namespace
       },
       spec: {
-        ports: ports.map(port => { return {name: port.name, port: port.port, nodePort: 32000 + Math.random() * 2767}}),
+        ports: ports,
+        selector: selector
       }
     };
   }
 
-  getDeployment(name: string, namespace: string, ports: number[]) {
+  getDeployment(request) {
     return {
       kind: 'Deployment',
       metadata: {
-        name: name,
-        namespace: namespace
+        name: request.metadata.name,
+        namespace: request.metadata.namespace
       },
       spec: {
-        template: {
-          spec: {
-            containers: [{
-              name: name,
-              ports: ports.map(port => {return {containerPort: port}})
-            }]
-          }
-        }
+        template: request.spec.template
       },
       status: {
         conditions: [{
@@ -62,8 +75,7 @@ export default class K8SResponseCreator {
         details: {
           name: name,
           group: 'apps',
-          kind: kind,
-          uid: 'e61d06eb-11ee-11ea-bbcb-025000000001'
+          kind: kind
         }
       }
     };
@@ -93,18 +105,22 @@ export default class K8SResponseCreator {
           cpu: node.cpu,
           memory: node.memory
         },
-        addresses: {
-          0: {
+        addresses: [
+          {
             type: 'InternalIP',
             address: node.address
+          },
+          {
+            type: 'HostName',
+            address: node.name
           }
-        }
+        ]
       }
     };
   }
 
-  getNodeList(nodes) {
-    let nodeListItems = [];
+  getNodeListResponse(nodes) {
+    const nodeListItems = [];
     for (const node of nodes) {
       nodeListItems.push(this.getNode(node));
     }
@@ -115,7 +131,17 @@ export default class K8SResponseCreator {
     };
   };
 
+  getNodeResponse(node) {
+    const nodeItem = this.getNode(node);
+    return {
+      kind: 'Node',
+      nodeItem
+    };
+  }
+
   getEndpoint(service: any) {
+
+
     return {
       kind: 'Endpoints',
       apiVersion: 'v1',
@@ -128,7 +154,9 @@ export default class K8SResponseCreator {
             ip: '192.168.140.1'
           }
         ],
-        ports: service.spec.ports.map(port => {return {name: port.name, port: port.port}}),
+        ports: service.spec.ports.map(port => {
+          return { name: port.name, port: port.port };
+        })
       }]
     };
   }

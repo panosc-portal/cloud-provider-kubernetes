@@ -1,5 +1,4 @@
-import { K8sDeployment } from '../../models/kubernetes';
-import { K8sEndpoints } from '../../models/kubernetes';
+import { K8sDeployment, K8sService } from '../../models/kubernetes';
 import { K8sInstanceState } from '../../models/kubernetes';
 import { logger } from '../../utils';
 import { K8sInstanceStatus } from '../../models/enumerations';
@@ -28,8 +27,8 @@ interface K8sDeploymentState {
 
 export class K8sInstanceStatusHelper {
 
-  static getK8sInstanceState(deployment: K8sDeployment, endpoints: K8sEndpoints): K8sInstanceState {
-    const sameInstance = K8sInstanceStatusHelper.verifySameInstance(deployment, endpoints);
+  static getK8sInstanceState(deployment: K8sDeployment, service: K8sService): K8sInstanceState {
+    const sameInstance = K8sInstanceStatusHelper.verifySameInstance(deployment, service);
     if (sameInstance) {
       const deploymentState = K8sInstanceStatusHelper.getK8sDeploymentState(deployment);
       const deploymentStatus = deploymentState.status;
@@ -40,7 +39,7 @@ export class K8sInstanceStatusHelper {
       } else if (deploymentStatus === 'UNKNOWN') {
         return new K8sInstanceState(K8sInstanceStatus.UNKNOWN);
       } else if (deploymentStatus === 'ACTIVE') {
-        const serviceState = K8sInstanceStatusHelper.getK8sServiceState(endpoints, deployment);
+        const serviceState = K8sInstanceStatusHelper.getK8sServiceState(service, deployment);
         const serviceStatus = serviceState.status;
         if (serviceStatus === 'ERROR') {
           return new K8sInstanceState(K8sInstanceStatus.ERROR, serviceState.message);
@@ -51,8 +50,8 @@ export class K8sInstanceStatusHelper {
     }
   }
 
-  static getK8sServiceState(endpoints: K8sEndpoints, deployment: K8sDeployment): K8sServiceState {
-    const endpointSubsets = endpoints.subsets;
+  static getK8sServiceState(service: K8sService, deployment: K8sDeployment): K8sServiceState {
+    const endpointSubsets = service.endpoints;
     if (endpointSubsets && endpointSubsets.length === 1) {
       const deploymentPorts = deployment.ports;
       const endpointsPorts = endpointSubsets[0].ports;
@@ -103,9 +102,9 @@ export class K8sInstanceStatusHelper {
     }
   }
   
-  static verifySameInstance(deployment: K8sDeployment, endpoints: K8sEndpoints) {
+  static verifySameInstance(deployment: K8sDeployment, service: K8sService) {
     const deploymentName = deployment.name;
-    const endpointsName = endpoints.name;
+    const endpointsName = service.name;
 
     return deploymentName === endpointsName;
   }
