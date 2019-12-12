@@ -83,7 +83,7 @@ export class SchedulerService {
 
   readConfig(): Promise<JobConfig[]> {
     return new Promise((resolve, reject) => {
-      const configFile = process.env.CLOUD_PROVIDER_K8S_SCHEDULER_CONFIG || 'scheduler.config.json';
+      const configFile = process.env.CLOUD_PROVIDER_K8S_SCHEDULER_CONFIG || 'resources/scheduler.config.json';
       if (fs.existsSync(configFile)) {
         fs.readFile(configFile, (err, data) => {
           if (err) {
