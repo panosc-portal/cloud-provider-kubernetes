@@ -131,50 +131,35 @@ export default class K8SResponseCreator {
     };
   };
 
-  getNodeResponse(node) {
-    const nodeItem = this.getNode(node);
-    return {
-      kind: 'Node',
-      nodeItem
-    };
+  getEndpoint(service: any, status: string) {
+    if (status === 'endpoint-error') {
+      return {
+        kind: 'Endpoints',
+        apiVersion: 'v1',
+        metadata: {
+          name: service.metadata.name
+        }
+      };
+    } else {
+      return {
+        kind: 'Endpoints',
+        apiVersion: 'v1',
+        metadata: {
+          name: service.metadata.name
+        },
+        subsets: [{
+          addresses: [
+            {
+              ip: '192.168.140.1'
+            }
+          ],
+          ports: service.spec.ports.map(port => {
+            return { name: port.name, port: port.port };
+          })
+        }]
+      };
+    }
   }
-
-  getEndpoint(service: any) {
-
-
-    return {
-      kind: 'Endpoints',
-      apiVersion: 'v1',
-      metadata: {
-        name: service.metadata.name
-      },
-      subsets: [{
-        addresses: [
-          {
-            ip: '192.168.140.1'
-          }
-        ],
-        ports: service.spec.ports.map(port => {
-          return { name: port.name, port: port.port };
-        })
-      }]
-    };
-  }
-
-  getErrorEndpoint(service: any) {
-    return {
-      kind: 'Endpoints',
-      apiVersion: 'v1',
-      metadata: {
-        name: service.metadata.name
-      }
-    };
-  }
-
-  getErrorDeployment(deployment: any) {
-
-  }
-
 
   getDeletedNamespace(name: string) {
     return {
@@ -186,15 +171,89 @@ export default class K8SResponseCreator {
     };
   }
 
-  getPodList(deployment) {
+  getPodList(deployment, status) {
+    let statusContent;
+    if (status === 'pod-crashLoop') {
+      statusContent = {
+        phase: 'Running', conditions: [
+          {},
+          {
+            type: 'Ready',
+            status: 'False'
+          }
+        ], containerStatuses: [
+          {
+            state: {
+              waiting: {
+                reason: 'CrashLoopBackOff',
+                message: `Back-off 5m0s restarting failed container=${deployment.metadata.name} pod=${deployment.metadata.name}-5586856f79-88d58_default(053b037e-8c00-47ec-a4b5-bf475ebad666)`
+              }
+            },
+            ready: true
+          }]
+      };
+    } else if (status === 'pod-ContainerCreatingTimeout') {
+      statusContent = {
+        phase: 'Pending', conditions: [
+          {},
+          {
+            type: 'Ready',
+            status: 'False'
+          }
+        ], containerStatuses: [
+          {
+            state: {
+              waiting: {
+                reason: 'ContainerCreating'
+              }
+            },
+            ready: false
+          }]
+      };
+    } else if (status === 'pod-ErrImagePull') {
+      statusContent = {
+        phase: 'Pending', conditions: [
+          {},
+          {
+            type: 'Ready',
+            status: 'False'
+          }
+        ], containerStatuses: [
+          {
+            state: {
+              waiting: {
+                reason: 'ErrImagePull',
+                message: `rpc error: code = Unknown desc = Error response from daemon: pull access denied for danielguerra/ubun, repository does not exist or may require \'docker login\': denied: requested access to the resource is denied`
+              }
+            },
+            ready: false
+          }]
+      };
+    } else {
+      statusContent = {
+        phase: 'Running', conditions: [
+          {},
+          {
+            type: 'Ready',
+            status: 'True'
+          }
+        ],
+        containerStatuses: [
+          {
+            state: {
+              running: {}
+            },
+            ready: true
+          }]
+      };
+    }
     return {
       kind: 'PodList',
       items: [{
-        metadata: { name: `${deployment.metadata.name}-12DD-46FV` },
-        status: { phase: 'Running' }
+        metadata: { name: `${deployment.metadata.name}-12DD-46FV`, creationTimestamp: '2019-12-13T11:40:52Z' },
+        status: statusContent
       }]
     };
-
   }
 
 }

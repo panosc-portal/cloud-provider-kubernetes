@@ -69,7 +69,7 @@ export class K8sServiceManager {
 
   async deleteWithComputeId(computeId: string, namespace: string): Promise<boolean> {
     try {
-      const deletedService = await this._dataSource.K8sClient.api.v1
+      await this._dataSource.K8sClient.api.v1
         .namespaces(namespace)
         .services(computeId)
         .delete();

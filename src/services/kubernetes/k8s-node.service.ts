@@ -45,7 +45,7 @@ export class K8sNodeService {
         return null;
       }
     } catch (error) {
-      if (error.statusCode == 404) {
+      if (error.statusCode === 404) {
         return null;
       }
       logger.error(error.message);

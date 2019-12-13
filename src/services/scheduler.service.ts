@@ -52,7 +52,7 @@ export class SchedulerService {
             let jobIsOk = true;
   
             // Inject dependencies
-            for (var dependency in jobClass.dependencies) {
+            for (const dependency in jobClass.dependencies) {
               const injectionIdentifier = jobClass.dependencies[dependency];
               const injection = await this._application.get(injectionIdentifier);
               if (injection != null) {

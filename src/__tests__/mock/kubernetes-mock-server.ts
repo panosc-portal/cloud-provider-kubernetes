@@ -10,7 +10,8 @@ const logger = buildLogger('[K8S Mock Server]');
 export class KubernetesMockServer {
   private _server = null;
   private _port = 3001;
-  //private _defaultObjectName ='defaultNameInstance';
+  private _defaultInstance = 'default-instance';
+  private _error = { state: false, type: null };
   private _createdDeployments = new Map();
   private _createdServices = new Map();
   private _createdNamespaces = new Map();
@@ -50,12 +51,19 @@ export class KubernetesMockServer {
     });
 
     app.get('/api/v1/namespaces/:namespace/pods', (req, res) => {
-      const labelSelector = req.query.labelSelector;
+      let labelSelector;
+      if (this._error.state) {
+        labelSelector = `app=${this._defaultInstance}`;
+      } else {
+        labelSelector = req.query.labelSelector;
+
+      }
       const namespace = req.params.namespace;
       const label = labelSelector.split('=')[1];
       logger.info(`Getting pods with label ${labelSelector} from namespace ${namespace}`);
       const deployment = this._createdDeployments.get(`${namespace}.${label}`);
-      const response = k8sResponseCreator.getPodList(deployment);
+
+      const response = k8sResponseCreator.getPodList(deployment, this._error.type);
       if (response != null) {
         res.status(200).send(response);
       } else {
@@ -89,23 +97,18 @@ export class KubernetesMockServer {
 
     app.get('/api/v1/namespaces/:namespace/endpoints/:service', (req, res) => {
       const namespace = req.params.namespace;
-      let serviceName = req.params.service;
       let response;
-      let endpointError = false;
-      if (serviceName === 'error-service') {
-        logger.info(`Getting error endpoint for service ${serviceName} from namespace ${namespace}`);
-        serviceName = 'default-instance';
-        endpointError = true;
-      } else {
-        logger.info(`Getting endpoint for service ${serviceName} from namespace ${namespace}`);
+
+      if (this._error.state) {
+        req.params.service = this._defaultInstance;
       }
+      const serviceName = req.params.service;
+
+      logger.info(`Getting endpoint for service ${serviceName} from namespace ${namespace}`);
       const service = this._createdServices.get(`${namespace}.${serviceName}`);
       if (service != null) {
-        if (endpointError) {
-          response = k8sResponseCreator.getErrorEndpoint(service);
-        } else {
-          response = k8sResponseCreator.getEndpoint(service);
-        }
+        response = k8sResponseCreator.getEndpoint(service, this._error.type);
+
         if (response != null) {
           res.status(200).send(response);
         } else {
@@ -149,9 +152,13 @@ export class KubernetesMockServer {
 
     app.post('/apis/apps/v1/namespaces/:namespace/deployments', jsonParser, (req, res) => {
       const namespace = req.params.namespace;
-      let deploymentName = req.body.metadata.name;
-      let deploymentError = false;
       let response;
+
+      this.errorManager(req.body.metadata.name);
+      if (this._error.state === true) {
+        req.body.metadata.name = this._defaultInstance;
+      }
+      const deploymentName = req.body.metadata.name;
 
       try {
         this.deploymentServiceValid(req.body);
@@ -159,20 +166,12 @@ export class KubernetesMockServer {
         logger.error(error.message);
         res.sendStatus(500);
       }
+
       logger.info(`Posting deployment ${deploymentName} in namespace ${namespace}`);
       if (this._createdNamespaces.get(namespace) != null) {
-        if (deploymentName == 'error-deployment') {
-          logger.info(`Getting error endpoint for service ${deploymentName} from namespace ${namespace}`);
-          deploymentName = 'default-instance';
-          deploymentError = true;
-        }
         const deploymentExist = this._createdDeployments.get(`${namespace}.${deploymentName}`);
         if (deploymentExist == null) {
-          if (deploymentError) {
-            response = k8sResponseCreator.getErrorDeployment(req.body);
-          } else {
-            response = k8sResponseCreator.getDeployment(req.body);
-          }
+          response = k8sResponseCreator.getDeployment(req.body);
           this._createdDeployments.set(`${namespace}.${deploymentName}`, response);
           res.status(200).send(response);
         } else {
@@ -205,7 +204,13 @@ export class KubernetesMockServer {
 
     app.post('/api/v1/namespaces/:namespace/services', jsonParser, (req, res) => {
       const namespace = req.params.namespace;
-      let serviceName = req.body.metadata.name;
+
+      this.errorManager(req.body.metadata.name);
+      if (this._error.state) {
+        req.body.metadata.name = this._defaultInstance;
+      }
+      const serviceName = req.body.metadata.name;
+
       try {
         this.deploymentServiceValid(req.body);
       } catch (error) {
@@ -214,9 +219,6 @@ export class KubernetesMockServer {
       }
       logger.info(`Posting service ${serviceName} in namespace ${namespace}`);
       if (this._createdNamespaces.get(namespace) != null) {
-        if (serviceName.startsWith('error')) {
-          serviceName = 'default-instance';
-        }
         const serviceExist = this._createdServices.get(`${namespace}.${serviceName}`);
         if (serviceExist == null) {
           const response = k8sResponseCreator.getService(
@@ -295,8 +297,20 @@ export class KubernetesMockServer {
     }
   }
 
-  errorManager(object) {
-
+  errorManager(objectName) {
+    if (objectName === 'pod-crashLoop') {
+      logger.info(`Running error pod crashLoop mode`);
+      this._error = { state: true, type: objectName };
+    }else if(objectName ==='pod-ContainerCreatingTimeout'){
+      logger.info(`Running error pod ContainerCreatingTimeout state mode`);
+      this._error = { state: true, type: objectName };
+    }else if(objectName ==='pod-ErrImagePull'){
+      logger.info(`Running error pod ErrImagePull state mode`);
+      this._error = { state: true, type: objectName };
+    } else if (objectName === 'endpoint-error') {
+      logger.info(`Running error endpoint state mode`);
+      this._error = { state: true, type: objectName };
+    }
   }
 
   deploymentServiceValid(request) {

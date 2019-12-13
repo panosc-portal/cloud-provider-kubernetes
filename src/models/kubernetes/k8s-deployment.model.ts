@@ -3,10 +3,6 @@ export class K8sDeployment {
     return this.isValid() ? this._k8sDeploymentResponse.metadata.name : null;
   }
 
-  get statuses(): any {
-    return this.isValid() ? this._k8sDeploymentResponse.status.conditions : null;
-  }
-
   get containers(): any {
     return this.isValid() ? this._k8sDeploymentResponse.spec.template.spec.containers : null;
   }
@@ -30,6 +26,15 @@ export class K8sDeployment {
 
   get labels() {
     return this.isValid() ? this._k8sDeploymentResponse.spec.template.metadata.labels : null;
+  }
+
+  get podStatus() {
+    return this.isValid() ? this._k8sPodListResponse.items[0].status : null;
+
+  }
+
+  get podCreationTime() {
+    return this.isValid() ? this._k8sPodListResponse.items[0].metadata.creationTimestamp : null;
   }
 
 
@@ -67,12 +72,14 @@ export class K8sDeployment {
       this._k8sPodListResponse.kind === 'PodList' &&
       this._k8sPodListResponse.items != null &&
       this._k8sPodListResponse.items[0] != null &&
-      this._k8sPodListResponse.items.length == 1 &&
+      this._k8sPodListResponse.items.length === 1 &&
       this._k8sPodListResponse.items[0].metadata != null &&
       this._k8sPodListResponse.items[0].metadata.name != null &&
+      this._k8sPodListResponse.items[0].metadata.creationTimestamp != null &&
       this._k8sPodListResponse.items[0].status != null &&
       this._k8sPodListResponse.items[0].status.phase != null
     );
   }
+
 
 }

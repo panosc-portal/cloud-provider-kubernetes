@@ -1,6 +1,6 @@
 import { bind, BindingScope, inject, lifeCycleObserver } from '@loopback/core';
 import { K8sServiceManager } from './k8s-service.manager';
-import { Instance, K8sDeploymentRequest, K8sInstance, K8sServiceRequest } from '../../models';
+import { Instance, K8sInstance } from '../../models';
 import { K8sRequestFactoryService } from './k8s-request-factory.service';
 import { K8sDeploymentManager } from './k8s-deployment.manager';
 import { KubernetesDataSource } from '../../datasources';
