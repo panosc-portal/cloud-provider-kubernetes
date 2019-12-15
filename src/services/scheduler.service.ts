@@ -60,7 +60,7 @@ export class SchedulerService {
 
               } else {
                 jobIsOk = false;
-                console.error(`Dependency '${injectionIdentifier}' in Job class '${jobConfig.jobClass}' could not be found`);
+                logger.error(`Dependency '${injectionIdentifier}' in Job class '${jobConfig.jobClass}' could not be found`);
               }
             }
     
@@ -71,7 +71,7 @@ export class SchedulerService {
             }
           
           } else {
-            console.error(`Job class '${jobConfig.jobClass}' specified in scheduler config does not exist`);
+            logger.error(`Job class '${jobConfig.jobClass}' specified in scheduler config does not exist`);
           }
         });
       }

@@ -13,7 +13,7 @@ export class CreateInstanceAction extends InstanceAction {
     const instance = this.instance;
 
     try {
-      logger.info(`Creating instance ${instance.id}`)
+      logger.info(`Creating kubernetes instance ${instance.id}`)
 
       // Update instance state
       await this._updateInstanceState(new InstanceState({status: InstanceStatus.BUILDING, message: '', cpu: 0, memory: 0}));
@@ -21,7 +21,7 @@ export class CreateInstanceAction extends InstanceAction {
       await this._createK8sInstance();
 
     } catch (error) {
-      logger.error(`Error creating instance with Id ${instance.id}: ${error.message}`);
+      logger.error(`Error creating kubernetes instance with Id ${instance.id}: ${error.message}`);
       throw error;
     }
   }

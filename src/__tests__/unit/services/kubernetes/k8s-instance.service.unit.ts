@@ -13,6 +13,7 @@ import {
 } from '../../../../models/kubernetes';
 import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
+import { Instance } from '../../../../models';
 
 describe('K8sInstanceService', () => {
   let k8sInstanceService: K8sInstanceService;
@@ -88,49 +89,25 @@ describe('K8sInstanceService', () => {
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
 
-    const deploymentRequest = k8sInstanceService.requestFactoryService.createK8sDeploymentRequest({
-      name: 'default-instance',
-      image: image,
-      flavour: flavour
-    });
-    const deployment = await k8sDeploymentManager.create(deploymentRequest, 'panosc');
+    const instance = new Instance({id: 999, image: image, flavour: flavour, name: 'endpoint-error'});
 
-    const serviceRequest = k8sInstanceService.requestFactoryService.createK8sServiceRequest({
-      name: 'endpoint-error',
-      image: image
-    });
-    const service = await k8sServiceManager.create(serviceRequest, 'panosc');
+    const k8sInstance = await k8sInstanceService.create(instance);
 
-
-    const node = await k8sNodeService.getMaster();
-    const k8sInstance = new K8sInstance(deployment, service, 'test-instance', node.hostname);
     expect(k8sInstance).not.to.be.null();
     expect(k8sInstance.state.status).to.be.equal('ERROR');
   });
 
-it('create instance with deployment error pod BackOff', async () => {
+  it('create instance with deployment error pod BackOff', async () => {
     const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
     expect(k8sNamespace).to.not.be.null();
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
 
-    const deploymentRequest = k8sInstanceService.requestFactoryService.createK8sDeploymentRequest({
-      name: 'pod-crashLoop',
-      image: image,
-      flavour: flavour
-    });
-    const deployment = await k8sDeploymentManager.create(deploymentRequest, 'panosc');
+    const instance = new Instance({id: 999, image: image, flavour: flavour, name: 'pod-crash-loop'});
 
-    const serviceRequest = k8sInstanceService.requestFactoryService.createK8sServiceRequest({
-      name: 'default-instance',
-      image: image
-    });
-    const service = await k8sServiceManager.create(serviceRequest, 'panosc');
+    const k8sInstance = await k8sInstanceService.create(instance);
 
-
-    const node = await k8sNodeService.getMaster();
-    const k8sInstance = new K8sInstance(deployment, service, 'test-instance', node.hostname);
     expect(k8sInstance).not.to.be.null();
     expect(k8sInstance.state.status).to.be.equal('ERROR');
 
@@ -143,22 +120,10 @@ it('create instance with deployment error pod BackOff', async () => {
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
 
-    const deploymentRequest =  k8sInstanceService.requestFactoryService.createK8sDeploymentRequest({
-      name: 'pod-ContainerCreatingTimeout',
-      image: image,
-      flavour: flavour
-    });
-    const deployment = await k8sDeploymentManager.create(deploymentRequest, 'panosc');
+    const instance = new Instance({id: 999, image: image, flavour: flavour, name: 'pod-container-creating-timeout'});
 
-    const serviceRequest = k8sInstanceService.requestFactoryService.createK8sServiceRequest({
-      name: 'default-instance',
-      image: image
-    });
-    const service = await k8sServiceManager.create(serviceRequest, 'panosc');
+    const k8sInstance = await k8sInstanceService.create(instance);
 
-
-    const node = await k8sInstanceService.nodeService.getMaster();
-    const k8sInstance = new K8sInstance(deployment, service, 'test-instance', node.hostname);
     expect(k8sInstance).not.to.be.null();
     expect(k8sInstance.state.status).to.be.equal('ERROR');
   });
@@ -170,22 +135,10 @@ it('create instance with deployment error pod BackOff', async () => {
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
 
-    const deploymentRequest = k8sInstanceService.requestFactoryService.createK8sDeploymentRequest({
-      name: 'pod-ErrImagePull',
-      image: image,
-      flavour: flavour
-    });
-    const deployment = await k8sDeploymentManager.create(deploymentRequest, 'panosc');
+    const instance = new Instance({id: 999, image: image, flavour: flavour, name: 'pod-err-image-pull'});
 
-    const serviceRequest = k8sInstanceService.requestFactoryService.createK8sServiceRequest({
-      name: 'default-instance',
-      image: image
-    });
-    const service = await k8sServiceManager.create(serviceRequest, 'panosc');
+    const k8sInstance = await k8sInstanceService.create(instance);
 
-
-    const node = await k8sNodeService.getMaster();
-    const k8sInstance = new K8sInstance(deployment, service, 'test-instance', node.hostname);
     expect(k8sInstance).not.to.be.null();
     expect(k8sInstance.state.status).to.be.equal('ERROR');
 

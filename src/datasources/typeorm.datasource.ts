@@ -2,6 +2,7 @@ import { Connection, createConnection, EntityManager, ObjectType, Repository } f
 import { lifeCycleObserver, LifeCycleObserver, inject, CoreBindings } from '@loopback/core';
 import { logger } from '../utils';
 import { CloudProviderKubernetesApplication } from '..';
+import { timeout } from 'cron';
 
 @lifeCycleObserver('datasource')
 export class TypeORMDataSource implements LifeCycleObserver {
@@ -9,6 +10,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
 
   private _config: any;
   private _connection: Connection;
+  private _connectionPromise: Promise<Connection>;
 
   constructor(/*@inject(CoreBindings.APPLICATION_INSTANCE) private application?: CloudProviderKubernetesApplication*/) {
     this._config = {
@@ -53,12 +55,16 @@ export class TypeORMDataSource implements LifeCycleObserver {
 
   async connection(): Promise<Connection> {
     try {
-      if (this._connection == null) {
-        const connection = await createConnection(this._config);
-        this._connection = connection;
+      let connection = this._connection;
+      if (connection == null && this._connectionPromise == null) {
+        this._connectionPromise = createConnection(this._config);
+        connection = this._connection = await this._connectionPromise;
+
+      } else if (connection == null && this._connectionPromise != null) {
+        connection = await this._connectionPromise;
       }
 
-      return this._connection;
+      return connection;
     } catch (error) {
       logger.error(error.message);
       process.exit();

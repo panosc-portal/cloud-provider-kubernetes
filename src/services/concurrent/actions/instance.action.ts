@@ -1,6 +1,7 @@
 import { InstanceCommand, Instance, InstanceCommandType, InstanceState, InstanceStatus, K8sInstance, ProtocolName, InstanceProtocol } from '../../../models';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
+import { logger } from '../../../utils';
 
 const noop = function() {};
 
@@ -64,20 +65,35 @@ export abstract class InstanceAction {
 
   protected async _createK8sInstance(): Promise<K8sInstance> {
     const instance = this.instance;
-    const k8sInstance = await this.k8sInstanceService.create(instance);
+    let k8sInstance: K8sInstance = null;
 
-    // Get compute Id
-    instance.computeId = k8sInstance.computeId;
+    try {
+      k8sInstance = await this.k8sInstanceService.create(instance);
 
-    // Get status of k8sInstance and set in instance
-    instance.state = new InstanceState({status: InstanceStatus[k8sInstance.state.status], message: k8sInstance.state.message});
-
-    // Get IP Address
-    instance.hostname = k8sInstance.hostname;
-
-    // Get protocols
-    instance.protocols = k8sInstance.protocols.map(k8sProtocol => 
-      new InstanceProtocol({name: ProtocolName[k8sProtocol.name.toUpperCase()], port: k8sProtocol.externalPort}));
+      // Get compute Id
+      instance.computeId = k8sInstance.computeId;
+  
+      // Get status of k8sInstance and set in instance
+      instance.state = new InstanceState({status: InstanceStatus[k8sInstance.state.status], message: k8sInstance.state.message});
+  
+      // Get IP Address
+      instance.hostname = k8sInstance.hostname;
+  
+      // Get protocols
+      instance.protocols = k8sInstance.protocols.map(k8sProtocol => {
+        const protocol = new InstanceProtocol({name: ProtocolName[k8sProtocol.name.toUpperCase()], port: k8sProtocol.externalPort});
+        if (protocol.name != null) {
+          return protocol;
+        } else {
+          logger.warn(`Kubernetes instance protocol '${k8sProtocol.name} is not recognised`);
+          return null;
+        }
+      }).filter(protocol => protocol != null);
+  
+    } catch (error) {
+      logger.error(error.message);
+      instance.state = new InstanceState({status: InstanceStatus.ERROR, message: error.message});
+    }
 
     await this.instanceService.save(instance);
 

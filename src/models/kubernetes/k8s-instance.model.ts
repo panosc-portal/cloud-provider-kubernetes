@@ -24,7 +24,6 @@ export class K8sInstance {
     return this._state;
   }
 
-
   get currentCpu(): number {
     // TODO : get current CPU
     return 0;

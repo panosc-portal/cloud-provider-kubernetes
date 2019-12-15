@@ -53,7 +53,7 @@ export class StateInstanceAction extends InstanceAction {
         nextInstanceState.status = InstanceStatus.DELETING;
       
       } else if (currentInstanceStatus === InstanceStatus.BUILDING && nextInstanceState.status === InstanceStatus.ACTIVE) {
-        // TODO Check ports are open
+        // Check ports are open
         const portsOpenPromises = [];
         this.instance.protocols.forEach(protocol => {
           portsOpenPromises.push(isPortReachable(protocol.port, {host: instance.hostname }));
@@ -65,7 +65,7 @@ export class StateInstanceAction extends InstanceAction {
         }
       }
 
-      this._updateInstanceState(nextInstanceState);
+      await this._updateInstanceState(nextInstanceState);
 
     } catch (error) {
       logger.error(`Error getting state instance with Id ${instance.id}: ${error.message}`);

@@ -9,41 +9,47 @@ export class K8sNamespaceManager {
 
   async getWithName(name: string) {
     try {
+      logger.debug(`Getting kubernetes namespace '${name}'`);
       const namespace = await this._dataSource.K8sClient.api.v1.namespaces(name).get();
-      const k8sNamespace = new K8sNamespace(namespace.body);
+      const k8sNamespace = new K8sNamespace(name, namespace.body);
       if (k8sNamespace.isValid()) {
+        logger.debug(`Got kubernetes namespace '${name}'`);
         return k8sNamespace;
+
       } else {
-        return null;
+        logger.error(`Kubernetes namespace '${name}' is not valid`);
+        throw new Error(`Kubernetes namespace '${name}' is not valid`);
       }
+
     } catch (error) {
       if (error.statusCode === 404) {
         return null;
+
       } else {
-        logger.error(error.message);
-        throw new Error(`Did not manage to get deployment ${name}`);
+        logger.error(`Failed to get kubernetes namepsace with name '${name}': ${error.message}`);
+        throw new Error(`Failed to get kubernetes namepsace with name '${name}': ${error.message}`);
       }
     }
   }
 
   async create(namespaceRequest: K8sNamespaceRequest): Promise<K8sNamespace> {
     try {
+      logger.debug(`Creating kubernetes namespace '${namespaceRequest.name}'`);
       const namespace = await this._dataSource.K8sClient.api.v1.namespaces.post({ body: namespaceRequest.model });
-      const newNamespace = new K8sNamespace(namespace.body);
+      const newNamespace = new K8sNamespace(namespaceRequest.name, namespace.body);
+
       if (newNamespace.isValid()) {
         logger.debug('Namespace ' + newNamespace.name + ' has been created');
         return newNamespace;
+
       } else {
-        logger.error('Did not manage to create a kubernetes namespace');
-        return null;
+        logger.error(`Kubernetes namepsace '${namespaceRequest.name}' is not valid`);
+        throw new Error(`Kubernetes namepsace '${namespaceRequest.name}' is not valid`);
       }
+
     } catch (error) {
-      if (error.statusCode === 409) {
-        return null;
-      } else {
-        logger.error(error.message);
-        throw new Error(`Did not manage to create namespace ${namespaceRequest.name}`);
-      }
+      logger.error(`Failed to create k8s namespace '${namespaceRequest.name}': ${error.message}`);
+      throw new Error(`Failed to create k8s namespace '${namespaceRequest.name}': ${error.message}`);
     }
   }
 
@@ -59,18 +65,19 @@ export class K8sNamespaceManager {
 
   async delete(name: string): Promise<boolean> {
     try {
+      logger.debug(`Deleting kubernetes namespace '${name}'`);
       await this._dataSource.K8sClient.api.v1.namespaces(name).delete();
-      logger.debug('Namespace ' + name + ' has been deleted');
+      logger.debug(`Namespace '${name}' has been deleted`);
       return true;
 
     } catch (error) {
       if (error.statusCode === 404) {
-        return false;
-        
+        logger.debug(`Namespace '${name}' does not exist so not deleting`);
+
       } else {
-        logger.error(error.message);
-        throw new Error(`Did not manage to delete namespace ${name}`);
+        logger.error(`Error deleting namespace '${name}': ${error.message}`);
       }
+      return false;
     }
   }
 }

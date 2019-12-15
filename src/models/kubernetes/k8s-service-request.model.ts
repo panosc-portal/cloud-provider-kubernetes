@@ -1,4 +1,5 @@
 import { Image } from "../domain";
+import { logger } from "../../utils";
 
 export interface K8sServiceRequestConfig {
   name: string,
@@ -17,6 +18,9 @@ export class K8sServiceRequest {
   }
 
   constructor(private _config: K8sServiceRequestConfig) {
+    if (_config.image.protocols.length === 0) {
+      logger.warn(`Image ${this._config.name} does not have any protocols`);
+    }
     this._model = {
       apiVersion: 'v1',
       kind: 'Service',
@@ -28,7 +32,7 @@ export class K8sServiceRequest {
       },
       spec: {
         type: 'NodePort',
-        ports: _config.image.protocols.map(protocol => { return {name: protocol.name, port: protocol.port}}),
+        ports: _config.image.protocols.map(protocol => { return {name: protocol.name.toLowerCase(), port: protocol.port}}),
         selector: {
           app: this._config.name
         }

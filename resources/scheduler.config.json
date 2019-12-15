@@ -8,7 +8,7 @@
     {
       "name": "non_stable_instance_state_job",
       "jobClass": "InstanceStateJob",
-      "cronExpression": "*/5 * * * * *",
+      "cronExpression": "* * * * * *",
       "params": {
         "states": ["BUILDING", "STARTING", "REBOOTING", "STOPPING", "DELETED"]
       }

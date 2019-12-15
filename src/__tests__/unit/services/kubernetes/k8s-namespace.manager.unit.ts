@@ -44,7 +44,11 @@ describe('K8sNamespaceManager', () => {
   it('create the same namespace twice', async () => {
     const k8sNamespaceRequest = new K8sNamespaceRequest('testnamespace');
     await k8sNamespaceManager.create(k8sNamespaceRequest);
-    const k8sNamespace2 = await k8sNamespaceManager.create(k8sNamespaceRequest);
+    let k8sNamespace2 = null;
+    try {
+      k8sNamespace2 = await k8sNamespaceManager.create(k8sNamespaceRequest);
+    } catch (error) {
+    }
     expect(k8sNamespace2).to.be.null();
   });
 

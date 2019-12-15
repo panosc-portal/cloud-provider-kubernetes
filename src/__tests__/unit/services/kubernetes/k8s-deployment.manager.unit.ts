@@ -123,7 +123,12 @@ describe('K8sDeploymentManager', () => {
       image: instance.image,
       flavour: instance.flavour
     });
-    const k8sDeployment2 = await k8sDeploymentManager.create(k8sDeploymentRequest2, 'panosc');
+    let k8sDeployment2 = null;
+    try {
+      k8sDeployment2 = await k8sDeploymentManager.create(k8sDeploymentRequest2, 'panosc');
+    } catch (error) {
+      // Expect an error rather than returning null
+    }
     expect(k8sDeployment2).to.be.null();
   });
 

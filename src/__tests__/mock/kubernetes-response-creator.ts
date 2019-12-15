@@ -173,7 +173,7 @@ export default class K8SResponseCreator {
 
   getPodList(deployment, status) {
     let statusContent;
-    if (status === 'pod-crashLoop') {
+    if (status === 'pod-crash-loop') {
       statusContent = {
         phase: 'Running', conditions: [
           {},
@@ -192,7 +192,7 @@ export default class K8SResponseCreator {
             ready: true
           }]
       };
-    } else if (status === 'pod-ContainerCreatingTimeout') {
+    } else if (status === 'pod-container-creating-timeout') {
       statusContent = {
         phase: 'Pending', conditions: [
           {},
@@ -210,7 +210,7 @@ export default class K8SResponseCreator {
             ready: false
           }]
       };
-    } else if (status === 'pod-ErrImagePull') {
+    } else if (status === 'pod-err-image-pull') {
       statusContent = {
         phase: 'Pending', conditions: [
           {},

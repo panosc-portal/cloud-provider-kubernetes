@@ -46,7 +46,7 @@ export class K8sDeploymentRequest {
                 name: this._config.name,
                 image: this._config.image.path,
                 ports: this._config.image.protocols.map(protocol => {
-                  return { name: protocol.name, containerPort: protocol.port };
+                  return { name: protocol.name.toLowerCase(), containerPort: protocol.port };
                 }),
                 resources: {
                   limits: {

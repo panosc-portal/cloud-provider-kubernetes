@@ -8,47 +8,52 @@ export class K8sDeploymentManager {
 
   async getWithComputeId(computeId: string, namespace: string): Promise<K8sDeployment> {
     try {
-      const deployment = await this._dataSource.K8sClient.apis.apps.v1
-        .namespace(namespace)
-        .deployments(computeId)
-        .get();
+      logger.debug(`Getting kubernetes deployment ${computeId} in namespace ${namespace}`);
+      const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespace(namespace).deployments(computeId).get();
       const podList = await this._dataSource.K8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${computeId}` } });
-      const k8sDeployment = new K8sDeployment(deployment.body,podList.body);
+      const k8sDeployment = new K8sDeployment(computeId, deployment.body,podList.body);
+
       if (k8sDeployment.isValid()) {
+        logger.debug(`Got kubernetes deployment '${computeId}' in namespace '${namespace}'`);
         return k8sDeployment;
+      
       } else {
-        return null;
+        logger.error(`Kubernetes deployment with compute Id '${computeId}' is not valid`);
+        throw new Error(`Kubernetes deployment with compute Id '${computeId}' is not valid`);
       }
+
     } catch (error) {
       if (error.statusCode === 404) {
+        logger.debug(`Kubernetes deployment '${computeId}' in namespace '${namespace}' does not exist`);
         return null;
+
       } else {
-        logger.error(error.message);
-        throw new Error(`Did not manage to get deployment ${computeId}`);
+        logger.error(`Failed to get kubernetes deployment with compute Id '${computeId}': ${error.message}`);
+        throw new Error(`Failed to get kubernetes deployment with compute Id '${computeId}': ${error.message}`);
       }
     }
   }
 
   async create(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
     try {
-      const deployment = await this._dataSource.K8sClient.apis.apps.v1
-        .namespaces(namespace)
-        .deployments.post({ body: deploymentRequest.model });
+      logger.debug(`Creating kubernetes deployment '${deploymentRequest.name}' in namespace '${namespace}'`);
+      const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments.post({ body: deploymentRequest.model });
       const podList = await this._dataSource.K8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${deploymentRequest.name}` } });
-      const newDeployment = new K8sDeployment(deployment.body, podList.body);
+      
+      const newDeployment = new K8sDeployment(deploymentRequest.name, deployment.body, podList.body);
+      
       if (newDeployment.isValid()) {
-        logger.debug('Deployment ' + newDeployment.name + ' has been created');
+        logger.debug(`Deployment '${newDeployment.name}' in namespace '${namespace}' has been created`);
         return newDeployment;
+
       } else {
-        logger.error('Did not manage to create a kubernetes deployment');
+        logger.error(`Kubernetes deployment with compute Id '${deploymentRequest.name}' is not valid`);
+        throw new Error(`Kubernetes deployment with compute Id '${deploymentRequest.name}' is not valid`);
       }
+
     } catch (error) {
-      if (error.statusCode === 409) {
-        return null;
-      } else {
-        logger.error(error.message);
-        throw new Error(`Did not manage to create deployment ${deploymentRequest.name}`);
-      }
+      logger.error(`Failed to create k8s deployment with compute Id '${deploymentRequest.name}': ${error.message}`);
+      throw new Error(`Failed to create k8s deployment with compute Id '${deploymentRequest.name}': ${error.message}`);
     }
   }
 
@@ -64,21 +69,19 @@ export class K8sDeploymentManager {
 
   async deleteWithComputeId(computeId: string, namespace: string): Promise<boolean> {
     try {
-      await this._dataSource.K8sClient.apis.apps.v1
-        .namespaces(namespace)
-        .deployments(computeId)
-        .delete();
-      logger.debug(`Deployment  ${computeId} has been deleted`);
+      logger.debug(`Deleting kubernetes deployment '${computeId}' from namespace '${namespace}'`);    
+      await this._dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments(computeId).delete();
+      logger.debug(`Deployment '${computeId}' has been deleted`);
       return true;
 
     } catch (error) {
       if (error.statusCode === 404) {
-        return false;
+        logger.debug(`Deployment '${computeId}' does not exist so not deleting`);
 
       } else {
-        logger.error(error.message);
-        throw new Error(`Did not manage to delete deployment ${computeId} `);
+        logger.error(`Error deleting deployment '${computeId}': ${error.message}`);
       }
+      return false;
     }
   }
 }
