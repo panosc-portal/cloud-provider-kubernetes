@@ -158,7 +158,7 @@ export class KubernetesMockServer {
       if (this._createdNamespaces.get(namespace) != null) {
         const deploymentExist = this._createdDeployments.get(`${namespace}.${deploymentName}`);
         if (deploymentExist == null) {
-          const response = k8sResponseCreator.getDeployment(req.body);
+          const response = k8sResponseCreator.getDeployment(req.body,this._error.type);
           this._createdDeployments.set(`${namespace}.${deploymentName}`, response);
           res.status(200).send(response);
         } else {

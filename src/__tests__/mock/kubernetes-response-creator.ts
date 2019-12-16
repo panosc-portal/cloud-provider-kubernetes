@@ -33,7 +33,28 @@ export default class K8SResponseCreator {
     };
   }
 
-  getDeployment(request) {
+  getDeployment(request, status: string) {
+    let conditions;
+
+    if (status && status.startsWith('pod')) {
+      conditions = [{
+        type: 'Available',
+        status: 'False', message: 'Deployment does not have minimum availability.'
+      }, {
+        type: 'Progressing',
+        status: 'True', message: 'ReplicaSet in progress'
+      }];
+    } else {
+      conditions = [{
+        type: 'Available',
+        status: 'True',
+        message: 'Test deployment was successful'
+      }, {
+        type: 'Progressing',
+        status: 'True', message: 'ReplicaSet has successfully progressed'
+      }];
+    }
+
     return {
       kind: 'Deployment',
       metadata: {
@@ -44,13 +65,7 @@ export default class K8SResponseCreator {
         template: request.spec.template
       },
       status: {
-        conditions: [{
-          type: 'Available',
-          status: 'True',
-          lastUpdateTime: '2019-12-03T14:21:39Z',
-          lastTransitionTime: '2019-12-03T14:21:39Z',
-          message: 'Test deployment was successful'
-        }]
+        conditions: conditions
       }
     };
   }
@@ -189,7 +204,7 @@ export default class K8SResponseCreator {
                 message: `Back-off 5m0s restarting failed container=${deployment.metadata.name} pod=${deployment.metadata.name}-5586856f79-88d58_default(053b037e-8c00-47ec-a4b5-bf475ebad666)`
               }
             },
-            ready: true
+            ready: false
           }]
       };
     } else if (status === 'pod-container-creating-timeout') {
