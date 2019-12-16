@@ -1,7 +1,7 @@
 import { BaseRepository } from '../repositories';
 
-export class BaseService<T extends { id: number }> {
-  constructor(protected _repository: BaseRepository<T, number>) {}
+export class BaseService<T extends { id: number }, R extends BaseRepository<T, number>> {
+  constructor(protected _repository: R) {}
 
   getAll(): Promise<T[]> {
     return this._repository.find();

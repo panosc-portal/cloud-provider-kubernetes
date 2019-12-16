@@ -5,7 +5,7 @@ import { repository, FilterBuilder, WhereBuilder } from '@loopback/repository';
 import { BaseService } from './base.service';
 
 @bind({ scope: BindingScope.SINGLETON })
-export class InstanceService extends BaseService<Instance> {
+export class InstanceService extends BaseService<Instance, InstanceRepository> {
   constructor(@repository(InstanceRepository) repo: InstanceRepository) {
     super(repo);
   }
@@ -23,5 +23,9 @@ export class InstanceService extends BaseService<Instance> {
       .build();
     const filter = new FilterBuilder().where(where).build();
     return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'protocols'] } as QueryOptions);
+  }
+
+  async getAllNamespaceComputeIds(): Promise<{namespace: string, computeId: string}[]> {
+    return this._repository.getAllNamespaceComputeIds();
   }
 }

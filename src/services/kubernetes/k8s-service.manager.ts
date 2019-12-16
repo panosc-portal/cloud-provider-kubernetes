@@ -1,6 +1,6 @@
 import { K8sService, K8sServiceRequest } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
-import { logger } from '../../utils';
+import { logger, K8S_OWNER_LABEL } from '../../utils';
 
 export class K8sServiceManager {
   constructor(private _dataSource: KubernetesDataSource) {
@@ -108,5 +108,33 @@ export class K8sServiceManager {
       }
       return false;
     }
+  }
+
+  async cleanup(validInstances: {namespace: string, computeId: string}[]): Promise<number> {
+    try {
+      const servicesResponse = await this._dataSource.K8sClient.api.v1.services.get({ qs: { labelSelector: `owner=${K8S_OWNER_LABEL}` } });
+      const services = servicesResponse.body.items.map((service: any) => ({name: service.metadata.name, namespace: service.metadata.namespace}));
+
+      const invalidServices = services.filter(service => {
+        return (validInstances.find(instance => instance.computeId === service.name && instance.namespace === service.namespace) == null);
+      })
+
+      // Delete invalid services
+      if (invalidServices.length > 0) {
+        logger.debug(`Cleaning k8s services: deleting ${invalidServices.length}`);
+        const results = await Promise.all(invalidServices.map(service => {
+          return this.deleteWithComputeId(service.name, service.namespace);
+        }));
+        const deletedCount = results.filter(result => result === true).length;
+        logger.debug(`Cleaned k8s services: deleted ${deletedCount}`);
+  
+        return deletedCount;
+      }
+  
+    } catch (error) {
+      logger.error(`Error caught while cleaning k8s services: ${error.message}`);
+    }
+
+    return 0;
   }
 }

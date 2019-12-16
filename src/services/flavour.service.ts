@@ -5,7 +5,7 @@ import { repository } from '@loopback/repository';
 import { BaseService } from './base.service';
 
 @bind({ scope: BindingScope.SINGLETON })
-export class FlavourService extends BaseService<Flavour> {
+export class FlavourService extends BaseService<Flavour, FlavourRepository> {
   constructor(@repository(FlavourRepository) repo: FlavourRepository) {
     super(repo);
   }

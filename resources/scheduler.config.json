@@ -12,6 +12,11 @@
       "params": {
         "states": ["BUILDING", "STARTING", "REBOOTING", "STOPPING", "DELETED"]
       }
+    },
+    {
+      "name": "k8s_cleanup_job",
+      "jobClass": "K8sCleanupJob",
+      "cronExpression": "0 */5 * * * *"
     }
   ]
 }

@@ -4,7 +4,7 @@ import { Instance, K8sInstance, K8sDeployment, K8sService } from '../../models';
 import { K8sRequestFactoryService } from './k8s-request-factory.service';
 import { K8sDeploymentManager } from './k8s-deployment.manager';
 import { KubernetesDataSource } from '../../datasources';
-import { logger } from '../../utils';
+import { logger, K8S_DEFAULT_NAMESPACE } from '../../utils';
 import { K8sNamespaceManager } from './k8s-namespace.manager';
 import * as uuidv4 from 'uuid/v4';
 import { K8sNodeService } from './k8s-node.service';
@@ -18,7 +18,7 @@ export class K8sInstanceService {
   private _namespaceManager: K8sNamespaceManager;
   private _nodeService: K8sNodeService;
 
-  private _defaultNamespace = 'panosc';
+  private _defaultNamespace = K8S_DEFAULT_NAMESPACE;
 
   get defaultNamespace(): string {
     return this._defaultNamespace;
@@ -51,23 +51,23 @@ export class K8sInstanceService {
     this._nodeService = new K8sNodeService(dataSource);
   }
 
-  async get(computeId: string): Promise<K8sInstance> {
+  async get(computeId: string, namespace: string): Promise<K8sInstance> {
     let k8sInstance: K8sInstance = null;
     try {
-      const deployment = await this._deploymentManager.getWithComputeId(computeId, this.defaultNamespace);
-      const service = await this._serviceManager.getWithComputeId(computeId, this.defaultNamespace);
+      const deployment = await this._deploymentManager.getWithComputeId(computeId, namespace);
+      const service = await this._serviceManager.getWithComputeId(computeId, namespace);
       const masterNode = await this._nodeService.getMaster();
 
       if (deployment != null && service != null) {
-        k8sInstance = new K8sInstance(deployment, service, computeId, masterNode.hostname);
+        k8sInstance = new K8sInstance(deployment, service, computeId, namespace, masterNode.hostname);
 
       } else if (deployment == null && service != null) {
         logger.error(`Deployment missing from kubernetes instance with compute Id '${computeId}': deleting kubernetes instance`);
-        await this.delete(computeId);
+        await this.delete(computeId, namespace);
 
       } else if (deployment != null && service == null) {
         logger.error(`Service missing from kubernetes instance with compute Id '${computeId}': deleting kubernetes instance`);
-        await this.delete(computeId);
+        await this.delete(computeId, namespace);
       }
 
     } catch (error) {
@@ -87,7 +87,7 @@ export class K8sInstanceService {
     let k8sInstance: K8sInstance = null;
 
     // Get compute Id
-    const instanceComputeId = await this.UUIDGenerator(instance.name);
+    const instanceComputeId = await this.UUIDGenerator(instance.name, this._defaultNamespace);
     if (instanceComputeId != null) {
       logger.debug(`Creating kubernetes instance with compute Id '${instanceComputeId}' for instance '${instance.id}'`);
 
@@ -105,13 +105,13 @@ export class K8sInstanceService {
         logger.debug(`Kubernetes service for instance '${instance.id}' ('${instance.name}') created successfully`);
 
         // Get master node from environment variable
-        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, process.env.CLOUD_PROVIDER_K8S_KUBERNETES_ADDRESS);
-        
+        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, this._defaultNamespace, process.env.CLOUD_PROVIDER_K8S_KUBERNETES_ADDRESS);
+
       } catch (error) {
         logger.error(`Couldn't create k8s instance for instance '${instance.id}' ('${instance.name}'): ${error.message}`);
 
         // Cleanup
-        await this.delete(instanceComputeId);
+        await this.delete(instanceComputeId, this._defaultNamespace);
 
         throw new Error(`Failed to create kubernetes instance for instance '${instance.id}': ${error.message}`);
       }
@@ -120,15 +120,22 @@ export class K8sInstanceService {
     return k8sInstance;
   }
 
-  async delete(instanceComputeId: string): Promise<boolean> {
+  async delete(instanceComputeId: string, namespace: string): Promise<boolean> {
     logger.debug(`Deleting deployment and service with computeId '${instanceComputeId}'`);
-    const serviceDeleted = await this._serviceManager.deleteWithComputeId(instanceComputeId, this._defaultNamespace);
-    const deploymentDeleted = await this._deploymentManager.deleteWithComputeId(instanceComputeId, this._defaultNamespace);
+    const serviceDeleted = await this._serviceManager.deleteWithComputeId(instanceComputeId, namespace);
+    const deploymentDeleted = await this._deploymentManager.deleteWithComputeId(instanceComputeId, namespace);
 
     return serviceDeleted && deploymentDeleted;
   }
 
-  async UUIDGenerator(name: string) {
+  async cleanup(validInstances: {namespace: string, computeId: string}[]): Promise<{deploymentCount: number, serviceCount: number}> {
+    const deploymentCount = await this._deploymentManager.cleanup(validInstances);
+    const serviceCount = await this._serviceManager.cleanup(validInstances);
+
+    return {deploymentCount, serviceCount};
+  }
+
+  async UUIDGenerator(name: string, namespace: string) {
     let computeId = null;
     try {
       let unique = false;
@@ -136,8 +143,8 @@ export class K8sInstanceService {
         const modifiedName = name.replace(/ /g, `-`);
         const instanceComputeId = modifiedName + '-' + uuidv4();
         logger.debug(`Determining if computeId '${instanceComputeId}' is unique`);
-        const deployment = await this._deploymentManager.getWithComputeId(instanceComputeId, this._defaultNamespace);
-        const service = await this._serviceManager.getWithComputeId(instanceComputeId, this._defaultNamespace);
+        const deployment = await this._deploymentManager.getWithComputeId(instanceComputeId, namespace);
+        const service = await this._serviceManager.getWithComputeId(instanceComputeId, namespace);
         unique = (deployment == null && service == null);
         if (unique) {
           logger.debug(`Determined unique computeId '${instanceComputeId}'`);

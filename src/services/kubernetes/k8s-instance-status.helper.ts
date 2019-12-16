@@ -1,5 +1,6 @@
 import { K8sDeployment, K8sInstanceState, K8sService } from '../../models/kubernetes';
 import { K8sInstanceStatus } from '../../models/enumerations';
+import { K8S_CREATING_TIMEOUT_S } from '../../utils';
 
 enum K8sDeploymentStatus {
   UNKNOWN = 'UNKNOWN',
@@ -142,8 +143,8 @@ export class K8sInstanceStatusHelper {
               const podCreationTime = +new Date(deployment.podCreationTime);
               const currentTime = +new Date();
               const diff = Math.abs(currentTime - podCreationTime);
-              const minutesRunning = Math.floor((diff / 1000) / 60);
-              if (minutesRunning > 10) {
+              const secondsRunning = Math.floor(diff / 1000);
+              if (secondsRunning >= K8S_CREATING_TIMEOUT_S) {
                 return { status: K8sDeploymentStatus.ERROR, message: 'Container creation timeout' };
 
               } else {

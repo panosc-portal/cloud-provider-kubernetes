@@ -1,6 +1,6 @@
 import { K8sDeployment, K8sDeploymentRequest } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
-import { logger } from '../../utils';
+import { logger, K8S_OWNER_LABEL } from '../../utils';
 
 export class K8sDeploymentManager {
   constructor(private _dataSource: KubernetesDataSource) {
@@ -88,5 +88,32 @@ export class K8sDeploymentManager {
       }
       return false;
     }
+  }
+
+  async cleanup(validInstances: {namespace: string, computeId: string}[]): Promise<number> {
+    try {
+      const deploymentsResponse = await this._dataSource.K8sClient.apis.apps.v1.deployments.get({ qs: { labelSelector: `owner=${K8S_OWNER_LABEL}` } });
+      const deployments = deploymentsResponse.body.items.map((deployment: any) => ({name: deployment.metadata.name, namespace: deployment.metadata.namespace}));
+
+      const invalidDeployments = deployments.filter(deployment => {
+        return (validInstances.find(instance => instance.computeId === deployment.name && instance.namespace === deployment.namespace) == null);
+      })
+
+      // Delete invalid deployments
+      if (invalidDeployments.length > 0) {
+        logger.debug(`Cleaning k8s deployments: deleting ${invalidDeployments.length}`);
+        const results = await Promise.all(invalidDeployments.map(deployment => {
+          return this.deleteWithComputeId(deployment.name, deployment.namespace);
+        }));
+        const deletedCount = results.filter(result => result === true).length;
+        logger.debug(`Cleaned k8s deployments: deleted ${deletedCount}`);
+  
+        return deletedCount;
+      }
+  
+    } catch (error) {
+      logger.error(`Error caught while cleaning k8s deployments: ${error.message}`);
+    }
+    return 0;
   }
 }

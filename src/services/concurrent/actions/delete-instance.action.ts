@@ -14,11 +14,12 @@ export class DeleteInstanceAction extends InstanceAction {
 
     try {
       const computeId = instance.computeId;
-      if (computeId != null) {
-        const k8sInstance = await this.k8sInstanceService.get(computeId);
+      const namespace = instance.namespace;
+      if (computeId != null && namespace != null) {
+        const k8sInstance = await this.k8sInstanceService.get(computeId, namespace);
         if (k8sInstance != null) {
           logger.info(`Deleting instance ${instance.id}`)
-          await this._deleteK8sInstance(computeId);
+          await this._deleteK8sInstance(computeId, namespace);
 
           await this._updateInstanceState(new InstanceState({status: InstanceStatus.DELETED, message: '', cpu: 0, memory: 0}));
 

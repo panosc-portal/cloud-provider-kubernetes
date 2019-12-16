@@ -16,12 +16,13 @@ export class StateInstanceAction extends InstanceAction {
 
     try {
       const computeId = instance.computeId;
+      const namespace = instance.namespace;
 
-      if (computeId == null) {
+      if (computeId == null || namespace == null) {
         return;
       }
 
-      const k8sInstance = await this.k8sInstanceService.get(computeId);
+      const k8sInstance = await this.k8sInstanceService.get(computeId, namespace);
       let nextInstanceState: InstanceState;
       if (k8sInstance == null) {
         if (currentInstanceStatus !== InstanceStatus.REBOOTING && currentInstanceStatus !== InstanceStatus.STOPPING) {

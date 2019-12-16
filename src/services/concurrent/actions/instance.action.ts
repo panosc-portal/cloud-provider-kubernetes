@@ -73,6 +73,9 @@ export abstract class InstanceAction {
       // Get compute Id
       instance.computeId = k8sInstance.computeId;
   
+      // Get namespace
+      instance.namespace = k8sInstance.namespace;
+  
       // Get status of k8sInstance and set in instance
       instance.state = new InstanceState({status: InstanceStatus[k8sInstance.state.status], message: k8sInstance.state.message});
   
@@ -100,8 +103,8 @@ export abstract class InstanceAction {
     return k8sInstance;
   }
 
-  protected async _deleteK8sInstance(computeId: string) {
-    await this.k8sInstanceService.delete(computeId);
+  protected async _deleteK8sInstance(computeId: string, namespace: string) {
+    await this.k8sInstanceService.delete(computeId, namespace);
   }
 
   protected abstract _run(): Promise<void>;

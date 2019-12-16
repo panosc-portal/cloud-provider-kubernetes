@@ -66,7 +66,7 @@ describe('K8sInstanceService', () => {
 
     const instance = await instanceService.getById(3);
     const k8sInstance = await k8sInstanceService.create(instance);
-    const instanceDeleted = await k8sInstanceService.delete(k8sInstance.computeId);
+    const instanceDeleted = await k8sInstanceService.delete(k8sInstance.computeId, 'panosc');
 
     expect(instanceDeleted).to.be.true();
   });

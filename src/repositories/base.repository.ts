@@ -20,10 +20,11 @@ export class BaseRepository<T, ID> {
 
   constructor(private _dataSource: TypeORMDataSource, private _entityClass: ObjectType<T>) {}
 
-  async init() {
+  async init(): Promise<Repository<T>> {
     if (this._repository == null) {
       this._repository = await this._dataSource.repository(this._entityClass);
     }
+    return this._repository;
   }
 
   async save(entity: T): Promise<T> {

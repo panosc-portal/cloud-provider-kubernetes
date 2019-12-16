@@ -1,4 +1,5 @@
 import { Image, Flavour } from '../domain';
+import { K8S_OWNER_LABEL } from '../../utils';
 
 export interface K8sDeploymentRequestConfig {
   name: string,
@@ -25,7 +26,7 @@ export class K8sDeploymentRequest {
         name: this._config.name,
         labels: {
           app: this._config.name,
-          owner: 'cloud-provider'
+          owner: K8S_OWNER_LABEL
         }
       },
       spec: {

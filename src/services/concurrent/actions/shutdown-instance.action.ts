@@ -14,11 +14,17 @@ export class ShutdownInstanceAction extends InstanceAction {
 
     try {
       const computeId = instance.computeId;
-      if (computeId != null) {
-        const k8sInstance = await this.k8sInstanceService.get(computeId);
+      const namespace = instance.namespace;
+      if (computeId != null && namespace != null) {
+        const k8sInstance = await this.k8sInstanceService.get(computeId, namespace);
         if (k8sInstance != null) {
           logger.info(`Shutting down instance ${instance.id}: deleting current k8s instance`);
-          await this._deleteK8sInstance(computeId);
+          await this._deleteK8sInstance(computeId, namespace);
+
+          instance.computeId = null;
+          instance.namespace = null;
+
+          await this.instanceService.save(instance);
 
         } else {
           logger.info(`Could not find k8s instance with ${computeId}`);

@@ -53,7 +53,7 @@ export class InstanceStateJob extends Job {
           }));
   
         } catch (error) {
-          logger.warn(error);
+          // Ignore errors such as action already queued
         }
 
         logger.info(`Finished updating states of ${runningInstances.length} instances`);
