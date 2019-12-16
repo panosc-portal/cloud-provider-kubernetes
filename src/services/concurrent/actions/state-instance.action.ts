@@ -28,19 +28,21 @@ export class StateInstanceAction extends InstanceAction {
           logger.warn(`K8S Instance with Id ${computeId} has been deleted on the server`);
         }
 
-        nextInstanceState = new InstanceState({status: InstanceStatus.DELETED, message: ''});
-      
+        nextInstanceState = new InstanceState({ status: InstanceStatus.DELETED, message: '' });
+
       } else {
         nextInstanceState = new InstanceState({
-          status: InstanceStatus[k8sInstance.state.status], 
+          status: InstanceStatus[k8sInstance.state.status],
           message: k8sInstance.state.message,
           cpu: k8sInstance.currentCpu,
           memory: k8sInstance.currentMemory
         });
+        logger.debug(`Instance ${computeId} state: ${nextInstanceState.status} ${nextInstanceState.message}`);
+
       }
 
-      if (currentInstanceStatus === InstanceStatus.REBOOTING && 
-          (nextInstanceState.status === InstanceStatus.BUILDING || nextInstanceState.status === InstanceStatus.DELETED)) {
+      if (currentInstanceStatus === InstanceStatus.REBOOTING &&
+        (nextInstanceState.status === InstanceStatus.BUILDING || nextInstanceState.status === InstanceStatus.DELETED)) {
         nextInstanceState.status = InstanceStatus.REBOOTING;
 
       } else if (currentInstanceStatus === InstanceStatus.STARTING && nextInstanceState.status === InstanceStatus.BUILDING) {
@@ -51,12 +53,12 @@ export class StateInstanceAction extends InstanceAction {
 
       } else if (currentInstanceStatus === InstanceStatus.DELETING && nextInstanceState.status === InstanceStatus.ACTIVE) {
         nextInstanceState.status = InstanceStatus.DELETING;
-      
+
       } else if (currentInstanceStatus === InstanceStatus.BUILDING && nextInstanceState.status === InstanceStatus.ACTIVE) {
         // Check ports are open
         const portsOpenPromises = [];
         this.instance.protocols.forEach(protocol => {
-          portsOpenPromises.push(isPortReachable(protocol.port, {host: instance.hostname }));
+          portsOpenPromises.push(isPortReachable(protocol.port, { host: instance.hostname }));
         });
 
         const portsOpen = await Promise.all(portsOpenPromises);

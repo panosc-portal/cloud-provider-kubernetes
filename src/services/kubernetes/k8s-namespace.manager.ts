@@ -5,7 +5,8 @@ import { logger } from '../../utils';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class K8sNamespaceManager {
-  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {}
+  constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {
+  }
 
   async getWithName(name: string) {
     try {
@@ -36,17 +37,22 @@ export class K8sNamespaceManager {
     try {
       logger.debug(`Creating kubernetes namespace '${namespaceRequest.name}'`);
       const namespace = await this._dataSource.K8sClient.api.v1.namespaces.post({ body: namespaceRequest.model });
-      const newNamespace = new K8sNamespace(namespaceRequest.name, namespace.body);
 
-      if (newNamespace.isValid()) {
-        logger.debug('Namespace ' + newNamespace.name + ' has been created');
-        return newNamespace;
-
+      if (namespace.body == null) {
+        logger.error(`Failed to create k8s namespace with name ${namespaceRequest.name} because namespace body is null`);
+        throw new Error(`Failed to create k8s namespace with name ${namespaceRequest.name} because namespace body is null`);
       } else {
-        logger.error(`Kubernetes namepsace '${namespaceRequest.name}' is not valid`);
-        throw new Error(`Kubernetes namepsace '${namespaceRequest.name}' is not valid`);
-      }
+        const newNamespace = new K8sNamespace(namespaceRequest.name, namespace.body);
 
+        if (newNamespace.isValid()) {
+          logger.debug('Namespace ' + newNamespace.name + ' has been created');
+          return newNamespace;
+
+        } else {
+          logger.error(`Kubernetes namepsace '${namespaceRequest.name}' is not valid`);
+          throw new Error(`Kubernetes namepsace '${namespaceRequest.name}' is not valid`);
+        }
+      }
     } catch (error) {
       logger.error(`Failed to create k8s namespace '${namespaceRequest.name}': ${error.message}`);
       throw new Error(`Failed to create k8s namespace '${namespaceRequest.name}': ${error.message}`);

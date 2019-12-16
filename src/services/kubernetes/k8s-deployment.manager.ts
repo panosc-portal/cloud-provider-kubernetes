@@ -39,16 +39,21 @@ export class K8sDeploymentManager {
       logger.debug(`Creating kubernetes deployment '${deploymentRequest.name}' in namespace '${namespace}'`);
       const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments.post({ body: deploymentRequest.model });
       const podList = await this._dataSource.K8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${deploymentRequest.name}` } });
-      
-      const newDeployment = new K8sDeployment(deploymentRequest.name, deployment.body, podList.body);
-      
-      if (newDeployment.isValid()) {
-        logger.debug(`Deployment '${newDeployment.name}' in namespace '${namespace}' has been created`);
-        return newDeployment;
+
+      if (deployment.body == null || podList.body == null) {
+        logger.error(`Failed to create k8s deployment with compute Id ${deploymentRequest.name} because PodList body or deployment body is null`)
+        throw new Error(`Failed to create k8s deployment with compute Id ${deploymentRequest.name} because PodList body or deployment body is null`)
 
       } else {
-        logger.error(`Kubernetes deployment with compute Id '${deploymentRequest.name}' is not valid`);
-        throw new Error(`Kubernetes deployment with compute Id '${deploymentRequest.name}' is not valid`);
+        const newDeployment = new K8sDeployment(deploymentRequest.name, deployment.body, podList.body);
+        if (newDeployment.isValid()) {
+          logger.debug(`Deployment '${newDeployment.name}' in namespace '${namespace}' has been created`);
+          return newDeployment;
+
+        } else {
+          logger.error(`Kubernetes deployment with compute Id '${deploymentRequest.name}' is not valid`);
+          throw new Error(`Kubernetes deployment with compute Id '${deploymentRequest.name}' is not valid`);
+        }
       }
 
     } catch (error) {

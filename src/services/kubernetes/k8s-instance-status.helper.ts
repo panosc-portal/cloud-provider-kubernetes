@@ -1,6 +1,4 @@
-import { K8sDeployment, K8sService } from '../../models/kubernetes';
-import { K8sInstanceState } from '../../models/kubernetes';
-import { logger } from '../../utils';
+import { K8sDeployment, K8sInstanceState, K8sService } from '../../models/kubernetes';
 import { K8sInstanceStatus } from '../../models/enumerations';
 
 enum K8sDeploymentStatus {
@@ -18,12 +16,12 @@ enum K8sServiceStatus {
 
 interface K8sServiceState {
   status: K8sServiceStatus
-  message?: string
+  message: string
 }
 
 interface K8sDeploymentState {
   status: K8sDeploymentStatus
-  message?: string
+  message: string
 }
 
 export class K8sInstanceStatusHelper {
@@ -32,36 +30,30 @@ export class K8sInstanceStatusHelper {
     const deploymentState = K8sInstanceStatusHelper.getK8sDeploymentState(deployment);
     const deploymentStatus = deploymentState.status;
     if (deploymentStatus === 'ERROR') {
-      logger.error(`Instance state ERROR ${deploymentState.message}`);
       return new K8sInstanceState(K8sInstanceStatus.ERROR, deploymentState.message);
-    
+
     } else if (deploymentStatus === 'BUILDING') {
-      logger.info(`Instance state BUILDING ${deploymentState.message}`);
       return new K8sInstanceState(K8sInstanceStatus.BUILDING, deploymentState.message);
-    
+
     } else if (deploymentStatus === 'UNKNOWN') {
       if (deploymentState.message) {
-        logger.error(`Instance state UNKNOWN ${deploymentState.message}`);
         return new K8sInstanceState(K8sInstanceStatus.UNKNOWN, deploymentState.message);
-      
+
       } else {
-        logger.error('Instance state UNKNOWN error');
         return new K8sInstanceState(K8sInstanceStatus.UNKNOWN);
       }
-    
+
     } else if (deploymentStatus === 'ACTIVE') {
       const serviceState = K8sInstanceStatusHelper.getK8sServiceState(service, deployment);
       const serviceStatus = serviceState.status;
       if (serviceStatus === 'BUILDING') {
         return new K8sInstanceState(K8sInstanceStatus.BUILDING, serviceState.message);
-      
+
       } else if (serviceStatus === 'ERROR') {
-        logger.error(`Instance state ERROR ${serviceState.message}`);
         return new K8sInstanceState(K8sInstanceStatus.ERROR, serviceState.message);
-      
+
       } else if (serviceStatus === 'ACTIVE') {
-        logger.info(`Instance state ACTIVE`);
-        return new K8sInstanceState(K8sInstanceStatus.ACTIVE);
+        return new K8sInstanceState(K8sInstanceStatus.ACTIVE, 'Instance is active');
       }
     }
 
@@ -84,8 +76,8 @@ export class K8sInstanceStatusHelper {
           };
         }
       }
-      return { status: K8sServiceStatus.ACTIVE };
-    
+      return { status: K8sServiceStatus.ACTIVE, message: 'Service is active' };
+
     } else {
       return { status: K8sServiceStatus.ERROR, message: 'Service has no or too many endpoints ' };
     }
@@ -93,37 +85,59 @@ export class K8sInstanceStatusHelper {
 
 
   static getK8sDeploymentState(deployment: K8sDeployment): K8sDeploymentState {
+    const status = deployment.status;
+    if (status && status.conditions) {
+      const conditions = status.conditions;
+      const conditionAvailable = conditions.find(c => c.type === 'Available');
+      if (conditionAvailable && conditionAvailable.status === 'True') {
+        return { status: K8sDeploymentStatus.ACTIVE, message: 'Deployment active' };
+
+      } else {
+        return this.getK8sDeploymentPodsState(deployment);
+      }
+
+    } else {
+      return { status: K8sDeploymentStatus.BUILDING, message: 'Deployment Building' };
+    }
+
+  }
+
+  static getK8sDeploymentPodsState(deployment: K8sDeployment): K8sDeploymentState {
     if (!deployment.hasPods()) {
       return { status: K8sDeploymentStatus.BUILDING, message: 'Pods have not been created yet' };
-    
+
     } else {
       const status = deployment.podStatus;
       const phase = status.phase;
-  
+      const conditions = status.conditions;
+
       switch (phase) {
         case 'Running':
-          if (status.conditions[1].type === 'Ready' && status.conditions[1].status === 'False') {
+          const conditionReady = conditions.find(c => c.type === 'Ready');
+
+          if (conditionReady && conditionReady.status === 'False') {
             const containerWaitingState = status.containerStatuses[0].state.waiting;
             if (containerWaitingState.reason === 'CrashLoopBackOff') {
               return { status: K8sDeploymentStatus.ERROR, message: containerWaitingState.message };
-            
+
             } else if (containerWaitingState.message) {
               return { status: K8sDeploymentStatus.UNKNOWN, message: containerWaitingState.message };
-            
+
             } else {
-              return { status: K8sDeploymentStatus.UNKNOWN };
+              return { status: K8sDeploymentStatus.UNKNOWN, message: 'Unknown error' };
             }
-          
+
           } else {
-            return { status: K8sDeploymentStatus.ACTIVE };
+            return { status: K8sDeploymentStatus.ACTIVE, message: 'Service is active' };
           }
         case 'Pending':
+          const conditionPodScheduled = conditions.find(c => c.type === 'PodScheduled');
           if (status.containerStatuses && status.containerStatuses[0]) {
             const containerWaitingState = status.containerStatuses[0].state.waiting;
             const reason = containerWaitingState.reason;
             if (reason === 'ImagePullBackOff' || reason === 'ErrImagePull') {
               return { status: K8sDeploymentStatus.ERROR, message: containerWaitingState.message };
-            
+
             } else if (reason === 'ContainerCreating') {
               const podCreationTime = +new Date(deployment.podCreationTime);
               const currentTime = +new Date();
@@ -131,27 +145,32 @@ export class K8sInstanceStatusHelper {
               const minutesRunning = Math.floor((diff / 1000) / 60);
               if (minutesRunning > 10) {
                 return { status: K8sDeploymentStatus.ERROR, message: 'Container creation timeout' };
-              
+
               } else {
                 return { status: K8sDeploymentStatus.BUILDING, message: reason };
-              
+
               }
+
             } else if (containerWaitingState.message) {
               return { status: K8sDeploymentStatus.UNKNOWN, message: containerWaitingState.message };
-            
+
             } else {
-              return { status: K8sDeploymentStatus.UNKNOWN };
+              return { status: K8sDeploymentStatus.UNKNOWN, message: 'Unknown error' };
             }
-          
+
+          } else if (conditionPodScheduled && conditionPodScheduled.status === 'False') {
+            return { status: K8sDeploymentStatus.ERROR, message: conditionPodScheduled.message };
+
           } else {
-            return { status: K8sDeploymentStatus.BUILDING };
+            return { status: K8sDeploymentStatus.BUILDING, message: 'Building' };
           }
         default:
-          return { status: K8sDeploymentStatus.UNKNOWN };
+          return { status: K8sDeploymentStatus.UNKNOWN, message: 'Unknown error' };
       }
     }
   }
 }
+
 
 /*
     const mostRecentDate = new Date(Math.max.apply(null, statuses.map((e: any) => {

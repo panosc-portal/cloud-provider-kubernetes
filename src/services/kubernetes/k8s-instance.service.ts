@@ -104,9 +104,8 @@ export class K8sInstanceService {
         service = await this._serviceManager.create(serviceRequest, this._defaultNamespace);
         logger.debug(`Kubernetes service for instance '${instance.id}' ('${instance.name}') created successfully`);
 
-        // Get master node for instance hostname (assuming nodePort)
-        const masterNode = await this._nodeService.getMaster();
-        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, masterNode.hostname);
+        // Get master node from environment variable
+        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, process.env.CLOUD_PROVIDER_K8S_KUBERNETES_ADRESSE);
         
       } catch (error) {
         logger.error(`Couldn't create k8s instance for instance '${instance.id}' ('${instance.name}'): ${error.message}`);

@@ -6,7 +6,7 @@ export class K8SConfigCreator {
         {
           name: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_CLUSTER_NAME,
           cluster: {
-            server: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_HTTP_URL
+            server: `${process.env.CLOUD_PROVIDER_K8S_KUBERNETES_PROTOCOL}://${process.env.CLOUD_PROVIDER_K8S_KUBERNETES_ADRESSE}:${process.env.CLOUD_PROVIDER_K8S_KUBERNETES_PORT}`
           }
         }
       ],

@@ -51,11 +51,11 @@ export class K8sDeploymentRequest {
                 }),
                 resources: {
                   limits: {
-                    cpu: `${this._config.flavour.cpu}m`,
+                    cpu: `${this._config.flavour.cpu}`,
                     memory: `${this._config.flavour.memory}Mi`
                   },
                   requests: {
-                    cpu: `${this._config.flavour.cpu}m`,
+                    cpu: `${this._config.flavour.cpu}`,
                     memory: `${this._config.flavour.memory}Mi`
                   }
                 }

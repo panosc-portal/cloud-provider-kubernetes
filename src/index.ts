@@ -1,6 +1,5 @@
 import { CloudProviderKubernetesApplication } from './application';
 import { ApplicationConfig } from '@loopback/core';
-import { logger } from './utils';
 
 export { CloudProviderKubernetesApplication };
 
@@ -11,7 +10,7 @@ export async function main(options: ApplicationConfig = {}) {
   await app.start();
 
   const url = app.restServer.url;
-  logger.info(`Server is running at ${url}`);
+  console.log(`Server is running at ${url}`);
 
   return app;
 }

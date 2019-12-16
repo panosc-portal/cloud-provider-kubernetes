@@ -28,6 +28,10 @@ export class K8sDeployment {
     return this.isValid() ? this._k8sDeploymentResponse.spec.template.metadata.labels : null;
   }
 
+  get status() {
+    return this.isValid() ? this._k8sDeploymentResponse.status : null;
+  }
+
   get podStatus() {
     return this.isValid() ? this._k8sPodListResponse.items[0].status : null;
   }
@@ -61,7 +65,9 @@ export class K8sDeployment {
       this._k8sDeploymentResponse.spec.template.spec != null &&
       this._k8sDeploymentResponse.spec.template.spec.containers != null &&
       this._k8sDeploymentResponse.spec.template.metadata != null &&
-      this._k8sDeploymentResponse.spec.template.metadata.labels != null
+      this._k8sDeploymentResponse.spec.template.metadata.labels != null &&
+      this._k8sDeploymentResponse.status != null
+
     );
   }
 
