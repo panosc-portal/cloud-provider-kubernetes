@@ -27,8 +27,8 @@ export class K8sNamespaceManager {
         return null;
 
       } else {
-        logger.error(`Failed to get kubernetes namepsace with name '${name}': ${error.message}`);
-        throw new Error(`Failed to get kubernetes namepsace with name '${name}': ${error.message}`);
+        logger.error(`Failed to get kubernetes namespace with name '${name}': ${error.message}`);
+        throw new Error(`Failed to get kubernetes namespace with name '${name}': ${error.message}`);
       }
     }
   }
@@ -49,8 +49,8 @@ export class K8sNamespaceManager {
           return newNamespace;
 
         } else {
-          logger.error(`Kubernetes namepsace '${namespaceRequest.name}' is not valid`);
-          throw new Error(`Kubernetes namepsace '${namespaceRequest.name}' is not valid`);
+          logger.error(`Kubernetes namespace '${namespaceRequest.name}' is not valid`);
+          throw new Error(`Kubernetes namespace '${namespaceRequest.name}' is not valid`);
         }
       }
     } catch (error) {
