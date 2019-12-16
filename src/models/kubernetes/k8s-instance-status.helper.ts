@@ -1,5 +1,5 @@
-import { K8sDeployment, K8sInstanceState, K8sService } from '../../models/kubernetes';
-import { K8sInstanceStatus } from '../../models/enumerations';
+import { K8sDeployment, K8sInstanceState, K8sService } from '.';
+import { K8sInstanceStatus } from '../enumerations';
 import { K8S_CREATING_TIMEOUT_S } from '../../utils';
 
 enum K8sDeploymentStatus {

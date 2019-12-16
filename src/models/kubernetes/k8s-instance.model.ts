@@ -1,8 +1,8 @@
 import { K8sDeployment } from './k8s-deployment.model';
 import { K8sService } from './k8s-service.model';
 import { K8sInstanceState } from './k8s-instance-state.model';
-import { K8sInstanceStatusHelper } from '../../services/kubernetes';
 import { K8sProtocol } from './k8s-protocol.model';
+import { K8sInstanceStatusHelper } from './k8s-instance-status.helper';
 
 export class K8sInstance {
 
