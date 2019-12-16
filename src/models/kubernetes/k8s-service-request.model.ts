@@ -27,7 +27,8 @@ export class K8sServiceRequest {
       metadata: {
         name: this._config.name,
         labels: {
-          app: this._config.name
+          app: this._config.name,
+          owner: 'cloud-provider'
         }
       },
       spec: {

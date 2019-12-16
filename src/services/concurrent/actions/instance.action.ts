@@ -85,7 +85,7 @@ export abstract class InstanceAction {
         if (protocol.name != null) {
           return protocol;
         } else {
-          logger.warn(`Kubernetes instance protocol '${k8sProtocol.name} is not recognised`);
+          logger.warn(`Kubernetes instance protocol '${k8sProtocol.name}' is not recognised`);
           return null;
         }
       }).filter(protocol => protocol != null);
