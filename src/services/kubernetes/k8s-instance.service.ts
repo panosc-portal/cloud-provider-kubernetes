@@ -141,7 +141,7 @@ export class K8sInstanceService {
       let unique = false;
       while (!unique) {
         const modifiedName = name.replace(/ /g, `-`);
-        const instanceComputeId = modifiedName + '-' + uuidv4();
+        const instanceComputeId = modifiedName.toLowerCase() + '-' + uuidv4();
         logger.debug(`Determining if computeId '${instanceComputeId}' is unique`);
         const deployment = await this._deploymentManager.getWithComputeId(instanceComputeId, namespace);
         const service = await this._serviceManager.getWithComputeId(instanceComputeId, namespace);

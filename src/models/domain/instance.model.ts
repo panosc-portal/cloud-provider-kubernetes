@@ -58,7 +58,7 @@ export class Instance {
   @property({
     type: 'string',
   })
-  @Column({ length: 250, nullable: true })
+  @Column({ length: 2500, nullable: true })
   statusMessage: string;
 
   @property({

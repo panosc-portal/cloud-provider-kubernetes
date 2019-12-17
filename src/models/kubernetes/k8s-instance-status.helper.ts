@@ -7,6 +7,7 @@ enum K8sDeploymentStatus {
   BUILDING = 'BUILDING',
   ACTIVE = 'ACTIVE',
   ERROR = 'ERROR',
+  STOPPED = 'STOPPED'
 }
 
 enum K8sServiceStatus {
@@ -32,7 +33,8 @@ export class K8sInstanceStatusHelper {
     const deploymentStatus = deploymentState.status;
     if (deploymentStatus === 'ERROR') {
       return new K8sInstanceState(K8sInstanceStatus.ERROR, deploymentState.message);
-
+    } else if (deploymentStatus === 'STOPPED') {
+      return new K8sInstanceState(K8sInstanceStatus.STOPPED, deploymentState.message);
     } else if (deploymentStatus === 'BUILDING') {
       return new K8sInstanceState(K8sInstanceStatus.BUILDING, deploymentState.message);
 
@@ -117,44 +119,64 @@ export class K8sInstanceStatusHelper {
           const conditionReady = conditions.find(c => c.type === 'Ready');
 
           if (conditionReady && conditionReady.status === 'False') {
-            const containerWaitingState = status.containerStatuses[0].state.waiting;
-            if (containerWaitingState.reason === 'CrashLoopBackOff') {
-              return { status: K8sDeploymentStatus.ERROR, message: containerWaitingState.message };
+            if (status.containerStatuses && status.containerStatuses.length > 0) {
+              const containerStatuses = status.containerStatuse[0];
+              if (containerStatuses.state.waiting) {
+                const containerWaitingState = containerStatuses.state.waiting;
+                if (containerWaitingState.reason && containerWaitingState.reason === 'CrashLoopBackOff') {
+                  return { status: K8sDeploymentStatus.ERROR, message: containerWaitingState.message };
 
-            } else if (containerWaitingState.message) {
-              return { status: K8sDeploymentStatus.UNKNOWN, message: containerWaitingState.message };
+                } else if (containerWaitingState.message) {
+                  return { status: K8sDeploymentStatus.UNKNOWN, message: containerWaitingState.message };
 
+                } else {
+                  return { status: K8sDeploymentStatus.UNKNOWN, message: 'Unknown error' };
+                }
+              } else if (containerStatuses.state.terminated && containerStatuses.state.terminated.reason === 'Completed') {
+                return { status: K8sDeploymentStatus.STOPPED, message: 'Container has stopped' };
+              } else {
+                return { status: K8sDeploymentStatus.UNKNOWN, message: 'Unknown error' };
+              }
             } else {
-              return { status: K8sDeploymentStatus.UNKNOWN, message: 'Unknown error' };
+              return { status: K8sDeploymentStatus.BUILDING, message: 'Deployment building' };
             }
-
           } else {
             return { status: K8sDeploymentStatus.ACTIVE, message: 'Service is active' };
           }
         case 'Pending':
           const conditionPodScheduled = conditions.find(c => c.type === 'PodScheduled');
-          if (status.containerStatuses && status.containerStatuses[0]) {
-            const containerWaitingState = status.containerStatuses[0].state.waiting;
-            const reason = containerWaitingState.reason;
-            if (reason === 'ImagePullBackOff' || reason === 'ErrImagePull') {
-              return { status: K8sDeploymentStatus.ERROR, message: containerWaitingState.message };
+          if (status.containerStatuses && status.containerStatuses.length > 0) {
+            const containerStatuses = status.containerStatuse[0];
 
-            } else if (reason === 'ContainerCreating') {
-              const podCreationTime = +new Date(deployment.podCreationTime);
-              const currentTime = +new Date();
-              const diff = Math.abs(currentTime - podCreationTime);
-              const secondsRunning = Math.floor(diff / 1000);
-              if (secondsRunning >= K8S_CREATING_TIMEOUT_S) {
-                return { status: K8sDeploymentStatus.ERROR, message: 'Container creation timeout' };
+            if (containerStatuses.state.waiting) {
+              const containerWaitingState = containerStatuses.state.waiting;
 
-              } else {
-                return { status: K8sDeploymentStatus.BUILDING, message: reason };
+              if (containerWaitingState.reason) {
+                const reason = containerWaitingState.reason;
 
+                if (reason === 'ImagePullBackOff' || reason === 'ErrImagePull') {
+                  return { status: K8sDeploymentStatus.ERROR, message: containerWaitingState.message };
+
+                } else if (reason === 'ContainerCreating') {
+                  const podCreationTime = +new Date(deployment.podCreationTime);
+                  const currentTime = +new Date();
+                  const diff = Math.abs(currentTime - podCreationTime);
+                  const secondsRunning = Math.floor(diff / 1000);
+
+                  if (secondsRunning >= K8S_CREATING_TIMEOUT_S) {
+                    return { status: K8sDeploymentStatus.ERROR, message: 'Container creation timeout' };
+
+                  } else {
+                    return { status: K8sDeploymentStatus.BUILDING, message: reason };
+                  }
+
+                } else if (containerWaitingState.message) {
+                  return { status: K8sDeploymentStatus.UNKNOWN, message: containerWaitingState.message };
+
+                } else {
+                  return { status: K8sDeploymentStatus.UNKNOWN, message: 'Unknown error' };
+                }
               }
-
-            } else if (containerWaitingState.message) {
-              return { status: K8sDeploymentStatus.UNKNOWN, message: containerWaitingState.message };
-
             } else {
               return { status: K8sDeploymentStatus.UNKNOWN, message: 'Unknown error' };
             }
