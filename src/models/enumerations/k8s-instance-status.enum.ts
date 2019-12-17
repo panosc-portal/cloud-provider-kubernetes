@@ -3,5 +3,6 @@ export enum K8sInstanceStatus {
   BUILDING = 'BUILDING',
   ACTIVE = 'ACTIVE',
   ERROR = 'ERROR',
-  STOPPED = 'STOPPED'
+  STOPPED = 'STOPPED',
+  UNSCHEDULABLE = 'UNSCHEDULABLE'
 }

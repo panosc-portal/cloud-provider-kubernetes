@@ -1,13 +1,14 @@
 import { K8sDeployment, K8sInstanceState, K8sService } from '.';
 import { K8sInstanceStatus } from '../enumerations';
-import { K8S_CREATING_TIMEOUT_S } from '../../utils';
+import { K8S_CREATING_TIMEOUT_S, K8S_UNSCHEDULABLE_S } from '../../utils';
 
 enum K8sDeploymentStatus {
   UNKNOWN = 'UNKNOWN',
   BUILDING = 'BUILDING',
   ACTIVE = 'ACTIVE',
   ERROR = 'ERROR',
-  STOPPED = 'STOPPED'
+  STOPPED = 'STOPPED',
+  UNSCHEDULABLE = 'UNSCHEDULABLE'
 }
 
 enum K8sServiceStatus {
@@ -35,6 +36,8 @@ export class K8sInstanceStatusHelper {
       return new K8sInstanceState(K8sInstanceStatus.ERROR, deploymentState.message);
     } else if (deploymentStatus === 'STOPPED') {
       return new K8sInstanceState(K8sInstanceStatus.STOPPED, deploymentState.message);
+    }else if(deploymentStatus === 'UNSCHEDULABLE'){
+      return new K8sInstanceState(K8sInstanceStatus.UNSCHEDULABLE, deploymentState.message);
     } else if (deploymentStatus === 'BUILDING') {
       return new K8sInstanceState(K8sInstanceStatus.BUILDING, deploymentState.message);
 
@@ -144,6 +147,7 @@ export class K8sInstanceStatusHelper {
             return { status: K8sDeploymentStatus.ACTIVE, message: 'Service is active' };
           }
         case 'Pending':
+          const currentTime = +new Date();
           const conditionPodScheduled = conditions.find(c => c.type === 'PodScheduled');
           if (status.containerStatuses && status.containerStatuses.length > 0) {
             const containerStatuses = status.containerStatuses[0];
@@ -159,9 +163,8 @@ export class K8sInstanceStatusHelper {
 
                 } else if (reason === 'ContainerCreating') {
                   const podCreationTime = +new Date(deployment.podCreationTime);
-                  const currentTime = +new Date();
-                  const diff = Math.abs(currentTime - podCreationTime);
-                  const secondsRunning = Math.floor(diff / 1000);
+                  const diffContainerCreation = Math.abs(currentTime - podCreationTime);
+                  const secondsRunning = Math.floor(diffContainerCreation / 1000);
 
                   if (secondsRunning >= K8S_CREATING_TIMEOUT_S) {
                     return { status: K8sDeploymentStatus.ERROR, message: 'Container creation timeout' };
@@ -182,8 +185,15 @@ export class K8sInstanceStatusHelper {
             }
 
           } else if (conditionPodScheduled && conditionPodScheduled.status === 'False') {
-            return { status: K8sDeploymentStatus.ERROR, message: conditionPodScheduled.message };
+            const podScheduledStateTime = +new Date(conditionPodScheduled.lastTransitionTime);
+            const diffScheduledTime = Math.abs(currentTime - podScheduledStateTime);
+            const secondsUnscheduled = Math.floor(diffScheduledTime / 1000);
 
+            if (secondsUnscheduled >= K8S_UNSCHEDULABLE_S) {
+              return { status: K8sDeploymentStatus.ERROR, message: conditionPodScheduled.message };
+            } else {
+              return { status: K8sDeploymentStatus.UNSCHEDULABLE, message: 'Deployment unschedulable' };
+            }
           } else {
             return { status: K8sDeploymentStatus.BUILDING, message: 'Building' };
           }
