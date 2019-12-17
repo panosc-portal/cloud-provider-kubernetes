@@ -16,10 +16,8 @@ class DummyInstanceAction extends InstanceAction {
     return this._type;
   }
 
-  get instance(): Instance {
-    return {
-      id: 1
-    } as Instance;
+  get instanceId(): number {
+    return this._id;
   }
 
   constructor(private _id: number, private _durationMS: number, private _input: number, private _type: InstanceCommandType, listener: InstanceActionListener) {
