@@ -10,7 +10,7 @@ export class DeleteInstanceAction extends InstanceAction {
   }
 
   protected async _run(): Promise<void> {
-    const instance = this.instance;
+    const instance = await this.getInstance();
 
     try {
       const computeId = instance.computeId;
@@ -21,7 +21,7 @@ export class DeleteInstanceAction extends InstanceAction {
           logger.info(`Deleting instance ${instance.id}`)
           await this._deleteK8sInstance(computeId, namespace);
 
-          await this._updateInstanceState(new InstanceState({status: InstanceStatus.DELETED, message: '', cpu: 0, memory: 0}));
+          await this._updateInstanceState(new InstanceState({status: InstanceStatus.DELETED, message: 'Instance deleted', cpu: 0, memory: 0}));
 
         } else {
           logger.info(`Could not find k8s instance ${computeId}`);

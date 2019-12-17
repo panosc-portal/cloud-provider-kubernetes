@@ -7,7 +7,6 @@ import { KubernetesDataSource } from '../../datasources';
 import { logger, K8S_DEFAULT_NAMESPACE } from '../../utils';
 import { K8sNamespaceManager } from './k8s-namespace.manager';
 import * as uuidv4 from 'uuid/v4';
-import { K8sNodeService } from './k8s-node.service';
 
 @lifeCycleObserver('server')
 @bind({ scope: BindingScope.SINGLETON })
@@ -16,7 +15,6 @@ export class K8sInstanceService {
   private _deploymentManager: K8sDeploymentManager;
   private _serviceManager: K8sServiceManager;
   private _namespaceManager: K8sNamespaceManager;
-  private _nodeService: K8sNodeService;
 
   private _defaultNamespace = K8S_DEFAULT_NAMESPACE;
 
@@ -36,10 +34,6 @@ export class K8sInstanceService {
     return this._namespaceManager;
   }
 
-  get nodeService(): K8sNodeService {
-    return this._nodeService;
-  }
-
   get requestFactoryService(): K8sRequestFactoryService {
     return this._requestFactoryService;
   }
@@ -48,7 +42,6 @@ export class K8sInstanceService {
     this._deploymentManager = new K8sDeploymentManager(dataSource);
     this._serviceManager = new K8sServiceManager(dataSource);
     this._namespaceManager = new K8sNamespaceManager(dataSource);
-    this._nodeService = new K8sNodeService(dataSource);
   }
 
   async get(computeId: string, namespace: string): Promise<K8sInstance> {
@@ -56,10 +49,9 @@ export class K8sInstanceService {
     try {
       const deployment = await this._deploymentManager.getWithComputeId(computeId, namespace);
       const service = await this._serviceManager.getWithComputeId(computeId, namespace);
-      const masterNode = await this._nodeService.getMaster();
 
       if (deployment != null && service != null) {
-        k8sInstance = new K8sInstance(deployment, service, computeId, namespace, masterNode.hostname);
+        k8sInstance = new K8sInstance(deployment, service, computeId, namespace, process.env.CLOUD_PROVIDER_K8S_KUBERNETES_ADDRESS);
 
       } else if (deployment == null && service != null) {
         logger.error(`Deployment missing from kubernetes instance with compute Id '${computeId}': deleting kubernetes instance`);
@@ -104,7 +96,7 @@ export class K8sInstanceService {
         service = await this._serviceManager.create(serviceRequest, this._defaultNamespace);
         logger.debug(`Kubernetes service for instance '${instance.id}' ('${instance.name}') created successfully`);
 
-        // Get master node from environment variable
+        // Get master node IP from environment variable
         k8sInstance = new K8sInstance(deployment, service, instanceComputeId, this._defaultNamespace, process.env.CLOUD_PROVIDER_K8S_KUBERNETES_ADDRESS);
 
       } catch (error) {

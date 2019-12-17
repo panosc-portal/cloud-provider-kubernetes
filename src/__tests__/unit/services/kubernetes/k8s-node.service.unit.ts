@@ -9,7 +9,7 @@ describe('K8sNodeService', () => {
 
   before('getK8sDeploymentManager', async () => {
     const testApplicationContext = createTestApplicationContext();
-    k8sNodeService = testApplicationContext.k8sInstanceService.nodeService;
+    k8sNodeService = testApplicationContext.k8sNodeService;
   });
 
   beforeEach('startMockServer', async () => {

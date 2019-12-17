@@ -40,8 +40,8 @@ export class InstanceActionPromiseQueue {
         this._dequeue();
 
       } else {
-        logger.debug(`Action ${instanceAction.type} is already queued for instance ${instanceAction.instance.id}`);
-        reject(`Action ${instanceAction.type} is already queued for instance ${instanceAction.instance.id}`);
+        logger.debug(`Action ${instanceAction.type} is already queued for instance ${instanceAction.instanceId}`);
+        reject(`Action ${instanceAction.type} is already queued for instance ${instanceAction.instanceId}`);
       }
     });
   }
@@ -59,16 +59,16 @@ export class InstanceActionPromiseQueue {
 
     this._activeItem = item;
 
-    logger.debug(`Starting action ${item.instanceAction.type} on instance ${item.instanceAction.instance.id}`);
+    logger.debug(`Starting action ${item.instanceAction.type} on instance ${item.instanceAction.instanceId}`);
     item.instanceAction.execute().then((value) => {
-      logger.debug(`Terminated action ${item.instanceAction.type} on instance ${item.instanceAction.instance.id}`);
+      logger.debug(`Terminated action ${item.instanceAction.type} on instance ${item.instanceAction.instanceId}`);
       this._activeItem = null;
       item.resolve(value);
       this._dequeue();
 
     })
     .catch(error => {
-      logger.debug(`Failed action ${item.instanceAction.type} on instance ${item.instanceAction.instance.id}`);
+      logger.debug(`Failed action ${item.instanceAction.type} on instance ${item.instanceAction.instanceId}`);
       this._activeItem = null;
       item.reject(error);
       this._dequeue();

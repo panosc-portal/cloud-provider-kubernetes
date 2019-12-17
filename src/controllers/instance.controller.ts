@@ -169,15 +169,19 @@ export class InstanceController extends BaseController {
   private async _performAction(instance: Instance, instanceCommandType: InstanceCommandType): Promise<Instance> {
     if (instanceCommandType === InstanceCommandType.START) {
       instance.status = InstanceStatus.STARTING;
+      instance.statusMessage = 'Instance starting';
 
     } else if (instanceCommandType === InstanceCommandType.REBOOT) {
       instance.status = InstanceStatus.REBOOTING;
+      instance.statusMessage = 'Instance rebooting';
 
     } else if (instanceCommandType === InstanceCommandType.SHUTDOWN) {
       instance.status = InstanceStatus.STOPPING;
+      instance.statusMessage = 'Instance stopping';
 
     } else if (instanceCommandType === InstanceCommandType.DELETE) {
       instance.status = InstanceStatus.DELETING;
+      instance.statusMessage = 'Instance deleting';
     }
 
     // Save state of the instance

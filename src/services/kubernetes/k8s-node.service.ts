@@ -1,8 +1,9 @@
-import { inject } from '@loopback/core';
+import { inject, bind, BindingScope } from '@loopback/core';
 import { KubernetesDataSource } from '../../datasources';
 import { K8sNode } from '../../models/kubernetes';
 import { logger } from '../../utils';
 
+@bind({ scope: BindingScope.SINGLETON })
 export class K8sNodeService {
   constructor(@inject('datasources.kubernetes') private _dataSource: KubernetesDataSource) {
   }

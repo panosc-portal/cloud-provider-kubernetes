@@ -1,4 +1,4 @@
-import { InstanceCommand } from '../../../models';
+import { InstanceCommand, InstanceStatus, InstanceState } from '../../../models';
 import { InstanceAction, InstanceActionListener } from './instance.action';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
@@ -10,7 +10,7 @@ export class ShutdownInstanceAction extends InstanceAction {
   }
 
   protected async _run(): Promise<void> {
-    const instance = this.instance;
+    const instance = await this.getInstance();
 
     try {
       const computeId = instance.computeId;
@@ -21,6 +21,7 @@ export class ShutdownInstanceAction extends InstanceAction {
           logger.info(`Shutting down instance ${instance.id}: deleting current k8s instance`);
           await this._deleteK8sInstance(computeId, namespace);
 
+          instance.state = new InstanceState({ status: InstanceStatus.STOPPED, message: 'Instance stopped', cpu: 0, memory: 0 });
           instance.computeId = null;
           instance.namespace = null;
 

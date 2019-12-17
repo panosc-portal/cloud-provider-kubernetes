@@ -39,26 +39,26 @@ export class InstanceActionService implements InstanceActionListener {
   }
 
   private _queueAction(instanceAction: InstanceAction): Promise<void> {
-    const instance = instanceAction.instance;
+    const instanceId = instanceAction.instanceId;
 
-    let actionQueue = this._actions.get(instance.id);
+    let actionQueue = this._actions.get(instanceId);
     if (actionQueue == null) {
       actionQueue = new InstanceActionPromiseQueue(() => {
-        logger.debug(`Deleting action queue for instance ${instance.id}`);
-        this._actions.delete(instance.id);
+        logger.debug(`Deleting action queue for instance ${instanceId}`);
+        this._actions.delete(instanceId);
       });
-      this._actions.set(instance.id, actionQueue);
+      this._actions.set(instanceId, actionQueue);
     }
 
     return actionQueue.add(instanceAction);
   }
 
   onTerminated(instanceAction: InstanceAction) {
-    logger.debug(`Action ${instanceAction.type} successfully ran on instance ${instanceAction.instance.id}`);
+    logger.debug(`Action ${instanceAction.type} successfully ran on instance ${instanceAction.instanceId}`);
   }
 
   onError(instanceAction: InstanceAction, error: any) {
-    logger.error(`Action ${instanceAction.type} failed to run on instance ${instanceAction.instance.id}: ${error}`);
+    logger.error(`Action ${instanceAction.type} failed to run on instance ${instanceAction.instanceId}: ${error}`);
   };
 
 }

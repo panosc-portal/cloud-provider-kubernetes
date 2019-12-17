@@ -10,7 +10,7 @@ export class RebootInstanceAction extends InstanceAction {
   }
 
   protected async _run(): Promise<void> {
-    const instance = this.instance;
+    const instance = await this.getInstance();
 
     try {
       const computeId = instance.computeId;

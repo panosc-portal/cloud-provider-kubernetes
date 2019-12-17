@@ -14,8 +14,8 @@ export abstract class InstanceAction {
 
   private _listener: InstanceActionListener;
 
-  get instance(): Instance {
-    return this._instanceCommand.instance;
+  get instanceId(): number {
+    return this._instanceCommand.instance.id;
   }
 
   get type(): InstanceCommandType {
@@ -48,8 +48,13 @@ export abstract class InstanceAction {
     });
   }
 
+  async getInstance(): Promise<Instance> {
+    return await this._instanceService.getById(this._instanceCommand.instance.id);
+  }
+
   protected async _updateInstanceState(nextState: InstanceState) {
-    const currentState = this.instance.state;
+    const instance = await this.getInstance();
+    const currentState = instance.state;
     
     const state = new InstanceState({
       status: nextState.status ? nextState.status : currentState.status,
@@ -58,13 +63,13 @@ export abstract class InstanceAction {
       memory: nextState.memory ? nextState.memory : currentState.memory
     });
 
-    this.instance.state = state;
+    instance.state = state;
 
-    await this.instanceService.save(this.instance);
+    await this.instanceService.save(instance);
   }
 
   protected async _createK8sInstance(): Promise<K8sInstance> {
-    const instance = this.instance;
+    const instance = await this.getInstance();
     let k8sInstance: K8sInstance = null;
 
     try {

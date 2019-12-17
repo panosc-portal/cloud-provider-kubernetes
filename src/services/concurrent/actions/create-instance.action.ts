@@ -10,7 +10,7 @@ export class CreateInstanceAction extends InstanceAction {
   }
 
   protected async _run(): Promise<void> {
-    const instance = this.instance;
+    const instance = await this.getInstance();
 
     try {
       logger.info(`Creating kubernetes instance ${instance.id}`)

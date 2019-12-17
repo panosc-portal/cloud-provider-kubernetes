@@ -3,9 +3,9 @@ import { createTestApplicationContext } from '../../../helpers/context.helper';
 import {
   FlavourService,
   ImageService,
-  InstanceService, K8sDeploymentManager,
+  InstanceService,
   K8sInstanceService,
-  K8sNamespaceManager, K8sServiceManager, K8sNodeService
+  K8sNamespaceManager
 } from '../../../../services';
 import {
   K8sInstance,
@@ -18,9 +18,6 @@ import { Instance } from '../../../../models';
 describe('K8sInstanceService', () => {
   let k8sInstanceService: K8sInstanceService;
   let k8sNamespaceManager: K8sNamespaceManager;
-  let k8sServiceManager: K8sServiceManager;
-  let k8sDeploymentManager: K8sDeploymentManager;
-  let k8sNodeService: K8sNodeService;
 
   let instanceService: InstanceService;
   let imageService: ImageService;
@@ -32,9 +29,6 @@ describe('K8sInstanceService', () => {
     const testApplicationContext = createTestApplicationContext();
     k8sInstanceService = testApplicationContext.k8sInstanceService;
     k8sNamespaceManager = testApplicationContext.k8sInstanceService.namespaceManager;
-    k8sServiceManager = testApplicationContext.k8sInstanceService.serviceManager;
-    k8sDeploymentManager = testApplicationContext.k8sInstanceService.deploymentManager;
-    k8sNodeService = testApplicationContext.k8sInstanceService.nodeService;
 
     imageService = testApplicationContext.imageService;
     flavourService = testApplicationContext.flavourService;
