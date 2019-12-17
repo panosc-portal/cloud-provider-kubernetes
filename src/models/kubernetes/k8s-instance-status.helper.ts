@@ -1,6 +1,6 @@
 import { K8sDeployment, K8sInstanceState, K8sService } from '.';
 import { K8sInstanceStatus } from '../enumerations';
-import { K8S_CREATING_TIMEOUT_S, K8S_UNSCHEDULABLE_S } from '../../utils';
+import { APPLICATION_CONFIG } from '../../application-config';
 
 enum K8sDeploymentStatus {
   UNKNOWN = 'UNKNOWN',
@@ -166,7 +166,7 @@ export class K8sInstanceStatusHelper {
                   const diffContainerCreation = Math.abs(currentTime - podCreationTime);
                   const secondsRunning = Math.floor(diffContainerCreation / 1000);
 
-                  if (secondsRunning >= K8S_CREATING_TIMEOUT_S) {
+                  if (secondsRunning >= APPLICATION_CONFIG.kubernetes.creationTimeoutS) {
                     return { status: K8sDeploymentStatus.ERROR, message: 'Container creation timeout' };
 
                   } else {
@@ -189,8 +189,9 @@ export class K8sInstanceStatusHelper {
             const diffScheduledTime = Math.abs(currentTime - podScheduledStateTime);
             const secondsUnscheduled = Math.floor(diffScheduledTime / 1000);
 
-            if (secondsUnscheduled >= K8S_UNSCHEDULABLE_S) {
+            if (secondsUnscheduled >= APPLICATION_CONFIG.kubernetes.unschedulableTimeoutS) {
               return { status: K8sDeploymentStatus.ERROR, message: conditionPodScheduled.message };
+              
             } else {
               return { status: K8sDeploymentStatus.UNSCHEDULABLE, message: 'Deployment unschedulable' };
             }

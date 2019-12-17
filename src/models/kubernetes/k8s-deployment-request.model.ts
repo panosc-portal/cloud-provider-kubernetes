@@ -1,5 +1,5 @@
 import { Image, Flavour } from '../domain';
-import { K8S_OWNER_LABEL } from '../../utils';
+import { APPLICATION_CONFIG } from '../../application-config';
 
 export interface K8sDeploymentRequestConfig {
   name: string,
@@ -26,7 +26,7 @@ export class K8sDeploymentRequest {
         name: this._config.name,
         labels: {
           app: this._config.name,
-          owner: K8S_OWNER_LABEL
+          owner: APPLICATION_CONFIG.kubernetes.ownerLabel
         }
       },
       spec: {

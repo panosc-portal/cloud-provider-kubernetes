@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv';
 import { BootMixin } from '@loopback/boot';
 import { ApplicationConfig } from '@loopback/core';
 import { RestExplorerBindings, RestExplorerComponent } from '@loopback/rest-explorer';
@@ -12,10 +11,6 @@ import 'reflect-metadata';
 export class CloudProviderKubernetesApplication extends BootMixin(ServiceMixin(RepositoryMixin(RestApplication))) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
-
-    if (!options.ignoreDotenv) {
-      dotenv.config();
-    }
 
     // Set up the custom sequence
     this.sequence(MySequence);

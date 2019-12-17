@@ -1,6 +1,7 @@
 import { K8sDeployment, K8sDeploymentRequest } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
-import { logger, K8S_OWNER_LABEL } from '../../utils';
+import { logger } from '../../utils';
+import { APPLICATION_CONFIG } from '../../application-config';
 
 export class K8sDeploymentManager {
   constructor(private _dataSource: KubernetesDataSource) {
@@ -92,7 +93,7 @@ export class K8sDeploymentManager {
 
   async cleanup(validInstances: {namespace: string, computeId: string}[]): Promise<number> {
     try {
-      const deploymentsResponse = await this._dataSource.K8sClient.apis.apps.v1.deployments.get({ qs: { labelSelector: `owner=${K8S_OWNER_LABEL}` } });
+      const deploymentsResponse = await this._dataSource.K8sClient.apis.apps.v1.deployments.get({ qs: { labelSelector: `owner=${APPLICATION_CONFIG.kubernetes.ownerLabel}` } });
       const deployments = deploymentsResponse.body.items.map((deployment: any) => ({name: deployment.metadata.name, namespace: deployment.metadata.namespace}));
 
       const invalidDeployments = deployments.filter(deployment => {

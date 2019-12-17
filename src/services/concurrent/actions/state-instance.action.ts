@@ -1,4 +1,4 @@
-import { InstanceCommand, InstanceState, InstanceStatus } from '../../../models';
+import { InstanceCommand, InstanceState, InstanceStatus, K8sInstanceStatus } from '../../../models';
 import { InstanceAction, InstanceActionListener } from './instance.action';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
@@ -38,13 +38,12 @@ export class StateInstanceAction extends InstanceAction {
   
         } else {
           nextInstanceState = new InstanceState({
-            status: InstanceStatus[k8sInstance.state.status],
+            status: this._convertStatus(currentInstanceStatus, k8sInstance.state.status),
             message: k8sInstance.state.message,
             cpu: k8sInstance.currentCpu,
             memory: k8sInstance.currentMemory
           });
           logger.debug(`Instance ${computeId} state: ${nextInstanceState.status} ${nextInstanceState.message}`);
-  
         }
   
         if (currentInstanceStatus === InstanceStatus.REBOOTING &&
@@ -80,6 +79,22 @@ export class StateInstanceAction extends InstanceAction {
     } catch (error) {
       logger.error(`Error getting state instance with Id ${instance.id}: ${error.message}`);
       throw error;
+    }
+  }
+
+  private _convertStatus(currentInstanceStatus: InstanceStatus, k8sInstanceStatus: K8sInstanceStatus): InstanceStatus {
+    if (k8sInstanceStatus === K8sInstanceStatus.UNSCHEDULABLE) {
+      if (currentInstanceStatus === InstanceStatus.REBOOTING) {
+        return InstanceStatus.REBOOTING;
+
+      } else if (currentInstanceStatus === InstanceStatus.STARTING) {
+        return InstanceStatus.STARTING;
+      
+      } else {
+        return InstanceStatus.ERROR;
+      }
+    } else {
+      return InstanceStatus[k8sInstanceStatus];
     }
   }
 }

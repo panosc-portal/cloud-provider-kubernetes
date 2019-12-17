@@ -4,6 +4,7 @@ import { logger } from "../utils";
 import { JOB_PROVIDER } from "./jobs/job-provider";
 import { CronJob } from "cron";
 import { Job } from "./jobs/job";
+import { APPLICATION_CONFIG } from "../application-config";
 
 interface JobConfigInjection {
   key: string,
@@ -15,7 +16,8 @@ interface JobConfig {
   jobClass: string,
   cronExpression: string,
   injections: JobConfigInjection[],
-  params: any
+  params: any,
+  enabled: boolean
 }
 
 @bind({ scope: BindingScope.SINGLETON })
@@ -40,40 +42,43 @@ export class SchedulerService {
 
   async init(): Promise<void> {
     try {
-      const jobConfigs = await this.readConfig();
+      if (APPLICATION_CONFIG.scheduler.enabled) {
+        const jobConfigs = await this.readConfig();
 
-      if (jobConfigs) {
-        jobConfigs.forEach(async (jobConfig) => {
-
-          // Instantiate job runner
-          const jobClass = JOB_PROVIDER.get(jobConfig.jobClass);
-          if (jobClass != null) {
-            const jobRunner = new jobClass.class() as Job;
-            let jobIsOk = true;
-  
-            // Inject dependencies
-            for (const dependency in jobClass.dependencies) {
-              const injectionIdentifier = jobClass.dependencies[dependency];
-              const injection = await this._application.get(injectionIdentifier);
-              if (injection != null) {
-                jobRunner[dependency] = injection;
-
-              } else {
-                jobIsOk = false;
-                logger.error(`Dependency '${injectionIdentifier}' in Job class '${jobConfig.jobClass}' could not be found`);
-              }
-            }
+        if (jobConfigs) {
+          jobConfigs.forEach(async (jobConfig) => {
+            if (jobConfig.enabled) {
+              // Instantiate job runner
+              const jobClass = JOB_PROVIDER.get(jobConfig.jobClass);
+              if (jobClass != null) {
+                const jobRunner = new jobClass.class() as Job;
+                let jobIsOk = true;
+      
+                // Inject dependencies
+                for (const dependency in jobClass.dependencies) {
+                  const injectionIdentifier = jobClass.dependencies[dependency];
+                  const injection = await this._application.get(injectionIdentifier);
+                  if (injection != null) {
+                    jobRunner[dependency] = injection;
     
-            if (jobIsOk) {
-              const cronJob = new CronJob(jobConfig.cronExpression, () => jobRunner.run(jobConfig.params));
-              this._jobs.set(jobConfig.name, cronJob);
-              cronJob.start();
+                  } else {
+                    jobIsOk = false;
+                    logger.error(`Dependency '${injectionIdentifier}' in Job class '${jobConfig.jobClass}' could not be found`);
+                  }
+                }
+        
+                if (jobIsOk) {
+                  const cronJob = new CronJob(jobConfig.cronExpression, () => jobRunner.run(jobConfig.params));
+                  this._jobs.set(jobConfig.name, cronJob);
+                  cronJob.start();
+                }
+              }
+
+            } else {
+              logger.error(`Job class '${jobConfig.jobClass}' specified in scheduler config does not exist`);
             }
-          
-          } else {
-            logger.error(`Job class '${jobConfig.jobClass}' specified in scheduler config does not exist`);
-          }
-        });
+          });
+        }
       }
 
     } catch (error) {
@@ -83,7 +88,7 @@ export class SchedulerService {
 
   readConfig(): Promise<JobConfig[]> {
     return new Promise((resolve, reject) => {
-      const configFile = process.env.CLOUD_PROVIDER_K8S_SCHEDULER_CONFIG || 'resources/scheduler.config.json';
+      const configFile = APPLICATION_CONFIG.scheduler.config || 'resources/scheduler.config.json';
       if (fs.existsSync(configFile)) {
         fs.readFile(configFile, (err, data) => {
           if (err) {

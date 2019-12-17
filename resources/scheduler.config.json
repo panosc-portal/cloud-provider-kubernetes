@@ -3,7 +3,8 @@
     {
       "name": "all_instance_state_job",
       "jobClass": "InstanceStateJob",
-      "cronExpression": "*/15 * * * * *"
+      "cronExpression": "*/15 * * * * *",
+      "enabled": true
     },
     {
       "name": "non_stable_instance_state_job",
@@ -11,12 +12,14 @@
       "cronExpression": "* * * * * *",
       "params": {
         "states": ["BUILDING", "STARTING", "REBOOTING", "STOPPING", "DELETED"]
-      }
+      },
+      "enabled": true
     },
     {
       "name": "k8s_cleanup_job",
       "jobClass": "K8sCleanupJob",
-      "cronExpression": "0 */5 * * * *"
+      "cronExpression": "0 */5 * * * *",
+      "enabled": true
     }
   ]
 }

@@ -1,30 +1,32 @@
+import { APPLICATION_CONFIG } from "../application-config";
+
 export class K8SConfigCreator {
   getConfig(): any {
     return {
       apiVersion: 'v1',
       clusters: [
         {
-          name: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_CLUSTER_NAME,
+          name: APPLICATION_CONFIG.kubernetes.clusterName,
           cluster: {
-            server: `${process.env.CLOUD_PROVIDER_K8S_KUBERNETES_PROTOCOL}://${process.env.CLOUD_PROVIDER_K8S_KUBERNETES_ADDRESS}:${process.env.CLOUD_PROVIDER_K8S_KUBERNETES_PORT}`
+            server: `${APPLICATION_CONFIG.kubernetes.protocol}://${APPLICATION_CONFIG.kubernetes.host}:${APPLICATION_CONFIG.kubernetes.port}`
           }
         }
       ],
       users: [
         {
-          name: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_USERNAME
+          name: APPLICATION_CONFIG.kubernetes.userName
         }
       ],
       contexts: [
         {
-          name: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_CONTEXT_NAME,
+          name: APPLICATION_CONFIG.kubernetes.contextName,
           context: {
-            cluster: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_CLUSTER_NAME,
-            user: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_USERNAME
+            cluster: APPLICATION_CONFIG.kubernetes.clusterName,
+            user: APPLICATION_CONFIG.kubernetes.userName
           }
         }
       ],
-      'current-context': process.env.CLOUD_PROVIDER_K8S_KUBERNETES_CONTEXT_NAME
+      'current-context': APPLICATION_CONFIG.kubernetes.contextName
     };
   }
 }

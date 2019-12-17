@@ -1,5 +1,6 @@
 import { Image } from "../domain";
-import { logger, K8S_OWNER_LABEL } from "../../utils";
+import { logger } from "../../utils";
+import { APPLICATION_CONFIG } from "../../application-config";
 
 export interface K8sServiceRequestConfig {
   name: string,
@@ -28,7 +29,7 @@ export class K8sServiceRequest {
         name: this._config.name,
         labels: {
           app: this._config.name,
-          owner: K8S_OWNER_LABEL
+          owner: APPLICATION_CONFIG.kubernetes.ownerLabel
         }
       },
       spec: {

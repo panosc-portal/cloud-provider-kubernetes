@@ -3,6 +3,7 @@ import { lifeCycleObserver, LifeCycleObserver, inject, CoreBindings } from '@loo
 import { logger } from '../utils';
 import { CloudProviderKubernetesApplication } from '..';
 import { timeout } from 'cron';
+import { APPLICATION_CONFIG } from '../application-config';
 
 @lifeCycleObserver('datasource')
 export class TypeORMDataSource implements LifeCycleObserver {
@@ -14,16 +15,16 @@ export class TypeORMDataSource implements LifeCycleObserver {
 
   constructor(/*@inject(CoreBindings.APPLICATION_INSTANCE) private application?: CloudProviderKubernetesApplication*/) {
     this._config = {
-      type: process.env.CLOUD_PROVIDER_K8S_DATABASE_TYPE,
-      host: process.env.CLOUD_PROVIDER_K8S_DATABASE_HOST,
-      port: process.env.CLOUD_PROVIDER_K8S_DATABASE_PORT,
-      username: process.env.CLOUD_PROVIDER_K8S_DATABASE_USERNAME,
-      password: process.env.CLOUD_PROVIDER_K8S_DATABASE_PASSWORD,
-      database: process.env.CLOUD_PROVIDER_K8S_DATABASE_NAME,
-      schema: process.env.CLOUD_PROVIDER_K8S_DATABASE_SCHEMA,
+      type: APPLICATION_CONFIG.database.type,
+      host: APPLICATION_CONFIG.database.host,
+      port: APPLICATION_CONFIG.database.port,
+      username: APPLICATION_CONFIG.database.userName,
+      password: APPLICATION_CONFIG.database.password,
+      database: APPLICATION_CONFIG.database.name,
+      schema: APPLICATION_CONFIG.database.schema,
       entities: ['dist/models/*.js'],
-      synchronize: process.env.CLOUD_PROVIDER_K8S_DATABASE_SYNCHRONIZE === 'true',
-      logging: process.env.CLOUD_PROVIDER_K8S_DATABASE_LOGGING === 'true'
+      synchronize: APPLICATION_CONFIG.database.synchronize,
+      logging: APPLICATION_CONFIG.database.logging
     };
   }
 
