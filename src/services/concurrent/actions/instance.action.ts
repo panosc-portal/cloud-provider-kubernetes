@@ -68,7 +68,7 @@ export abstract class InstanceAction {
     await this.instanceService.save(instance);
   }
 
-  protected async _createK8sInstance(): Promise<K8sInstance> {
+  protected async _createK8sInstance(instanceState?: InstanceState): Promise<K8sInstance> {
     const instance = await this.getInstance();
     let k8sInstance: K8sInstance = null;
 
@@ -81,8 +81,8 @@ export abstract class InstanceAction {
       // Get namespace
       instance.namespace = k8sInstance.namespace;
   
-      // Get status of k8sInstance and set in instance
-      instance.state = new InstanceState({status: InstanceStatus[k8sInstance.state.status], message: k8sInstance.state.message});
+      // Get status of k8sInstance and set in instance if a default one hasn't been specific
+      instance.state = instanceState != null ? instanceState : new InstanceState({status: InstanceStatus[k8sInstance.state.status], message: k8sInstance.state.message});
   
       // Get IP Address
       instance.hostname = k8sInstance.hostname;

@@ -1,4 +1,4 @@
-import { InstanceCommand, InstanceStatus } from '../../../models';
+import { InstanceCommand, InstanceStatus, InstanceState } from '../../../models';
 import { InstanceAction, InstanceActionListener } from './instance.action';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
@@ -22,7 +22,7 @@ export class RebootInstanceAction extends InstanceAction {
           await this._deleteK8sInstance(computeId, namespace);
 
           logger.info(`Rebooting instance ${instance.id}: creating new k8s instance`);
-          await this._createK8sInstance();
+          await this._createK8sInstance(new InstanceState({status: InstanceStatus.REBOOTING, message: 'Instance rebooting'}));
 
         } else {
           logger.info(`Could not find k8s instance with ${computeId}`);
