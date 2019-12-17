@@ -120,7 +120,7 @@ export class K8sInstanceStatusHelper {
 
           if (conditionReady && conditionReady.status === 'False') {
             if (status.containerStatuses && status.containerStatuses.length > 0) {
-              const containerStatuses = status.containerStatuse[0];
+              const containerStatuses = status.containerStatuses[0];
               if (containerStatuses.state.waiting) {
                 const containerWaitingState = containerStatuses.state.waiting;
                 if (containerWaitingState.reason && containerWaitingState.reason === 'CrashLoopBackOff') {
@@ -146,7 +146,7 @@ export class K8sInstanceStatusHelper {
         case 'Pending':
           const conditionPodScheduled = conditions.find(c => c.type === 'PodScheduled');
           if (status.containerStatuses && status.containerStatuses.length > 0) {
-            const containerStatuses = status.containerStatuse[0];
+            const containerStatuses = status.containerStatuses[0];
 
             if (containerStatuses.state.waiting) {
               const containerWaitingState = containerStatuses.state.waiting;
