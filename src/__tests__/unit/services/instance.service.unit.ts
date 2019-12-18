@@ -27,7 +27,7 @@ describe('InstanceService', () => {
   it('gets all instances with states', async () => {
     const instances = await instanceService.getAllWithStates([InstanceStatus.ACTIVE, InstanceStatus.BUILDING]);
 
-    expect(instances.length).to.equal(3);
+    expect(instances.length).to.equal(4);
   });
 
   it('gets an instance', async () => {

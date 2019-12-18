@@ -45,7 +45,7 @@ describe('SchedulerService', () => {
     expect(instanceStateJob).to.not.be.null();
 
     const updatedInstances = await instanceStateJob.run({states: [InstanceStatus.BUILDING]});
-    expect(updatedInstances).to.equal(2);
+    expect(updatedInstances).to.equal(3);
   });
 
   it('Removes a deleted instance', async () => {
