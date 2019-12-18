@@ -12,7 +12,7 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
 
   getAll(): Promise<Instance[]> {
     const where = new WhereBuilder().eq('deleted', false).build();
-    const filter = new FilterBuilder().where(where).build();
+    const filter = new FilterBuilder().where(where).order('instance.id').build();
     return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'protocols'] } as QueryOptions);
   }
 
@@ -21,7 +21,7 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
       .eq('deleted', false)
       .inq('status', states)
       .build();
-    const filter = new FilterBuilder().where(where).build();
+    const filter = new FilterBuilder().where(where).order('instance.id').build();
     return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'protocols'] } as QueryOptions);
   }
 
