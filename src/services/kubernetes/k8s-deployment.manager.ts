@@ -1,15 +1,20 @@
-import { K8sDeployment, K8sDeploymentRequest } from '../../models';
+import { K8sDeployment, K8sDeploymentRequest, Instance } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
-import { logger } from '../../utils';
+import { logger, LoggedError } from '../../utils';
 import { APPLICATION_CONFIG } from '../../application-config';
+import { K8sSecretManager } from './k8s-secret.manager';
 
 export class K8sDeploymentManager {
+
+  private _secretManager: K8sSecretManager;
+
   constructor(private _dataSource: KubernetesDataSource) {
+    this._secretManager = new K8sSecretManager(this._dataSource);
   }
 
   async getWithComputeId(computeId: string, namespace: string): Promise<K8sDeployment> {
     try {
-      logger.debug(`Getting kubernetes deployment ${computeId} in namespace ${namespace}`);
+      logger.debug(`Getting kubernetes deployment '${computeId}' in namespace '${namespace}'`);
       const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespace(namespace).deployments(computeId).get();
       const podList = await this._dataSource.K8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${computeId}` } });
       const k8sDeployment = new K8sDeployment(computeId, deployment.body,podList.body);
@@ -19,8 +24,7 @@ export class K8sDeploymentManager {
         return k8sDeployment;
       
       } else {
-        logger.error(`Kubernetes deployment with compute Id '${computeId}' is not valid`);
-        throw new Error(`Kubernetes deployment with compute Id '${computeId}' is not valid`);
+        throw new LoggedError(`Kubernetes deployment with compute Id '${computeId}' is not valid`);
       }
 
     } catch (error) {
@@ -29,47 +33,41 @@ export class K8sDeploymentManager {
         return null;
 
       } else {
-        logger.error(`Failed to get kubernetes deployment with compute Id '${computeId}': ${error.message}`);
-        throw new Error(`Failed to get kubernetes deployment with compute Id '${computeId}': ${error.message}`);
+        throw new LoggedError(`Failed to get kubernetes deployment with compute Id '${computeId}': ${error.message}`);
       }
     }
   }
 
-  async create(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
+  async create(instance: Instance, computeId: string, namespace: string): Promise<K8sDeployment> {
     try {
-      logger.debug(`Creating kubernetes deployment '${deploymentRequest.name}' in namespace '${namespace}'`);
+      const image = instance.image;
+      const flavour = instance.flavour;
+
+      // Determine if an image pull secret is needed
+      const secretName = await this._secretManager.processSecretForRepository(image.repository, namespace); 
+
+      const deploymentRequest = new K8sDeploymentRequest({name: computeId, image: image, flavour: flavour, imagePullSecret: secretName});
+
+      logger.debug(`Creating kubernetes deployment for instance '${instance.id}' (${instance.name}) with computeId '${computeId}' in namespace '${namespace}'`);
       const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments.post({ body: deploymentRequest.model });
       const podList = await this._dataSource.K8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${deploymentRequest.name}` } });
 
       if (deployment.body == null || podList.body == null) {
-        logger.error(`Failed to create k8s deployment with compute Id ${deploymentRequest.name} because PodList body or deployment body is null`)
-        throw new Error(`Failed to create k8s deployment with compute Id ${deploymentRequest.name} because PodList body or deployment body is null`)
+        throw new LoggedError(`Failed to create k8s deployment for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}' because PodList body or deployment body is null`)
 
       } else {
         const newDeployment = new K8sDeployment(deploymentRequest.name, deployment.body, podList.body);
         if (newDeployment.isValid()) {
-          logger.debug(`Deployment '${newDeployment.name}' in namespace '${namespace}' has been created`);
+          logger.debug(`Kubernetes deployment for instance '${instance.id}' ('${instance.name}') with computeId '${computeId}' created successfully`);
           return newDeployment;
 
         } else {
-          logger.error(`Kubernetes deployment with compute Id '${deploymentRequest.name}' is not valid`);
-          throw new Error(`Kubernetes deployment with compute Id '${deploymentRequest.name}' is not valid`);
+          throw new LoggedError(`Kubernetes deployment for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}' is not valid`);
         }
       }
 
     } catch (error) {
-      logger.error(`Failed to create k8s deployment with compute Id '${deploymentRequest.name}': ${error.message}`);
-      throw new Error(`Failed to create k8s deployment with compute Id '${deploymentRequest.name}': ${error.message}`);
-    }
-  }
-
-  async createIfNotExist(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<K8sDeployment> {
-    const deploymentName = deploymentRequest.name;
-    const existingDeployment = await this.getWithComputeId(deploymentName, namespace);
-    if (existingDeployment == null) {
-      return this.create(deploymentRequest, namespace);
-    } else {
-      return existingDeployment;
+      throw new LoggedError(`Failed to create k8s deployment for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}': ${error.message}`);
     }
   }
 

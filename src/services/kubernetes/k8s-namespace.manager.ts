@@ -1,7 +1,7 @@
 import { bind, BindingScope, inject } from '@loopback/core';
 import { K8sNamespace, K8sNamespaceRequest } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
-import { logger } from '../../utils';
+import { logger, LoggedError } from '../../utils';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class K8sNamespaceManager {
@@ -18,8 +18,7 @@ export class K8sNamespaceManager {
         return k8sNamespace;
 
       } else {
-        logger.error(`Kubernetes namespace '${name}' is not valid`);
-        throw new Error(`Kubernetes namespace '${name}' is not valid`);
+        throw new LoggedError(`Kubernetes namespace '${name}' is not valid`);
       }
 
     } catch (error) {
@@ -27,43 +26,42 @@ export class K8sNamespaceManager {
         return null;
 
       } else {
-        logger.error(`Failed to get kubernetes namespace with name '${name}': ${error.message}`);
-        throw new Error(`Failed to get kubernetes namespace with name '${name}': ${error.message}`);
+        throw new LoggedError(`Failed to get kubernetes namespace with name '${name}': ${error.message}`);
       }
     }
   }
 
-  async create(namespaceRequest: K8sNamespaceRequest): Promise<K8sNamespace> {
+  async create(namespaceName: string): Promise<K8sNamespace> {
     try {
-      logger.debug(`Creating kubernetes namespace '${namespaceRequest.name}'`);
+      logger.debug(`Creating kubernetes namespace '${namespaceName}'`);
+
+      const namespaceRequest = new K8sNamespaceRequest(namespaceName);
+
       const namespace = await this._dataSource.K8sClient.api.v1.namespaces.post({ body: namespaceRequest.model });
 
       if (namespace.body == null) {
-        logger.error(`Failed to create k8s namespace with name ${namespaceRequest.name} because namespace body is null`);
-        throw new Error(`Failed to create k8s namespace with name ${namespaceRequest.name} because namespace body is null`);
+        throw new LoggedError(`Failed to create k8s namespace with name ${namespaceRequest.name} because namespace body is null`);
+
       } else {
-        const newNamespace = new K8sNamespace(namespaceRequest.name, namespace.body);
+        const newNamespace = new K8sNamespace(namespaceName, namespace.body);
 
         if (newNamespace.isValid()) {
-          logger.debug('Namespace ' + newNamespace.name + ' has been created');
+          logger.debug(`Namespace ${namespaceName} has been created`);
           return newNamespace;
 
         } else {
-          logger.error(`Kubernetes namespace '${namespaceRequest.name}' is not valid`);
-          throw new Error(`Kubernetes namespace '${namespaceRequest.name}' is not valid`);
+          throw new LoggedError(`Kubernetes namespace '${namespaceName}' is not valid`);
         }
       }
     } catch (error) {
-      logger.error(`Failed to create k8s namespace '${namespaceRequest.name}': ${error.message}`);
-      throw new Error(`Failed to create k8s namespace '${namespaceRequest.name}': ${error.message}`);
+      throw new LoggedError(`Failed to create k8s namespace '${namespaceName}': ${error.message}`);
     }
   }
 
-  async createIfNotExist(namespaceRequest: K8sNamespaceRequest): Promise<K8sNamespace> {
-    const namespaceName = namespaceRequest.name;
+  async createIfNotExist(namespaceName: string): Promise<K8sNamespace> {
     const existingNamespace = await this.getWithName(namespaceName);
     if (existingNamespace == null) {
-      return this.create(namespaceRequest);
+      return this.create(namespaceName);
     } else {
       return existingNamespace;
     }

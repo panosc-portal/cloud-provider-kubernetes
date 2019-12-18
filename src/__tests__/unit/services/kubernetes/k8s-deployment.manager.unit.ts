@@ -1,7 +1,7 @@
 import { expect } from '@loopback/testlab';
 import { createTestApplicationContext } from '../../../helpers/context.helper';
 import { K8sDeploymentManager, K8sNamespaceManager, InstanceService } from '../../../../services';
-import { K8sDeploymentRequest, K8sNamespaceRequest } from '../../../../models';
+import { K8sDeploymentRequest } from '../../../../models';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
 
@@ -28,24 +28,19 @@ describe('K8sDeploymentManager', () => {
   });
 
   it('create kubernetes deployment', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(1);
     expect(instance).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest({
-      name: 'test',
-      image: instance.image,
-      flavour: instance.flavour
-    });
-    const k8sDeployment = await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
+    const k8sDeployment = await k8sDeploymentManager.create(instance, 'test', 'panosc');
     expect(k8sDeployment).to.not.be.null();
     expect(k8sDeployment.name).to.be.equal('test');
   });
 
   it('creates kubernetes deployment request with expected ports', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(1);
@@ -60,19 +55,13 @@ describe('K8sDeploymentManager', () => {
   });
 
   it('creates kubernetes deployment with expected ports', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(1);
     expect(instance).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest({
-      name: 'test',
-      image: instance.image,
-      flavour: instance.flavour
-    });
-
-    const k8sDeployment = await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
+    const k8sDeployment = await k8sDeploymentManager.create(instance, 'test', 'panosc');
     expect(k8sDeployment).to.not.be.null();
 
     expect(k8sDeployment.ports.length).to.equal(2);
@@ -88,44 +77,29 @@ describe('K8sDeploymentManager', () => {
   });
 
   it('create and get kubernetes deployment', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(1);
     expect(instance).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest({
-      name: 'test',
-      image: instance.image,
-      flavour: instance.flavour
-    });
-    await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
+    await k8sDeploymentManager.create(instance, 'test', 'panosc');
     const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc');
     expect(k8sDeployment).to.not.be.null();
     expect(k8sDeployment.name).to.be.equal('test');
   });
 
   it('create two kubernetes deployment with same name', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(1);
     expect(instance).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest({
-      name: 'test',
-      image: instance.image,
-      flavour: instance.flavour
-    });
-    await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
-    const k8sDeploymentRequest2 = new K8sDeploymentRequest({
-      name: 'test',
-      image: instance.image,
-      flavour: instance.flavour
-    });
+    await k8sDeploymentManager.create(instance, 'test', 'panosc');
     let k8sDeployment2 = null;
     try {
-      k8sDeployment2 = await k8sDeploymentManager.create(k8sDeploymentRequest2, 'panosc');
+      k8sDeployment2 = await k8sDeploymentManager.create(instance, 'test', 'panosc');
     } catch (error) {
       // Expect an error rather than returning null
     }
@@ -133,7 +107,7 @@ describe('K8sDeploymentManager', () => {
   });
 
   it('delete an inexistent deployment', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const deletedDeployment = await k8sDeploymentManager.deleteWithComputeId('test', 'panosc');
@@ -141,18 +115,13 @@ describe('K8sDeploymentManager', () => {
   });
 
   it('create and delete a deployment', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(1);
     expect(instance).to.not.be.null();
 
-    const k8sDeploymentRequest = new K8sDeploymentRequest({
-      name: 'test',
-      image: instance.image,
-      flavour: instance.flavour
-    });
-    await k8sDeploymentManager.create(k8sDeploymentRequest, 'panosc');
+    await k8sDeploymentManager.create(instance, 'test', 'panosc');
     const deletedService = await k8sDeploymentManager.deleteWithComputeId('testdeployment', 'panosc');
     expect(deletedService).to.be.not.null();
   });

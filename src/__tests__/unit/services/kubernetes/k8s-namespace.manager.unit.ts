@@ -1,6 +1,5 @@
 import { expect } from '@loopback/testlab';
 import { createTestApplicationContext } from '../../../helpers/context.helper';
-import { K8sNamespaceRequest } from '../../../../models';
 import { K8sNamespaceManager } from '../../../../services';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 
@@ -22,8 +21,7 @@ describe('K8sNamespaceManager', () => {
   });
 
   it('create kubernetes namespace', async () => {
-    const k8sNamespaceRequest = new K8sNamespaceRequest('test');
-    const k8sNamespace = await k8sNamespaceManager.create(k8sNamespaceRequest);
+    const k8sNamespace = await k8sNamespaceManager.create('test');
     expect(k8sNamespace).to.not.be.null();
     expect(k8sNamespace.name).to.be.equal('test');
   });
@@ -34,19 +32,17 @@ describe('K8sNamespaceManager', () => {
   });
 
   it('create and get kubernetes namespace', async () => {
-    const k8sNamespaceRequest = new K8sNamespaceRequest('testnamespace');
-    await k8sNamespaceManager.create(k8sNamespaceRequest);
+    await k8sNamespaceManager.create('testnamespace');
     const k8sNamespace = await k8sNamespaceManager.getWithName('testnamespace');
     expect(k8sNamespace).to.not.be.null();
     expect(k8sNamespace.name).to.be.equal('testnamespace');
   });
 
   it('create the same namespace twice', async () => {
-    const k8sNamespaceRequest = new K8sNamespaceRequest('testnamespace');
-    await k8sNamespaceManager.create(k8sNamespaceRequest);
+    await k8sNamespaceManager.create('testnamespace');
     let k8sNamespace2 = null;
     try {
-      k8sNamespace2 = await k8sNamespaceManager.create(k8sNamespaceRequest);
+      k8sNamespace2 = await k8sNamespaceManager.create('testnamespace');
     } catch (error) {
     }
     expect(k8sNamespace2).to.be.null();
@@ -58,7 +54,7 @@ describe('K8sNamespaceManager', () => {
   });
 
   it('create and delete a namespace', async () => {
-    await k8sNamespaceManager.create(new K8sNamespaceRequest('test'));
+    await k8sNamespaceManager.create('test');
     const deletedDeployment = await k8sNamespaceManager.delete('test');
     expect(deletedDeployment).to.be.true();
   });

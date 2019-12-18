@@ -1,16 +1,6 @@
 import { expect } from '@loopback/testlab';
 import { createTestApplicationContext } from '../../../helpers/context.helper';
-import {
-  FlavourService,
-  ImageService,
-  InstanceService,
-  K8sInstanceService,
-  K8sNamespaceManager
-} from '../../../../services';
-import {
-  K8sInstance,
-  K8sNamespaceRequest,
-} from '../../../../models/kubernetes';
+import { FlavourService, ImageService, InstanceService, K8sInstanceService, K8sNamespaceManager } from '../../../../services';
 import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 import { Instance } from '../../../../models';
@@ -46,7 +36,7 @@ describe('K8sInstanceService', () => {
   });
 
   it('create kubernetes instance', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(3);
@@ -55,7 +45,7 @@ describe('K8sInstanceService', () => {
   });
 
   it('create and delete kubernetes instance', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(3);
@@ -66,7 +56,7 @@ describe('K8sInstanceService', () => {
   });
 
   it('create instance and verify label connection', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const instance = await instanceService.getById(3);
@@ -77,7 +67,7 @@ describe('K8sInstanceService', () => {
   });
 
   it('create instance with service error', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const image = await imageService.getById(1);
@@ -92,7 +82,7 @@ describe('K8sInstanceService', () => {
   });
 
   it('create instance with deployment error pod BackOff', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const image = await imageService.getById(1);
@@ -108,7 +98,7 @@ describe('K8sInstanceService', () => {
   });
 
   it('create instance with deployment error pod ContainerCreating timeout', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const image = await imageService.getById(1);
@@ -123,7 +113,7 @@ describe('K8sInstanceService', () => {
   });
 
   it('create instance with deployment error pod ErrImagePull', async () => {
-    const k8sNamespace = await k8sNamespaceManager.create(new K8sNamespaceRequest('panosc'));
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
     const image = await imageService.getById(1);

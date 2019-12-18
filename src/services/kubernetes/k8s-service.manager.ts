@@ -1,6 +1,6 @@
-import { K8sService, K8sServiceRequest } from '../../models';
+import { K8sService, K8sServiceRequest, Instance } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
-import { logger } from '../../utils';
+import { logger, LoggedError } from '../../utils';
 import { APPLICATION_CONFIG } from '../../application-config';
 
 export class K8sServiceManager {
@@ -19,8 +19,7 @@ export class K8sServiceManager {
         return k8sService;
 
       } else {
-        logger.error(`Kubernetes service with compute Id '${computeId}' is not valid`);
-        throw new Error(`Kubernetes service with compute Id '${computeId}' is not valid`);
+        throw new LoggedError(`Kubernetes service with compute Id '${computeId}' is not valid`);
       }
 
     } catch (error) {
@@ -29,8 +28,7 @@ export class K8sServiceManager {
         return null;
 
       } else {
-        logger.error(`Failed to get kubernetes service with compute Id '${computeId}': ${error.message}`);
-        throw new Error(`Failed to get kubernetes service with compute Id '${computeId}': ${error.message}`);
+        throw new LoggedError(`Failed to get kubernetes service with compute Id '${computeId}': ${error.message}`);
       }
     }
   }
@@ -50,46 +48,35 @@ export class K8sServiceManager {
         return null;
 
       } else {
-        logger.error(`Failed to get kubernetes service endpoints with compute Id '${computeId}': ${error.message}`);
-        throw new Error(`Failed to get kubernetes service endpoints with compute Id '${computeId}': ${error.message}`);
+        throw new LoggedError(`Failed to get kubernetes service endpoints with compute Id '${computeId}': ${error.message}`);
       }
     }
   }
 
-  async create(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
+  async create(instance: Instance, computeId: string, namespace: string): Promise<K8sService> {
     try {
-      logger.debug(`Creating kubernetes service '${serviceRequest.name}' in namespace '${namespace}'`);
+      const serviceRequest = new K8sServiceRequest({name: computeId, image: instance.image});
+
+      logger.debug(`Creating kubernetes service for instance '${instance.id}' (${instance.name}) with computeId '${serviceRequest.name}' in namespace '${namespace}'`);
       const service = await this._dataSource.K8sClient.api.v1.namespace(namespace).services.post({ body: serviceRequest.model });
       const serviceEndpoint = await this.getEndpointsWithComputeId(serviceRequest.name, namespace);
 
       if (service.body == null || serviceEndpoint.body == null) {
-        logger.error(`Failed to create k8s deployment with compute Id ${serviceRequest.name} because service body or serviceEndpoint body is null`);
-        throw new Error(`Failed to create k8s deployment with compute Id ${serviceRequest.name} because service body or serviceEndpoint body is null`);
+        throw new LoggedError(`Failed to create k8s service for instance '${instance.id}' (${instance.name}) with compute Id '${serviceRequest.name}' because service body or serviceEndpoint body is null`);
+
       } else {
         const newService = new K8sService(serviceRequest.name, service.body, serviceEndpoint.body);
 
         if (newService.isValid()) {
-          logger.debug(`Service '${newService.name}' in namespace '${namespace}' has been created`);
+          logger.debug(`Kubernetes service for instance '${instance.id}' ('${instance.name}') with computeId '${computeId}' created successfully`);
           return newService;
 
         } else {
-          logger.error(`Kubernetes service with compute Id '${serviceRequest.name}' is not valid`);
-          throw new Error(`Kubernetes service with compute Id '${serviceRequest.name}' is not valid`);
+          throw new LoggedError(`Kubernetes service for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}' is not valid`);
         }
       }
     } catch (error) {
-      logger.error(`Failed to create k8s service with compute Id '${serviceRequest.name}': ${error.message}`);
-      throw new Error(`Failed to create k8s service with compute Id '${serviceRequest.name}': ${error.message}`);
-    }
-  }
-
-  async createIfNotExist(serviceRequest: K8sServiceRequest, namespace: string): Promise<K8sService> {
-    const serviceName = serviceRequest.name;
-    const existingService = await this.getWithComputeId(serviceName, namespace);
-    if (existingService == null) {
-      return this.create(serviceRequest, namespace);
-    } else {
-      return existingService;
+      throw new LoggedError(`Failed to create k8s service for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}': ${error.message}`);
     }
   }
 

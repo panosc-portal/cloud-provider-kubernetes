@@ -21,7 +21,8 @@ export class ApplicationConfig {
     defaultNamespace: string,
     creationTimeoutS: number,
     unschedulableTimeoutS: number,
-    ownerLabel: string
+    ownerLabel: string,
+    secretsConfig: string
   }
   logging: {
     level: string
@@ -60,7 +61,8 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
       defaultNamespace: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE != null ? process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE : 'panosc',
       creationTimeoutS: 600,
       unschedulableTimeoutS: 60,
-      ownerLabel: 'cloud-provider'
+      ownerLabel: 'cloud-provider',
+      secretsConfig: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_SECRETS_CONFIG,
     },
     logging: {
       level: process.env.CLOUD_PROVIDER_K8S_LOG_LEVEL

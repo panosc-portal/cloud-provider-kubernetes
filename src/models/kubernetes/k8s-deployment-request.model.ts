@@ -4,7 +4,8 @@ import { APPLICATION_CONFIG } from '../../application-config';
 export interface K8sDeploymentRequestConfig {
   name: string,
   image: Image,
-  flavour: Flavour
+  flavour: Flavour,
+  imagePullSecret?: string
 }
 
 export class K8sDeploymentRequest {
@@ -46,7 +47,7 @@ export class K8sDeploymentRequest {
             containers: [
               {
                 name: this._config.name,
-                image: this._config.image.path,
+                image: this._config.image.repository ? `${this._config.image.repository}/${this._config.image.path}` : this._config.image.path,
                 ports: this._config.image.protocols.map(protocol => {
                   return { name: protocol.name.toLowerCase(), containerPort: protocol.port };
                 }),
@@ -62,7 +63,7 @@ export class K8sDeploymentRequest {
                 }
               }
             ],
-            imagePullSecrets: [{ name: 'regcred' }]
+            imagePullSecrets: this._config.imagePullSecret != null ? [{ name:this._config.imagePullSecret }] : []
           }
         }
       }

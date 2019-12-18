@@ -1,7 +1,7 @@
 import { inject, bind, BindingScope } from '@loopback/core';
 import { KubernetesDataSource } from '../../datasources';
 import { K8sNode } from '../../models/kubernetes';
-import { logger } from '../../utils';
+import { logger, LoggedError } from '../../utils';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class K8sNodeService {
@@ -23,8 +23,7 @@ export class K8sNodeService {
       logger.debug(`Got ${nodes.length} kubernetes nodes`);
 
     } catch (error) {
-      logger.error(`Failed to get all kubernetes nodes: ${error.message}`);
-      throw error;
+      throw new LoggedError(`Failed to get all kubernetes nodes: ${error.message}`);
     }
 
     return nodes;
@@ -41,8 +40,7 @@ export class K8sNodeService {
         return masterNode;
 
       } else {
-        logger.error(`Couldn't find a kubernetes master node`);
-        throw new Error(`Couldn't find a kubernetes master node`);
+        throw new LoggedError(`Couldn't find a kubernetes master node`);
       }
     }
   }
@@ -59,8 +57,7 @@ export class K8sNodeService {
         return node;
 
       } else {
-        logger.error(`Kubernetes node with name '${name}' is not valid`);
-        throw new Error(`Kubernetes node with name '${name}' is not valid`);
+        throw new LoggedError(`Kubernetes node with name '${name}' is not valid`);
       }
 
     } catch (error) {
@@ -69,8 +66,7 @@ export class K8sNodeService {
         return null;
 
       } else {
-        logger.error(`Failed to get kubernetes node with name '${name}': ${error.message}`);
-        throw new Error(`Failed to get kubernetes node with name '${name}': ${error.message}`);
+        throw new LoggedError(`Failed to get kubernetes node with name '${name}': ${error.message}`);
       }
     }
   }

@@ -24,6 +24,14 @@ export class Image {
 
   @property({
     type: 'string',
+    required: false
+  })
+  @Index('image_repository_index')
+  @Column({ length: 250, nullable: true })
+  repository: string;
+
+  @property({
+    type: 'string',
     required: true
   })
   @Index('image_path_index')

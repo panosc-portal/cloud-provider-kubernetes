@@ -68,3 +68,5 @@ typings/
 DEVELOPING.md
 
 pgdata
+.docker-repo-secrets.json
+

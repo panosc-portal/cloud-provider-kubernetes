@@ -1,10 +1,9 @@
 import { bind, BindingScope, inject, lifeCycleObserver } from '@loopback/core';
 import { K8sServiceManager } from './k8s-service.manager';
 import { Instance, K8sInstance, K8sDeployment, K8sService } from '../../models';
-import { K8sRequestFactoryService } from './k8s-request-factory.service';
 import { K8sDeploymentManager } from './k8s-deployment.manager';
 import { KubernetesDataSource } from '../../datasources';
-import { logger } from '../../utils';
+import { logger, LoggedError } from '../../utils';
 import { K8sNamespaceManager } from './k8s-namespace.manager';
 import * as uuidv4 from 'uuid/v4';
 import { APPLICATION_CONFIG } from '../../application-config';
@@ -12,7 +11,6 @@ import { APPLICATION_CONFIG } from '../../application-config';
 @lifeCycleObserver('server')
 @bind({ scope: BindingScope.SINGLETON })
 export class K8sInstanceService {
-  private _requestFactoryService = new K8sRequestFactoryService();
   private _deploymentManager: K8sDeploymentManager;
   private _serviceManager: K8sServiceManager;
   private _namespaceManager: K8sNamespaceManager;
@@ -33,10 +31,6 @@ export class K8sInstanceService {
 
   get namespaceManager(): K8sNamespaceManager {
     return this._namespaceManager;
-  }
-
-  get requestFactoryService(): K8sRequestFactoryService {
-    return this._requestFactoryService;
   }
 
   constructor(@inject('datasources.kubernetes') dataSource: KubernetesDataSource) {
@@ -71,13 +65,11 @@ export class K8sInstanceService {
   }
 
   async create(instance: Instance): Promise<K8sInstance> {
-    const image = instance.image;
-    const flavour = instance.flavour;
-    const defaultNamespaceRequest = this.requestFactoryService.createK8sNamespaceRequest(this._defaultNamespace);
-    await this.namespaceManager.createIfNotExist(defaultNamespaceRequest);
-    let deployment: K8sDeployment = null;
-    let service: K8sService = null;
     let k8sInstance: K8sInstance = null;
+
+    if (instance.image.protocols.length === 0) {
+      throw new LoggedError(`Not creating kubernetes instance for instance '${instance.id}': image does not contain any protocols`);
+    }
 
     // Get compute Id
     const instanceComputeId = await this.UUIDGenerator(instance.name, this._defaultNamespace);
@@ -85,28 +77,23 @@ export class K8sInstanceService {
       logger.debug(`Creating kubernetes instance with compute Id '${instanceComputeId}' for instance '${instance.id}'`);
 
       try {
+        // Create namespace if required
+        await this._namespaceManager.createIfNotExist(this._defaultNamespace);
+    
         // Create deployment
-        logger.debug(`Creating kubernetes deployment for instance '${instance.id}' (${instance.name})`);
-        const deploymentRequest = this._requestFactoryService.createK8sDeploymentRequest({name: instanceComputeId, image: image, flavour: flavour});
-        deployment = await this._deploymentManager.create(deploymentRequest, this._defaultNamespace);
-        logger.debug(`Kubernetes deployment for instance '${instance.id}' ('${instance.name}') created successfully`);
+        const deployment = await this._deploymentManager.create(instance, instanceComputeId, this._defaultNamespace);
 
         // Create service
-        logger.debug(`Creating kubernetes service for instance '${instance.id}' ('${instance.name}')`);
-        const serviceRequest = this._requestFactoryService.createK8sServiceRequest({name: instanceComputeId, image: image});
-        service = await this._serviceManager.create(serviceRequest, this._defaultNamespace);
-        logger.debug(`Kubernetes service for instance '${instance.id}' ('${instance.name}') created successfully`);
+        const service = await this._serviceManager.create(instance, instanceComputeId, this._defaultNamespace);
 
         // Get master node IP from environment variable
         k8sInstance = new K8sInstance(deployment, service, instanceComputeId, this._defaultNamespace, APPLICATION_CONFIG().kubernetes.host);
 
       } catch (error) {
-        logger.error(`Couldn't create k8s instance for instance '${instance.id}' ('${instance.name}'): ${error.message}`);
-
         // Cleanup
         await this.delete(instanceComputeId, this._defaultNamespace);
 
-        throw new Error(`Failed to create kubernetes instance for instance '${instance.id}': ${error.message}`);
+        throw new LoggedError(`Failed to create kubernetes instance for instance '${instance.id}' ('${instance.name}'): ${error.message}`);
       }
     }
 
