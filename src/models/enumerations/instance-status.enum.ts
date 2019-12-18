@@ -1,5 +1,4 @@
 export enum InstanceStatus {
-  PENDING = 'PENDING',
   UNKNOWN = 'UNKNOWN',
   BUILDING = 'BUILDING',
   STARTING = 'STARTING',
@@ -10,6 +9,5 @@ export enum InstanceStatus {
   UNAVAILABLE = 'UNAVAILABLE',
   ERROR = 'ERROR',
   DELETING = 'DELETING',
-  DELETED = 'DELETED',
-  UNSCHEDULABLE = 'UNSCHEDULABLE'
+  DELETED = 'DELETED'
 }

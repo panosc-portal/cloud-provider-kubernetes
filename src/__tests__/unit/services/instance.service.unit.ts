@@ -50,7 +50,7 @@ describe('InstanceService', () => {
       image: image,
       flavour: flavour,
       hostname: 'test.host.eu',
-      status: InstanceStatus.PENDING,
+      status: InstanceStatus.BUILDING,
       currentCPU: 0,
       currentMemory: 0,
       createdAt: new Date(),

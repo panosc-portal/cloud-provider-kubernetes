@@ -42,7 +42,7 @@ export class SchedulerService {
 
   async init(): Promise<void> {
     try {
-      if (APPLICATION_CONFIG.scheduler.enabled) {
+      if (APPLICATION_CONFIG().scheduler.enabled) {
         const jobConfigs = await this.readConfig();
 
         if (jobConfigs) {
@@ -88,7 +88,7 @@ export class SchedulerService {
 
   readConfig(): Promise<JobConfig[]> {
     return new Promise((resolve, reject) => {
-      const configFile = APPLICATION_CONFIG.scheduler.config || 'resources/scheduler.config.json';
+      const configFile = APPLICATION_CONFIG().scheduler.config || 'resources/scheduler.config.json';
       if (fs.existsSync(configFile)) {
         fs.readFile(configFile, (err, data) => {
           if (err) {

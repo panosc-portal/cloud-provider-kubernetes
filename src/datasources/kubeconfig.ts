@@ -6,27 +6,27 @@ export class K8SConfigCreator {
       apiVersion: 'v1',
       clusters: [
         {
-          name: APPLICATION_CONFIG.kubernetes.clusterName,
+          name: APPLICATION_CONFIG().kubernetes.clusterName,
           cluster: {
-            server: `${APPLICATION_CONFIG.kubernetes.protocol}://${APPLICATION_CONFIG.kubernetes.host}:${APPLICATION_CONFIG.kubernetes.port}`
+            server: `${APPLICATION_CONFIG().kubernetes.protocol}://${APPLICATION_CONFIG().kubernetes.host}:${APPLICATION_CONFIG().kubernetes.port}`
           }
         }
       ],
       users: [
         {
-          name: APPLICATION_CONFIG.kubernetes.userName
+          name: APPLICATION_CONFIG().kubernetes.userName
         }
       ],
       contexts: [
         {
-          name: APPLICATION_CONFIG.kubernetes.contextName,
+          name: APPLICATION_CONFIG().kubernetes.contextName,
           context: {
-            cluster: APPLICATION_CONFIG.kubernetes.clusterName,
-            user: APPLICATION_CONFIG.kubernetes.userName
+            cluster: APPLICATION_CONFIG().kubernetes.clusterName,
+            user: APPLICATION_CONFIG().kubernetes.userName
           }
         }
       ],
-      'current-context': APPLICATION_CONFIG.kubernetes.contextName
+      'current-context': APPLICATION_CONFIG().kubernetes.contextName
     };
   }
 }

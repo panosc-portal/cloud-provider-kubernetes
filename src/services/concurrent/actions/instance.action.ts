@@ -1,4 +1,4 @@
-import { InstanceCommand, Instance, InstanceCommandType, InstanceState, InstanceStatus, K8sInstance, ProtocolName, InstanceProtocol } from '../../../models';
+import { InstanceCommand, Instance, InstanceCommandType, InstanceState, InstanceStatus, K8sInstance, ProtocolName, InstanceProtocol, K8sInstanceStatus } from '../../../models';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
 import { logger } from '../../../utils';
@@ -82,7 +82,7 @@ export abstract class InstanceAction {
       instance.namespace = k8sInstance.namespace;
   
       // Get status of k8sInstance and set in instance if a default one hasn't been specific
-      instance.state = instanceState != null ? instanceState : new InstanceState({status: InstanceStatus[k8sInstance.state.status], message: k8sInstance.state.message});
+      instance.state = instanceState != null ? instanceState : new InstanceState({status: this._convertStatus(instance.status, k8sInstance.state.status), message: k8sInstance.state.message});
   
       // Get IP Address
       instance.hostname = k8sInstance.hostname;
@@ -112,5 +112,24 @@ export abstract class InstanceAction {
     await this.k8sInstanceService.delete(computeId, namespace);
   }
 
+
+  protected _convertStatus(currentInstanceStatus: InstanceStatus, k8sInstanceStatus: K8sInstanceStatus): InstanceStatus {
+    if (k8sInstanceStatus === K8sInstanceStatus.UNSCHEDULABLE) {
+      if (currentInstanceStatus === InstanceStatus.REBOOTING) {
+        return InstanceStatus.REBOOTING;
+
+      } else if (currentInstanceStatus === InstanceStatus.BUILDING) {
+        return InstanceStatus.BUILDING;
+
+      } else if (currentInstanceStatus === InstanceStatus.STARTING) {
+        return InstanceStatus.STARTING;
+      
+      } else {
+        return InstanceStatus.ERROR;
+      }
+    } else {
+      return InstanceStatus[k8sInstanceStatus];
+    }
+  }
   protected abstract _run(): Promise<void>;
 }

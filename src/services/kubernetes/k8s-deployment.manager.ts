@@ -93,7 +93,7 @@ export class K8sDeploymentManager {
 
   async cleanup(validInstances: {namespace: string, computeId: string}[]): Promise<number> {
     try {
-      const deploymentsResponse = await this._dataSource.K8sClient.apis.apps.v1.deployments.get({ qs: { labelSelector: `owner=${APPLICATION_CONFIG.kubernetes.ownerLabel}` } });
+      const deploymentsResponse = await this._dataSource.K8sClient.apis.apps.v1.deployments.get({ qs: { labelSelector: `owner=${APPLICATION_CONFIG().kubernetes.ownerLabel}` } });
       const deployments = deploymentsResponse.body.items.map((deployment: any) => ({name: deployment.metadata.name, namespace: deployment.metadata.namespace}));
 
       const invalidDeployments = deployments.filter(deployment => {

@@ -26,7 +26,7 @@ describe('InstanceActionService', () => {
   it('Runs a command', async () => {
     let instance = await context.instanceService.getById(1);
     expect(instance).to.not.be.null();
-    expect(instance.status).to.equal(InstanceStatus.PENDING);
+    expect(instance.status).to.equal(InstanceStatus.BUILDING);
 
     const command = new InstanceCommand(instance, InstanceCommandType.CREATE);
     await context.instanceActionService.execute(command);
@@ -40,7 +40,7 @@ describe('InstanceActionService', () => {
   it('Queues a command', async () => {
     let instance = await context.instanceService.getById(1);
     expect(instance).to.not.be.null();
-    expect(instance.status).to.equal(InstanceStatus.PENDING);
+    expect(instance.status).to.equal(InstanceStatus.BUILDING);
 
     const stateCommand = new InstanceCommand(instance, InstanceCommandType.STATE);
     const createCommand = new InstanceCommand(instance, InstanceCommandType.CREATE);
@@ -49,7 +49,7 @@ describe('InstanceActionService', () => {
 
     await statePromise;
     instance = await context.instanceService.getById(1);
-    expect(instance.status).to.be.equal(InstanceStatus.PENDING);
+    expect(instance.status).to.be.equal(InstanceStatus.BUILDING);
     expect(instance.computeId).to.be.null();
 
     await createPromise;
@@ -63,7 +63,7 @@ describe('InstanceActionService', () => {
   it('Refuses a deplicated command', async () => {
     const instance = await context.instanceService.getById(1);
     expect(instance).to.not.be.null();
-    expect(instance.status).to.equal(InstanceStatus.PENDING);
+    expect(instance.status).to.equal(InstanceStatus.BUILDING);
 
     const command1 = new InstanceCommand(instance, InstanceCommandType.CREATE);
     const command2 = new InstanceCommand(instance, InstanceCommandType.CREATE);

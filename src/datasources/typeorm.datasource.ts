@@ -15,16 +15,16 @@ export class TypeORMDataSource implements LifeCycleObserver {
 
   constructor(/*@inject(CoreBindings.APPLICATION_INSTANCE) private application?: CloudProviderKubernetesApplication*/) {
     this._config = {
-      type: APPLICATION_CONFIG.database.type,
-      host: APPLICATION_CONFIG.database.host,
-      port: APPLICATION_CONFIG.database.port,
-      username: APPLICATION_CONFIG.database.userName,
-      password: APPLICATION_CONFIG.database.password,
-      database: APPLICATION_CONFIG.database.name,
-      schema: APPLICATION_CONFIG.database.schema,
+      type: APPLICATION_CONFIG().database.type,
+      host: APPLICATION_CONFIG().database.host,
+      port: APPLICATION_CONFIG().database.port,
+      username: APPLICATION_CONFIG().database.userName,
+      password: APPLICATION_CONFIG().database.password,
+      database: APPLICATION_CONFIG().database.name,
+      schema: APPLICATION_CONFIG().database.schema,
       entities: ['dist/models/*.js'],
-      synchronize: APPLICATION_CONFIG.database.synchronize,
-      logging: APPLICATION_CONFIG.database.logging
+      synchronize: APPLICATION_CONFIG().database.synchronize,
+      logging: APPLICATION_CONFIG().database.logging
     };
   }
 

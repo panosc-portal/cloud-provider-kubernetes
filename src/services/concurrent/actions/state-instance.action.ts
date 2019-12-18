@@ -81,20 +81,4 @@ export class StateInstanceAction extends InstanceAction {
       throw error;
     }
   }
-
-  private _convertStatus(currentInstanceStatus: InstanceStatus, k8sInstanceStatus: K8sInstanceStatus): InstanceStatus {
-    if (k8sInstanceStatus === K8sInstanceStatus.UNSCHEDULABLE) {
-      if (currentInstanceStatus === InstanceStatus.REBOOTING) {
-        return InstanceStatus.REBOOTING;
-
-      } else if (currentInstanceStatus === InstanceStatus.STARTING) {
-        return InstanceStatus.STARTING;
-      
-      } else {
-        return InstanceStatus.ERROR;
-      }
-    } else {
-      return InstanceStatus[k8sInstanceStatus];
-    }
-  }
 }

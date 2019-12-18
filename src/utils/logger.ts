@@ -5,7 +5,7 @@ export const buildLogger = function(prefix?: string, fgColor?: number) {
   const escStart = fgColor ? `\u001b[38;5;${fgColor}m` : '';
   const escEnd = fgColor ? `\u001b[0m` : '';
   return createLogger({
-    level: APPLICATION_CONFIG.logging.level,
+    level: APPLICATION_CONFIG().logging.level,
     transports: [
       new transports.Console({
         format: fgColor ? format.combine(

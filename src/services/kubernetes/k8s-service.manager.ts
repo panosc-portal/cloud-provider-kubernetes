@@ -113,7 +113,7 @@ export class K8sServiceManager {
 
   async cleanup(validInstances: {namespace: string, computeId: string}[]): Promise<number> {
     try {
-      const servicesResponse = await this._dataSource.K8sClient.api.v1.services.get({ qs: { labelSelector: `owner=${APPLICATION_CONFIG.kubernetes.ownerLabel}` } });
+      const servicesResponse = await this._dataSource.K8sClient.api.v1.services.get({ qs: { labelSelector: `owner=${APPLICATION_CONFIG().kubernetes.ownerLabel}` } });
       const services = servicesResponse.body.items.map((service: any) => ({name: service.metadata.name, namespace: service.metadata.namespace}));
 
       const invalidServices = services.filter(service => {

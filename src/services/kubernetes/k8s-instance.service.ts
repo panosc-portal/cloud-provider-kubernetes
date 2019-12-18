@@ -17,7 +17,7 @@ export class K8sInstanceService {
   private _serviceManager: K8sServiceManager;
   private _namespaceManager: K8sNamespaceManager;
 
-  private _defaultNamespace = APPLICATION_CONFIG.kubernetes.defaultNamespace;
+  private _defaultNamespace = APPLICATION_CONFIG().kubernetes.defaultNamespace;
 
   get defaultNamespace(): string {
     return this._defaultNamespace;
@@ -52,7 +52,7 @@ export class K8sInstanceService {
       const service = await this._serviceManager.getWithComputeId(computeId, namespace);
 
       if (deployment != null && service != null) {
-        k8sInstance = new K8sInstance(deployment, service, computeId, namespace, APPLICATION_CONFIG.kubernetes.host);
+        k8sInstance = new K8sInstance(deployment, service, computeId, namespace, APPLICATION_CONFIG().kubernetes.host);
 
       } else if (deployment == null && service != null) {
         logger.error(`Deployment missing from kubernetes instance with compute Id '${computeId}': deleting kubernetes instance`);
@@ -98,7 +98,7 @@ export class K8sInstanceService {
         logger.debug(`Kubernetes service for instance '${instance.id}' ('${instance.name}') created successfully`);
 
         // Get master node IP from environment variable
-        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, this._defaultNamespace, APPLICATION_CONFIG.kubernetes.host);
+        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, this._defaultNamespace, APPLICATION_CONFIG().kubernetes.host);
 
       } catch (error) {
         logger.error(`Couldn't create k8s instance for instance '${instance.id}' ('${instance.name}'): ${error.message}`);
@@ -151,7 +151,7 @@ export class K8sInstanceService {
   }
 
   async initDefaultNamespace(): Promise<void> {
-    this._defaultNamespace = APPLICATION_CONFIG.kubernetes.defaultNamespace || this.defaultNamespace;
+    this._defaultNamespace = APPLICATION_CONFIG().kubernetes.defaultNamespace || this.defaultNamespace;
   }
 
   async start(): Promise<void> {

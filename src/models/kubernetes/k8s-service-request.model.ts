@@ -29,7 +29,7 @@ export class K8sServiceRequest {
         name: this._config.name,
         labels: {
           app: this._config.name,
-          owner: APPLICATION_CONFIG.kubernetes.ownerLabel
+          owner: APPLICATION_CONFIG().kubernetes.ownerLabel
         }
       },
       spec: {

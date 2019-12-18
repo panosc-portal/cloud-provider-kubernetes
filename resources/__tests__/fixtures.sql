@@ -35,7 +35,7 @@ insert into flavour(id, name, description, cpu, memory)
 values (3, "flavour 3", "A flavour not associated to an instance", 8, 8192);
 
 insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
-values (1, "instance1", "A test instance", 1, 1, "instance1.host.eu", "PENDING", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
+values (1, "instance1", "A test instance", 1, 1, "instance1.host.eu", "BUILDING", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
 insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
 values (2, "instance2", "Another test instance", 2, 2, "instance2.host.eu", "BUILDING", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
 insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
