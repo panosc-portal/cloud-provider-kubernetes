@@ -15,8 +15,8 @@ export class K8sDeploymentManager {
   async getWithComputeId(computeId: string, namespace: string): Promise<K8sDeployment> {
     try {
       logger.debug(`Getting kubernetes deployment '${computeId}' in namespace '${namespace}'`);
-      const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespace(namespace).deployments(computeId).get();
-      const podList = await this._dataSource.K8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${computeId}` } });
+      const deployment = await this._dataSource.k8sClient.apis.apps.v1.namespace(namespace).deployments(computeId).get();
+      const podList = await this._dataSource.k8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${computeId}` } });
       const k8sDeployment = new K8sDeployment(computeId, deployment.body,podList.body);
 
       if (k8sDeployment.isValid()) {
@@ -49,8 +49,8 @@ export class K8sDeploymentManager {
       const deploymentRequest = new K8sDeploymentRequest({name: computeId, image: image, flavour: flavour, imagePullSecret: secretName});
 
       logger.debug(`Creating kubernetes deployment for instance '${instance.id}' (${instance.name}) with computeId '${computeId}' in namespace '${namespace}'`);
-      const deployment = await this._dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments.post({ body: deploymentRequest.model });
-      const podList = await this._dataSource.K8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${deploymentRequest.name}` } });
+      const deployment = await this._dataSource.getDeployment(deploymentRequest, namespace);
+      const podList = await this._dataSource.getPodsForDeployment(deploymentRequest.name, namespace);
 
       if (deployment.body == null || podList.body == null) {
         throw new LoggedError(`Failed to create k8s deployment for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}' because PodList body or deployment body is null`)
@@ -74,7 +74,7 @@ export class K8sDeploymentManager {
   async deleteWithComputeId(computeId: string, namespace: string): Promise<boolean> {
     try {
       logger.debug(`Deleting kubernetes deployment '${computeId}' from namespace '${namespace}'`);    
-      await this._dataSource.K8sClient.apis.apps.v1.namespaces(namespace).deployments(computeId).delete();
+      await this._dataSource.k8sClient.apis.apps.v1.namespaces(namespace).deployments(computeId).delete();
       logger.debug(`Deployment '${computeId}' has been deleted`);
       return true;
 
@@ -91,7 +91,7 @@ export class K8sDeploymentManager {
 
   async cleanup(validInstances: {namespace: string, computeId: string}[]): Promise<number> {
     try {
-      const deploymentsResponse = await this._dataSource.K8sClient.apis.apps.v1.deployments.get({ qs: { labelSelector: `owner=${APPLICATION_CONFIG().kubernetes.ownerLabel}` } });
+      const deploymentsResponse = await this._dataSource.k8sClient.apis.apps.v1.deployments.get({ qs: { labelSelector: `owner=${APPLICATION_CONFIG().kubernetes.ownerLabel}` } });
       const deployments = deploymentsResponse.body.items.map((deployment: any) => ({name: deployment.metadata.name, namespace: deployment.metadata.namespace}));
 
       const invalidDeployments = deployments.filter(deployment => {

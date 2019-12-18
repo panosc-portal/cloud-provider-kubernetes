@@ -48,12 +48,6 @@ export class TypeORMDataSource implements LifeCycleObserver {
     }
   }
 
-  mergeConfig(config: any) {
-    Object.keys(config).forEach(key => {
-      this._config[key] = config[key];
-    });
-  }
-
   async connection(): Promise<Connection> {
     try {
       let connection = this._connection;

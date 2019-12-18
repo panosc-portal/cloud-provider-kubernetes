@@ -49,7 +49,7 @@ export class K8sSecretManager {
   async get(name: string, namespace: string): Promise<K8sSecret> {
     try {
       logger.debug(`Getting kubernetes secret '${name}' in namespace '${namespace}'`);
-      const secret = await this._dataSource.K8sClient.api.v1.namespace(namespace).secrets(name).get();
+      const secret = await this._dataSource.k8sClient.api.v1.namespace(namespace).secrets(name).get();
       const k8sSecret = new K8sSecret(name, secret.body);
 
       if (k8sSecret.isValid()) {
@@ -77,7 +77,7 @@ export class K8sSecretManager {
   async create(secretRequest: K8sSecretRequest, namespace: string): Promise<K8sSecret> {
     try {
       logger.debug(`Creating kubernetes secret '${secretRequest.name}' for repository '${secretRequest.config.repository}' in namespace '${namespace}'`);
-      const secret = await this._dataSource.K8sClient.api.v1.namespaces(namespace).secrets.post({ body: secretRequest.model });
+      const secret = await this._dataSource.k8sClient.api.v1.namespaces(namespace).secrets.post({ body: secretRequest.model });
 
       const k8sSecret = new K8sSecret(secretRequest.name, secret.body);
       if (k8sSecret.isValid()) {

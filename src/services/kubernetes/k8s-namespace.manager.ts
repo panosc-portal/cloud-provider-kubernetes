@@ -11,7 +11,7 @@ export class K8sNamespaceManager {
   async getWithName(name: string) {
     try {
       logger.debug(`Getting kubernetes namespace '${name}'`);
-      const namespace = await this._dataSource.K8sClient.api.v1.namespaces(name).get();
+      const namespace = await this._dataSource.k8sClient.api.v1.namespaces(name).get();
       const k8sNamespace = new K8sNamespace(name, namespace.body);
       if (k8sNamespace.isValid()) {
         logger.debug(`Got kubernetes namespace '${name}'`);
@@ -37,7 +37,7 @@ export class K8sNamespaceManager {
 
       const namespaceRequest = new K8sNamespaceRequest(namespaceName);
 
-      const namespace = await this._dataSource.K8sClient.api.v1.namespaces.post({ body: namespaceRequest.model });
+      const namespace = await this._dataSource.k8sClient.api.v1.namespaces.post({ body: namespaceRequest.model });
 
       if (namespace.body == null) {
         throw new LoggedError(`Failed to create k8s namespace with name ${namespaceRequest.name} because namespace body is null`);
@@ -70,7 +70,7 @@ export class K8sNamespaceManager {
   async delete(name: string): Promise<boolean> {
     try {
       logger.debug(`Deleting kubernetes namespace '${name}'`);
-      await this._dataSource.K8sClient.api.v1.namespaces(name).delete();
+      await this._dataSource.k8sClient.api.v1.namespaces(name).delete();
       logger.debug(`Namespace '${name}' has been deleted`);
       return true;
 
