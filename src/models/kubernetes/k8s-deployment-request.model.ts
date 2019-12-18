@@ -61,7 +61,8 @@ export class K8sDeploymentRequest {
                   }
                 }
               }
-            ]
+            ],
+            imagePullSecrets: [{ name: 'regcred' }]
           }
         }
       }
