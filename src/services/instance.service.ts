@@ -1,7 +1,7 @@
 import { bind, BindingScope, inject } from '@loopback/core';
 import { Instance, InstanceStatus } from '../models';
 import { InstanceRepository, QueryOptions } from '../repositories';
-import { repository, FilterBuilder, WhereBuilder } from '@loopback/repository';
+import { repository, FilterBuilder, WhereBuilder, Where } from '@loopback/repository';
 import { BaseService } from './base.service';
 
 @bind({ scope: BindingScope.SINGLETON })
@@ -27,5 +27,21 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
 
   async getAllNamespaceComputeIds(): Promise<{namespace: string, computeId: string}[]> {
     return this._repository.getAllNamespaceComputeIds();
+  }
+
+  count(where?: Where): Promise<number> {
+    if (where) {
+      where = new WhereBuilder()
+      .eq('deleted', false)
+      .and(where)
+      .build();
+
+    } else {
+      where = new WhereBuilder()
+      .eq('deleted', false)
+      .build();
+    }
+
+    return this._repository.count(where);
   }
 }

@@ -15,7 +15,7 @@ export class Metrics {
   @property({
     type: 'object'
   })
-  images?: { count: number; usage: number };
+  images?: { count: number; usage: {imageId: number, imageName: string, instanceCount: number}[] };
 
   @property({
     type: 'object'

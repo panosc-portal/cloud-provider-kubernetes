@@ -7,6 +7,7 @@ import { ProtocolRepository } from '../repositories/protocol.repository';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class ImageService extends BaseService<Image, ImageRepository> {
+
   constructor(@repository(ImageRepository) repo: ImageRepository, @repository(ProtocolRepository) private _protocolRepository: ProtocolRepository) {
     super(repo);
   }
@@ -28,4 +29,7 @@ export class ImageService extends BaseService<Image, ImageRepository> {
     return this._protocolRepository.find(filter);
   }
 
+  getImageUsageCount(): Promise<{imageId: number, imageName: string, instanceCount: number}[]> {
+    return this._repository.getImageUsageCount();
+  }
 }
