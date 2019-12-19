@@ -4,6 +4,7 @@ import { inject } from '@loopback/context';
 import { FlavourService } from '../services';
 import { BaseController } from './base.controller';
 import { FlavourCreatorDto } from './dto/flavour-creator-dto';
+import { FlavourUpdatorDto } from './dto/flavour-updator-dto';
 
 export class FlavourController extends BaseController {
   constructor(@inject('services.FlavourService') private _flavourService: FlavourService) {
@@ -87,11 +88,19 @@ export class FlavourController extends BaseController {
       }
     }
   })
-  updateById(@param.path.number('id') id: number, @requestBody() flavour: Flavour): Promise<Flavour> {
-    this.throwBadRequestIfNull(flavour, 'Flavour with given id does not exist');
-    this.throwBadRequestIfNotEqual(id, flavour.id, 'Id in path is not the same as body id');
+  async update(@param.path.number('id') id: number, @requestBody() flavourUpdator: FlavourUpdatorDto): Promise<Flavour> {
+    this.throwBadRequestIfNull(flavourUpdator, 'Flavour with given id does not exist');
+    this.throwBadRequestIfNotEqual(id, flavourUpdator.id, 'Id in path is not the same as body id');
 
-    return this._flavourService.update(flavour);
+    const flavour = await this._flavourService.getById(id);
+    this.throwNotFoundIfNull(flavour, 'Flavour with given id does not exist');
+
+    flavour.name = flavourUpdator.name;
+    flavour.description = flavourUpdator.description;
+    flavour.cpu = flavourUpdator.cpu;
+    flavour.memory = flavourUpdator.memory;
+
+    return this._flavourService.save(flavour);
   }
 
   @del('/flavours/{id}', {

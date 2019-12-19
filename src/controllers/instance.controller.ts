@@ -106,6 +106,7 @@ export class InstanceController extends BaseController {
   })
   async update(@param.path.number('id') id: number, @requestBody() instanceUpdatorDto: InstanceUpdatorDto): Promise<Instance> {
     this.throwBadRequestIfNull(InstanceUpdatorDto, 'Invalid instance in request');
+    this.throwBadRequestIfNotEqual(id, instanceUpdatorDto.id, 'Id in path is not the same as body id');
 
     const instance = await this._instanceService.getById(id);
     this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
@@ -113,7 +114,7 @@ export class InstanceController extends BaseController {
     instance.name = instanceUpdatorDto.name;
     instance.description = instanceUpdatorDto.description
 
-    return this._instanceService.update(instance);
+    return this._instanceService.save(instance);
   }
 
   @get('/instances/{id}/state', {

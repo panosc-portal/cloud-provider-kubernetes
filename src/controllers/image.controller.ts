@@ -4,6 +4,7 @@ import { inject } from '@loopback/context';
 import { ImageService } from '../services';
 import { BaseController } from './base.controller';
 import { ImageCreatorDto } from './dto/image-creator-dto';
+import { ImageUpdatorDto } from './dto/image-updator-dto';
 
 export class ImageController extends BaseController {
   constructor(@inject('services.ImageService') private _imageService: ImageService) {
@@ -93,6 +94,7 @@ export class ImageController extends BaseController {
 
     return image;
   }
+
   @put('/images/{id}', {
     summary: 'Update an image by a given identifier',
     responses: {
@@ -106,11 +108,22 @@ export class ImageController extends BaseController {
       }
     }
   })
-  updateById(@param.path.number('id') id: number, @requestBody() image: Image): Promise<Image> {
-    this.throwBadRequestIfNull(image, 'Image with given id does not exist');
-    this.throwBadRequestIfNotEqual(id, image.id, 'Id in path is not the same as body id');
+  async updateById(@param.path.number('id') id: number, @requestBody() imageUpdator: ImageUpdatorDto): Promise<Image> {
+    this.throwBadRequestIfNull(imageUpdator, 'Image with given id does not exist');
+    this.throwBadRequestIfNotEqual(id, imageUpdator.id, 'Id in path is not the same as body id');
 
-    return this._imageService.update(image);
+    const image = await this._imageService.getById(id);
+    this.throwNotFoundIfNull(image, 'Image with given id does not exist');
+
+    const protocols = await this._imageService.getProtocolByIds(imageUpdator.protocolIds);
+
+    image.name = imageUpdator.name;
+    image.description = imageUpdator.description;
+    image.repository = imageUpdator.repository;
+    image.path = imageUpdator.path;
+    image.protocols = protocols;
+
+    return this._imageService.save(image);
   }
 
   @del('/images/{id}', {

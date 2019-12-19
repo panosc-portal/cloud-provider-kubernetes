@@ -1,7 +1,7 @@
 import { model, property } from '@loopback/repository';
 
 @model()
-export class InstanceUpdatorDto {
+export class ImageUpdatorDto {
   @property({
     type: 'number',
     required: true,
@@ -15,11 +15,25 @@ export class InstanceUpdatorDto {
   name: string;
 
   @property({
+    type: 'string',
+  })
+  repository: string;
+
+  @property({
+    type: 'string',
+    required: true
+  })
+  path: string;
+
+  @property({
     type: 'string'
   })
   description?: string;
 
-  constructor(data?: Partial<InstanceUpdatorDto>) {
+  @property({ type: 'array', itemType: 'number' })
+  protocolIds: number[];
+
+  constructor(data?: Partial<ImageUpdatorDto>) {
     Object.assign(this, data);
   }
 }

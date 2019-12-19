@@ -1,7 +1,7 @@
 import { model, property } from '@loopback/repository';
 
 @model()
-export class InstanceUpdatorDto {
+export class FlavourUpdatorDto {
   @property({
     type: 'number',
     required: true,
@@ -19,7 +19,19 @@ export class InstanceUpdatorDto {
   })
   description?: string;
 
-  constructor(data?: Partial<InstanceUpdatorDto>) {
+  @property({
+    type: 'number',
+    required: true
+  })
+  cpu: number;
+
+  @property({
+    type: 'number',
+    required: true
+  })
+  memory: number;
+
+  constructor(data?: Partial<FlavourUpdatorDto>) {
     Object.assign(this, data);
   }
 }
