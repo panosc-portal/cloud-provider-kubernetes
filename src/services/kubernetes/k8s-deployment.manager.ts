@@ -39,6 +39,7 @@ export class K8sDeploymentManager {
     }
   }
 
+
   async create(instance: Instance, computeId: string, namespace: string): Promise<K8sDeployment> {
     try {
       const image = instance.image;

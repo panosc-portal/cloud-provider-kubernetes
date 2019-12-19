@@ -25,7 +25,7 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
     return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'protocols'] } as QueryOptions);
   }
 
-  async getAllNamespaceComputeIds(): Promise<{namespace: string, computeId: string}[]> {
+  async getAllNamespaceComputeIds(): Promise<{ namespace: string, computeId: string }[]> {
     return this._repository.getAllNamespaceComputeIds();
   }
 
@@ -43,5 +43,11 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
     }
 
     return this._repository.count(where);
+  }
+
+  getInstancesByNodeName(name: string): Promise<Instance[]> {
+    const where = new WhereBuilder().eq('nodeName', name).build();
+    const filter = new FilterBuilder().where(where).order('instance.id').build();
+    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'protocols'] } as QueryOptions);
   }
 }

@@ -40,6 +40,10 @@ export class K8sDeployment {
     return this.isValid() ? this._k8sPodListResponse.items[0].metadata.creationTimestamp : null;
   }
 
+  get podNodeName(){
+    return this.isValid() ? this._k8sPodListResponse.items[0].spec.nodeName : null;
+  }
+
 
   constructor(private _name: string, private _k8sDeploymentResponse: any, private _k8sPodListResponse: any) {
   }

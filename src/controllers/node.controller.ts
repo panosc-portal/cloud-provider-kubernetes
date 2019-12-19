@@ -1,11 +1,12 @@
 import { get, getModelSchemaRef, param } from '@loopback/openapi-v3';
 import { Instance, Node } from '../models';
 import { inject } from '@loopback/context';
-import { NodeService } from '../services';
+import { InstanceService, NodeService } from '../services';
 import { BaseController } from './base.controller';
 
 export class NodeController extends BaseController {
-  constructor(@inject('services.NodeService') private _nodeService: NodeService) {
+  constructor(@inject('services.NodeService') private _nodeService: NodeService,
+              @inject('services.InstanceService') private _instanceService: InstanceService) {
     super();
   }
 
@@ -39,10 +40,9 @@ export class NodeController extends BaseController {
       }
     }
   })
-  async getById(@param.path.string('id') id: number): Promise<Node> {
-    const node = await this._nodeService.getById(id);
-    this.throwNotFoundIfNull(node, 'Node with given id does not exist');
-
+  async getByName(@param.path.string('name') name: string): Promise<Node> {
+    const node = await this._nodeService.getByHostname(name);
+    this.throwNotFoundIfNull(node, 'Node with given name does not exist');
     return node;
   }
 
@@ -59,10 +59,11 @@ export class NodeController extends BaseController {
       }
     }
   })
-  async getInstancesByNodeId(@param.path.string('id') id: number): Promise<Instance[]> {
-    const node = await this._nodeService.getById(id);
-    this.throwNotFoundIfNull(node, 'Node with given id does not exist');
+  async getInstancesByNodeId(@param.path.string('name') name: string): Promise<Instance[]> {
 
-    return this._nodeService.getInstancesByNode(node);
+    const instances = await this._instanceService.getInstancesByNodeName(name);
+    this.throwNotFoundIfNull(instances, 'Node with given name does not exist');
+
+    return instances;
   }
 }

@@ -43,6 +43,13 @@ export class Instance {
   hostname: string;
 
   @property({
+    type: 'string',
+    required: true
+  })
+  @Column({ length: 128, nullable: true })
+  nodeName: string;
+
+  @property({
     type: 'string'
   })
   @Column({ length: 50, nullable: true })

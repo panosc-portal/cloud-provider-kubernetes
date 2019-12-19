@@ -28,6 +28,10 @@ export class K8sInstance {
     return this._state;
   }
 
+  get nodeName(): string {
+    return this._deployment.podNodeName()
+  }
+
   get currentCpu(): number {
     // TODO : get current CPU
     return 0;

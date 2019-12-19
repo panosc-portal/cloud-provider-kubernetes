@@ -63,7 +63,7 @@ export class K8sNodeService {
 
     } catch (error) {
       if (error.statusCode === 404) {
-        logger.debug(`Kubernetes nodde with name '${name}' does not exist`);
+        logger.debug(`Kubernetes node with name '${name}' does not exist`);
         return null;
 
       } else {

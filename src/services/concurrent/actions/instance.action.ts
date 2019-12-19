@@ -86,6 +86,9 @@ export abstract class InstanceAction {
   
       // Get IP Address
       instance.hostname = k8sInstance.hostname;
+
+      // Get name of node that is carrying the instance pod
+      instance.nodeName = k8sInstance.nodeName;
   
       // Get protocols
       instance.protocols = k8sInstance.protocols.map(k8sProtocol => {
