@@ -49,8 +49,9 @@ export class K8sSecretManager {
   async get(name: string, namespace: string): Promise<K8sSecret> {
     try {
       logger.debug(`Getting kubernetes secret '${name}' in namespace '${namespace}'`);
-      const secret = await this._dataSource.k8sClient.api.v1.namespace(namespace).secrets(name).get();
-      const k8sSecret = new K8sSecret(name, secret.body);
+      const secret = await this._dataSource.getSecret(name, namespace);
+      
+      const k8sSecret = new K8sSecret(name, secret);
 
       if (k8sSecret.isValid()) {
         logger.debug(`Got kubernetes secret '${name}' in namespace '${namespace}'`);
@@ -77,9 +78,10 @@ export class K8sSecretManager {
   async create(secretRequest: K8sSecretRequest, namespace: string): Promise<K8sSecret> {
     try {
       logger.debug(`Creating kubernetes secret '${secretRequest.name}' for repository '${secretRequest.config.repository}' in namespace '${namespace}'`);
-      const secret = await this._dataSource.k8sClient.api.v1.namespaces(namespace).secrets.post({ body: secretRequest.model });
+      const secret = await this._dataSource.createSecret(secretRequest, namespace);
 
-      const k8sSecret = new K8sSecret(secretRequest.name, secret.body);
+      const k8sSecret = new K8sSecret(secretRequest.name, secret);
+
       if (k8sSecret.isValid()) {
         logger.debug(`Secret '${k8sSecret.name}' for repository '${secretRequest.config.repository}' in namespace '${namespace}' has been created`);
 
@@ -100,7 +102,7 @@ export class K8sSecretManager {
     const secretName = secretRequest.name;
     let secret = this._getSecretFromStore(secretName, namespace);
     if (secret == null) {
-      const secret = await this.get(secretName, namespace);
+      secret = await this.get(secretName, namespace);
 
       if (secret == null) {
         return this.create(secretRequest, namespace);

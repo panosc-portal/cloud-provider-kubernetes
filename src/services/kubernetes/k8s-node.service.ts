@@ -12,8 +12,8 @@ export class K8sNodeService {
     const nodes = [];
     try {
       logger.debug(`Getting all kubernetes nodes`);
-      const response = await this._dataSource.k8sClient.api.v1.nodes.get();
-      const nodeItems = response.body.items;
+      const nodeItems = await this._dataSource.getAllNodes();
+
       for (const nodeItem of nodeItems) {
         const node = new K8sNode(nodeItem);
         if (node.isValid()) {
@@ -49,12 +49,13 @@ export class K8sNodeService {
     try {
       logger.debug(`Getting kubernetes node with name '${name}'`);
 
-      const response = await this._dataSource.k8sClient.api.v1.nodes(name).get();
-      const node = new K8sNode(response.body);
+      const node = await this._dataSource.getNode(name);
+      
+      const k8sNode = new K8sNode(node);
 
-      if (node.isValid()) {
+      if (k8sNode.isValid()) {
         logger.debug(`Got kubernetes node with name '${name}'`);
-        return node;
+        return k8sNode;
 
       } else {
         throw new LoggedError(`Kubernetes node with name '${name}' is not valid`);

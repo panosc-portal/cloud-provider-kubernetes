@@ -10,9 +10,9 @@ export class K8sServiceManager {
   async getWithComputeId(computeId: string, namespace: string): Promise<K8sService> {
     try {
       logger.debug(`Getting kubernetes service '${computeId}' in namespace '${namespace}'`);
-      const service = await this._dataSource.k8sClient.api.v1.namespaces(namespace).services(computeId).get();
+      const service = await this._dataSource.getService(computeId, namespace);
       const serviceEndpoint = await this.getEndpointsWithComputeId(computeId, namespace);
-      const k8sService = new K8sService(computeId, service.body, serviceEndpoint.body);
+      const k8sService = new K8sService(computeId, service, serviceEndpoint);
 
       if (k8sService.isValid()) {
         logger.debug(`Got kubernetes service '${computeId}' in namespace '${namespace}'`);
@@ -36,7 +36,7 @@ export class K8sServiceManager {
   async getEndpointsWithComputeId(computeId: string, namespace: string): Promise<any> {
     try {
       logger.debug(`Getting kubernetes service endpoints '${computeId}' in namespace '${namespace}'`);
-      const serviceEndpoint = await this._dataSource.k8sClient.api.v1.namespaces(namespace).endpoint(computeId).get();
+      const serviceEndpoint = await this._dataSource.getEndpoints(computeId, namespace);
 
       logger.debug(`Got kubernetes service endpoints '${computeId}' in namespace '${namespace}'`);
 
@@ -58,24 +58,21 @@ export class K8sServiceManager {
       const serviceRequest = new K8sServiceRequest({name: computeId, image: instance.image});
 
       logger.debug(`Creating kubernetes service for instance '${instance.id}' (${instance.name}) with computeId '${serviceRequest.name}' in namespace '${namespace}'`);
-      const service = await this._dataSource.k8sClient.api.v1.namespace(namespace).services.post({ body: serviceRequest.model });
+      const service = await this._dataSource.createService(serviceRequest, namespace);
+      
       const serviceEndpoint = await this.getEndpointsWithComputeId(serviceRequest.name, namespace);
 
-      if (service.body == null || serviceEndpoint.body == null) {
-        throw new LoggedError(`Failed to create k8s service for instance '${instance.id}' (${instance.name}) with compute Id '${serviceRequest.name}' because service body or serviceEndpoint body is null`);
+      const newService = new K8sService(serviceRequest.name, service, serviceEndpoint);
+
+      if (newService.isValid()) {
+        logger.debug(`Kubernetes service for instance '${instance.id}' ('${instance.name}') with computeId '${computeId}' created successfully`);
+        return newService;
 
       } else {
-        const newService = new K8sService(serviceRequest.name, service.body, serviceEndpoint.body);
-
-        if (newService.isValid()) {
-          logger.debug(`Kubernetes service for instance '${instance.id}' ('${instance.name}') with computeId '${computeId}' created successfully`);
-          return newService;
-
-        } else {
-          throw new LoggedError(`Kubernetes service for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}' is not valid`);
-        }
+        throw new LoggedError(`Kubernetes service for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}' is not valid`);
       }
-    } catch (error) {
+    
+      } catch (error) {
       throw new LoggedError(`Failed to create k8s service for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}': ${error.message}`);
     }
   }
@@ -83,7 +80,7 @@ export class K8sServiceManager {
   async deleteWithComputeId(computeId: string, namespace: string): Promise<boolean> {
     try {
       logger.debug(`Deleting kubernetes service '${computeId}' from namespace '${namespace}'`);
-      await this._dataSource.k8sClient.api.v1.namespaces(namespace).services(computeId).delete();
+      await this._dataSource.deleteService(computeId, namespace);
       logger.debug(`Service '${computeId}' has been deleted`);
       return true;
 
@@ -100,8 +97,8 @@ export class K8sServiceManager {
 
   async cleanup(validInstances: {namespace: string, computeId: string}[]): Promise<number> {
     try {
-      const servicesResponse = await this._dataSource.k8sClient.api.v1.services.get({ qs: { labelSelector: `owner=${APPLICATION_CONFIG().kubernetes.ownerLabel}` } });
-      const services = servicesResponse.body.items.map((service: any) => ({name: service.metadata.name, namespace: service.metadata.namespace}));
+      const servicesResponse = await this._dataSource.getAllServicesWithLabelSelector(`owner=${APPLICATION_CONFIG().kubernetes.ownerLabel}`);
+      const services = servicesResponse.map((service: any) => ({name: service.metadata.name, namespace: service.metadata.namespace}));
 
       const invalidServices = services.filter(service => {
         return (validInstances.find(instance => instance.computeId === service.name && instance.namespace === service.namespace) == null);

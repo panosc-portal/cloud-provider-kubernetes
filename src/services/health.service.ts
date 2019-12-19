@@ -10,9 +10,9 @@ export class HealthService {
     const dbConnection = await this._dbDataSource.connection();
     const dbConnected = dbConnection.isConnected;
 
-    const k8sClient = this._k8sDataSource.k8sClient;
+    const k8sConnected = this._k8sDataSource.isConnected();
 
-    if (dbConnected && k8sClient != null) {
+    if (dbConnected && k8sConnected) {
       return Health.UP;
     
     } else {
