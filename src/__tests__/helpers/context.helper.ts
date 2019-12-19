@@ -9,6 +9,7 @@ import {
 } from '../../services';
 import { testDataSource } from '../fixtures/datasources/testdb.datasource';
 import { KubernetesDataSource } from '../../datasources';
+import { ProtocolRepository } from '../../repositories/protocol.repository';
 
 export interface TestApplicationContext {
   flavourRepository: FlavourRepository;
@@ -28,9 +29,10 @@ export function createTestApplicationContext(): TestApplicationContext {
   const flavourRepository: FlavourRepository = new FlavourRepository(testDataSource);
   const imageRepository: ImageRepository = new ImageRepository(testDataSource);
   const instanceRepository: InstanceRepository = new InstanceRepository(testDataSource);
+  const protocolRepository: ProtocolRepository = new ProtocolRepository(testDataSource);
 
   const flavourService: FlavourService = new FlavourService(flavourRepository);
-  const imageService: ImageService = new ImageService(imageRepository);
+  const imageService: ImageService = new ImageService(imageRepository, protocolRepository);
   const instanceService: InstanceService = new InstanceService(instanceRepository);
 
   const k8sInstanceService = new K8sInstanceService(kubernetesDataSource);

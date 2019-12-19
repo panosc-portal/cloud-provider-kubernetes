@@ -1,8 +1,9 @@
-import { get, getModelSchemaRef, param, put, requestBody } from '@loopback/openapi-v3';
-import { Image } from '../models';
+import { get, getModelSchemaRef, param, put, requestBody, post, del } from '@loopback/openapi-v3';
+import { Image, Protocol } from '../models';
 import { inject } from '@loopback/context';
 import { ImageService } from '../services';
 import { BaseController } from './base.controller';
+import { ImageCreatorDto } from './dto/image-creator-dto';
 
 export class ImageController extends BaseController {
   constructor(@inject('services.ImageService') private _imageService: ImageService) {
@@ -26,6 +27,23 @@ export class ImageController extends BaseController {
     return this._imageService.getAll();
   }
 
+  @get('/images/protocols', {
+    summary: 'Get a list of all image protocols',
+    responses: {
+      '200': {
+        description: 'OK',
+        content: {
+          'application/json': {
+            schema: { type: 'array', items: getModelSchemaRef(Protocol) }
+          }
+        }
+      }
+    }
+  })
+  getAllProtocols(): Promise<Protocol[]> {
+    return this._imageService.getAllProtocols();
+  }
+
   @get('/images/{id}', {
     summary: 'Get an image by a given identifier',
     responses: {
@@ -47,6 +65,34 @@ export class ImageController extends BaseController {
     return image;
   }
 
+  @post('/images', {
+    summary: 'Create a new image',
+    responses: {
+      '201': {
+        description: 'Created',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Image)
+          }
+        }
+      }
+    }
+  })
+  async create(@requestBody() imageCreator: ImageCreatorDto): Promise<Image> {
+    const protocols = await this._imageService.getProtocolByIds(imageCreator.protocolIds);
+
+    const image: Image = new Image({
+      name: imageCreator.name,
+      description: imageCreator.description,
+      repository: imageCreator.repository,
+      path: imageCreator.path,
+      protocols: protocols
+    });
+
+    await this._imageService.save(image);
+
+    return image;
+  }
   @put('/images/{id}', {
     summary: 'Update an image by a given identifier',
     responses: {
@@ -66,4 +112,20 @@ export class ImageController extends BaseController {
 
     return this._imageService.update(image);
   }
+
+  @del('/images/{id}', {
+    summary: 'Delete an image by a given identifier',
+    responses: {
+      '200': {
+        description: 'Ok'
+      }
+    }
+  })
+  async delete(@param.path.string('id') id: number): Promise<boolean> {
+    const image = await this._imageService.getById(id);
+    this.throwNotFoundIfNull(image, 'Image with given id does not exist');
+
+    return this._imageService.delete(image);
+  }
+
 }

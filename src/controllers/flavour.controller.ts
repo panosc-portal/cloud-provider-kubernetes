@@ -1,8 +1,9 @@
-import { get, getModelSchemaRef, param, put, requestBody } from '@loopback/rest';
+import { get, getModelSchemaRef, param, put, requestBody, post, del } from '@loopback/rest';
 import { Flavour } from '../models';
 import { inject } from '@loopback/context';
 import { FlavourService } from '../services';
 import { BaseController } from './base.controller';
+import { FlavourCreatorDto } from './dto/flavour-creator-dto';
 
 export class FlavourController extends BaseController {
   constructor(@inject('services.FlavourService') private _flavourService: FlavourService) {
@@ -47,7 +48,33 @@ export class FlavourController extends BaseController {
     return flavour;
   }
 
-  @put('/flavour/{id}', {
+  @post('/flavours', {
+    summary: 'Create a new flavour',
+    responses: {
+      '201': {
+        description: 'Created',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Flavour)
+          }
+        }
+      }
+    }
+  })
+  async create(@requestBody() flavourCreator: FlavourCreatorDto): Promise<Flavour> {
+    const flavour: Flavour = new Flavour({
+      name: flavourCreator.name,
+      description: flavourCreator.description,
+      cpu: flavourCreator.cpu,
+      memory: flavourCreator.memory
+    });
+
+    await this._flavourService.save(flavour);
+
+    return flavour;
+  }
+
+  @put('/flavours/{id}', {
     summary: 'Update an flavour by a given identifier',
     responses: {
       '200': {
@@ -65,5 +92,20 @@ export class FlavourController extends BaseController {
     this.throwBadRequestIfNotEqual(id, flavour.id, 'Id in path is not the same as body id');
 
     return this._flavourService.update(flavour);
+  }
+
+  @del('/flavours/{id}', {
+    summary: 'Delete a flavour by a given identifier',
+    responses: {
+      '200': {
+        description: 'Ok'
+      }
+    }
+  })
+  async delete(@param.path.string('id') id: number): Promise<boolean> {
+    const flavour = await this._flavourService.getById(id);
+    this.throwNotFoundIfNull(flavour, 'Flavour with given id does not exist');
+
+    return this._flavourService.delete(flavour);
   }
 }
