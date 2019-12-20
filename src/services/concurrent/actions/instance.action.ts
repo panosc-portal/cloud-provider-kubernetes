@@ -102,6 +102,7 @@ export abstract class InstanceAction {
       }).filter(protocol => protocol != null);
   
     } catch (error) {
+      logger.error(`Error in creation of kubernetes instance: ${error.message}`);
       instance.state = new InstanceState({status: InstanceStatus.ERROR, message: error.message});
     }
 

@@ -29,7 +29,7 @@ export class ImageService extends BaseService<Image, ImageRepository> {
     return this._protocolRepository.find(filter);
   }
 
-  getImageUsageCount(): Promise<{imageId: number, imageName: string, instanceCount: number}[]> {
-    return this._repository.getImageUsageCount();
+  getUsageCount(): Promise<{imageId: number, imageName: string, instanceCount: number}[]> {
+    return this._repository.getUsageCount();
   }
 }

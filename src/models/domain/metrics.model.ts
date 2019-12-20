@@ -10,7 +10,7 @@ export class Metrics {
   @property({
     type: 'object'
   })
-  system?: { cpu: number; memory: number };
+  system?: { cpu: {total: number, available: number}; memory: {total: number, available: number} };
 
   @property({
     type: 'object'
@@ -20,7 +20,7 @@ export class Metrics {
   @property({
     type: 'object'
   })
-  flavours?: { count: number; usage: number };
+  flavours?: { count: number; usage: {flavourId: number, flavourName: string, instanceCount: number}[] };
 
   constructor(data?: Partial<Metrics>) {
     Object.assign(this, data);

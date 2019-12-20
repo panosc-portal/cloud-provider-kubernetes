@@ -8,7 +8,7 @@ export class ImageRepository extends BaseRepository<Image, number> {
     super(dataSource, Image);
   }
 
-  async getImageUsageCount(): Promise<{imageId: number, imageName: string, instanceCount: number}[]> {
+  async getUsageCount(): Promise<{imageId: number, imageName: string, instanceCount: number}[]> {
     const command = `
       select im.id::integer as image_id, im.name as image_name, count(i.id)::integer as instance_count
       from instance i, image im
