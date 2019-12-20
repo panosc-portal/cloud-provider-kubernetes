@@ -19,10 +19,11 @@ export class StateInstanceAction extends InstanceAction {
       const namespace = instance.namespace;
 
       let nextInstanceState: InstanceState;
+      let nodeName: string = null;
       if (computeId == null || namespace == null) {
         if (currentInstanceStatus === InstanceStatus.DELETING) {
           nextInstanceState = new InstanceState({ status: InstanceStatus.DELETED, message: 'Instance deleted', cpu: 0, memory: 0 });
-        
+
         } else {
           return;
         }
@@ -33,9 +34,9 @@ export class StateInstanceAction extends InstanceAction {
           if (currentInstanceStatus !== InstanceStatus.REBOOTING && currentInstanceStatus !== InstanceStatus.STOPPING) {
             logger.warn(`K8S Instance with Id ${computeId} has been deleted on the server`);
           }
-  
+
           nextInstanceState = new InstanceState({ status: InstanceStatus.DELETED, message: 'Instance deleted', cpu: 0, memory: 0 });
-  
+
         } else {
           nextInstanceState = new InstanceState({
             status: this._convertStatus(currentInstanceStatus, k8sInstance.state.status),
@@ -43,29 +44,31 @@ export class StateInstanceAction extends InstanceAction {
             cpu: k8sInstance.currentCpu,
             memory: k8sInstance.currentMemory
           });
+          nodeName = k8sInstance.nodeName;
+
           logger.debug(`Instance ${computeId} state: ${nextInstanceState.status} ${nextInstanceState.message}`);
         }
-  
+
         if (currentInstanceStatus === InstanceStatus.REBOOTING &&
           (nextInstanceState.status === InstanceStatus.BUILDING || nextInstanceState.status === InstanceStatus.DELETED)) {
           nextInstanceState.status = InstanceStatus.REBOOTING;
           nextInstanceState.message = 'Instance rebooting';
-  
+
         } else if (currentInstanceStatus === InstanceStatus.STARTING && nextInstanceState.status === InstanceStatus.BUILDING) {
           nextInstanceState.status = InstanceStatus.STARTING;
           nextInstanceState.message = 'Instance starting';
-  
+
         } else if (currentInstanceStatus === InstanceStatus.DELETING && nextInstanceState.status === InstanceStatus.ACTIVE) {
           nextInstanceState.status = InstanceStatus.DELETING;
           nextInstanceState.message = 'Instance deleting';
-  
+
         } else if (currentInstanceStatus === InstanceStatus.BUILDING && nextInstanceState.status === InstanceStatus.ACTIVE) {
           // Check ports are open
           const portsOpenPromises = [];
           instance.protocols.forEach(protocol => {
             portsOpenPromises.push(isPortReachable(protocol.port, { host: instance.hostname }));
           });
-  
+
           const portsOpen = await Promise.all(portsOpenPromises);
           if (portsOpen.find(isOpen => !isOpen) != null) {
             nextInstanceState.status = InstanceStatus.STARTING;
@@ -74,7 +77,8 @@ export class StateInstanceAction extends InstanceAction {
       }
 
 
-      await this._updateInstanceState(nextInstanceState);
+      await this._updateInstanceState(nextInstanceState, nodeName);
+
 
     } catch (error) {
       logger.error(`Error getting state instance with Id ${instance.id}: ${error.message}`);

@@ -33,15 +33,15 @@ export class K8sDeployment {
   }
 
   get podStatus() {
-    return this.isValid() ? this._k8sPodListResponse.items[0].status : null;
+    return this.hasPods() ? this._k8sPodListResponse.items[0].status : null;
   }
 
   get podCreationTime() {
-    return this.isValid() ? this._k8sPodListResponse.items[0].metadata.creationTimestamp : null;
+    return this.hasPods() ? this._k8sPodListResponse.items[0].metadata.creationTimestamp : null;
   }
 
   get podNodeName(){
-    return this.isValid() ? this._k8sPodListResponse.items[0].spec.nodeName : null;
+    return this.hasPods() ? this._k8sPodListResponse.items[0].spec.nodeName : null;
   }
 
 

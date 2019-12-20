@@ -46,13 +46,13 @@ export class Instance {
     type: 'string',
     required: true
   })
-  @Column({ length: 128, nullable: true })
-  nodeName: string;
+  @Column({ length: 128, nullable: true,name: 'node_hostname' })
+  nodeHostname: string;
 
   @property({
     type: 'string'
   })
-  @Column({ length: 50, nullable: true })
+  @Column({ length: 50, nullable: true,name: 'compute_id' })
   computeId: string;
 
   @property({
@@ -65,7 +65,7 @@ export class Instance {
   @property({
     type: 'string',
   })
-  @Column({ length: 2500, nullable: true })
+  @Column({ length: 2500, nullable: true, name: 'status_message' })
   statusMessage: string;
 
   @property({
@@ -128,7 +128,7 @@ export class Instance {
     this.statusMessage = value.message;
     this.currentCPU = value.cpu;
     this.currentMemory = value.memory;
-  } 
+  }
 
   constructor(data?: Partial<Instance>) {
     Object.assign(this, data);

@@ -52,10 +52,10 @@ export abstract class InstanceAction {
     return await this._instanceService.getById(this._instanceCommand.instance.id);
   }
 
-  protected async _updateInstanceState(nextState: InstanceState) {
+  protected async _updateInstanceState(nextState: InstanceState, nodeName?: string) {
     const instance = await this.getInstance();
     const currentState = instance.state;
-    
+
     const state = new InstanceState({
       status: nextState.status ? nextState.status : currentState.status,
       message: nextState.message ? nextState.message : currentState.message,
@@ -64,6 +64,7 @@ export abstract class InstanceAction {
     });
 
     instance.state = state;
+    instance.nodeHostname = nodeName;
 
     await this.instanceService.save(instance);
   }
@@ -77,19 +78,19 @@ export abstract class InstanceAction {
 
       // Get compute Id
       instance.computeId = k8sInstance.computeId;
-  
+
       // Get namespace
       instance.namespace = k8sInstance.namespace;
-  
+
       // Get status of k8sInstance and set in instance if a default one hasn't been specific
       instance.state = instanceState != null ? instanceState : new InstanceState({status: this._convertStatus(instance.status, k8sInstance.state.status), message: k8sInstance.state.message});
-  
+
       // Get IP Address
       instance.hostname = k8sInstance.hostname;
 
       // Get name of node that is carrying the instance pod
-      instance.nodeName = k8sInstance.nodeName;
-  
+      instance.nodeHostname = k8sInstance.nodeName;
+
       // Get protocols
       instance.protocols = k8sInstance.protocols.map(k8sProtocol => {
         const protocol = new InstanceProtocol({name: ProtocolName[k8sProtocol.name.toUpperCase()], port: k8sProtocol.externalPort});
@@ -100,7 +101,7 @@ export abstract class InstanceAction {
           return null;
         }
       }).filter(protocol => protocol != null);
-  
+
     } catch (error) {
       logger.error(`Error in creation of kubernetes instance: ${error.message}`);
       instance.state = new InstanceState({status: InstanceStatus.ERROR, message: error.message});
@@ -126,7 +127,7 @@ export abstract class InstanceAction {
 
       } else if (currentInstanceStatus === InstanceStatus.STARTING) {
         return InstanceStatus.STARTING;
-      
+
       } else {
         return InstanceStatus.ERROR;
       }

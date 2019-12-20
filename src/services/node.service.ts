@@ -4,56 +4,43 @@ import { K8sNodeService } from './kubernetes';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class NodeService {
-  constructor(@inject('services.K8sNodeService') private _k8sNodeService: K8sNodeService,) {
+  constructor(@inject('services.K8sNodeService') private _k8sNodeService: K8sNodeService) {
   }
 
   async getAll(): Promise<Node[]> {
-    const nodes = [];
     const k8sNodes = await this._k8sNodeService.getAll();
-    if (k8sNodes) {
-      for (const k8sNode of k8sNodes) {
-        const node = new Node({
-          hostname: k8sNode.hostname,
-          cpus: {
-            available: k8sNode.cpuAllocatable,
-            total: k8sNode.cpuCapacity,
-            used: k8sNode.cpuCapacity - k8sNode.cpuAllocatable
-          }, memory: {
-            available: k8sNode.memoryAllocatable,
-            total: k8sNode.memoryCapacity,
-            used: k8sNode.memoryCapacity - k8sNode.memoryAllocatable
-          }
-        });
-        nodes.push(node);
+    const nodes = k8sNodes.map(k8sNode => new Node({
+      hostname: k8sNode.hostname,
+      cpus: {
+        available: k8sNode.cpuAllocatable,
+        total: k8sNode.cpuCapacity,
+        used: k8sNode.cpuCapacity - k8sNode.cpuAllocatable
+      }, memory: {
+        available: k8sNode.memoryAllocatableMB,
+        total: k8sNode.memoryCapacityMB,
+        used: k8sNode.memoryCapacityMB - k8sNode.memoryAllocatableMB
       }
-      return nodes;
-    }
-
+    }));
+    return nodes;
   }
 
   async getByHostname(hostname: string): Promise<Node> {
     const k8sNode = await this._k8sNodeService.get(hostname);
     if (k8sNode) {
       return new Node({
-        hostname: k8sNode.hostname(),
+        hostname: k8sNode.hostname,
         cpus: {
           available: k8sNode.cpuAllocatable,
           total: k8sNode.cpuCapacity,
           used: k8sNode.cpuCapacity - k8sNode.cpuAllocatable
         }, memory: {
-          available: k8sNode.memoryAllocatable,
-          total: k8sNode.memoryCapacity,
-          used: k8sNode.memoryCapacity - k8sNode.memoryAllocatable
+          available: k8sNode.memoryAllocatableMB,
+          total: k8sNode.memoryCapacityMB,
+          used: k8sNode.memoryCapacityMB - k8sNode.memoryAllocatableMB
         }
       });
+    } else {
+      return null;
     }
   };
-
-
-  getInstancesByNode(node: Node): Promise<Instance[]> {
-
-    return new Promise<Instance[]>(function(resolve, reject) {
-      resolve();
-    });
-  }
 }

@@ -45,8 +45,8 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
     return this._repository.count(where);
   }
 
-  getInstancesByNodeName(name: string): Promise<Instance[]> {
-    const where = new WhereBuilder().eq('nodeName', name).build();
+  getInstancesByNodHostname(name: string): Promise<Instance[]> {
+    const where = new WhereBuilder().eq('node_hostname', name).build();
     const filter = new FilterBuilder().where(where).order('instance.id').build();
     return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'protocols'] } as QueryOptions);
   }

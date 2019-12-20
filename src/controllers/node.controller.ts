@@ -27,7 +27,7 @@ export class NodeController extends BaseController {
     return this._nodeService.getAll();
   }
 
-  @get('/nodes/{id}', {
+  @get('/nodes/{name}', {
     summary: 'Get information about a given node',
     responses: {
       '200': {
@@ -46,7 +46,7 @@ export class NodeController extends BaseController {
     return node;
   }
 
-  @get('/nodes/{id}/instances', {
+  @get('/nodes/{name}/instances', {
     summary: 'Get all instances for a given node',
     responses: {
       '200': {
@@ -61,7 +61,7 @@ export class NodeController extends BaseController {
   })
   async getInstancesByNodeId(@param.path.string('name') name: string): Promise<Instance[]> {
 
-    const instances = await this._instanceService.getInstancesByNodeName(name);
+    const instances = await this._instanceService.getInstancesByNodHostname(name);
     this.throwNotFoundIfNull(instances, 'Node with given name does not exist');
 
     return instances;

@@ -266,7 +266,8 @@ export default class K8SResponseCreator {
       kind: 'PodList',
       items: [{
         metadata: { name: `${deployment.metadata.name}-12DD-46FV`, creationTimestamp: '2019-12-13T11:40:52Z' },
-        status: statusContent
+        status: statusContent,
+        spec: { nodeName: 'k8s-test-worker-1' }
       }]
     };
   }

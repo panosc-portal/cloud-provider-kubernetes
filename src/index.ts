@@ -1,12 +1,13 @@
 import * as dotenv from 'dotenv';
 import { CloudProviderKubernetesApplication } from './application';
 import { ApplicationConfig } from '@loopback/core';
+dotenv.config();
 import { logger } from './utils';
+
 
 export { CloudProviderKubernetesApplication };
 
 export async function main(options: ApplicationConfig = {}) {
-  dotenv.config();
 
   const app = new CloudProviderKubernetesApplication(options);
   await app.boot();

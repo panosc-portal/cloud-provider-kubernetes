@@ -29,22 +29,22 @@ export class K8sNode {
 
 
   get hostname() {
-    return this.isValid() ? this._k8sResponse.status.addresses[0].address : null;
+    return this.isValid() ? this._k8sResponse.status.addresses[1].address : null;
   }
 
   get cpuCapacity() {
-    return this.isValid() ? this._k8sResponse.status.capacity.cpu : null;
+    return this.isValid() ? Number(this._k8sResponse.status.capacity.cpu) : null;
   }
 
   get cpuAllocatable() {
-    return this.isValid() ? this._k8sResponse.status.allocatable.cpu : null;
+    return this.isValid() ? Number(this._k8sResponse.status.allocatable.cpu) : null;
   }
 
-  get memoryCapacity() {
-    return this.isValid() ? this._k8sResponse.status.capacity.memory : null;
+  get memoryCapacityMB() {
+    return this.isValid() ? parseInt(String(this._k8sResponse.status.capacity.memory.slice(0, -2) / 1024),10) : null;
   }
 
-  get memoryAllocatable() {
-    return this.isValid() ? this._k8sResponse.status.allocatable.memory : null;
+  get  memoryAllocatableMB() {
+    return this.isValid() ? parseInt(String(this._k8sResponse.status.allocatable.memory.slice(0, -2) / 1024),10) : null;
   }
 }
