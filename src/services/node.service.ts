@@ -1,5 +1,5 @@
 import { bind, BindingScope, inject } from '@loopback/core';
-import { Instance, Node } from '../models';
+import { Node } from '../models';
 import { K8sNodeService } from './kubernetes';
 
 @bind({ scope: BindingScope.SINGLETON })
