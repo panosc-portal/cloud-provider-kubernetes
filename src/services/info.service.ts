@@ -1,5 +1,6 @@
 import { bind, BindingScope } from '@loopback/core';
 import { Info } from '../models';
+const packageJson = require('../../package.json');
 
 @bind({ scope: BindingScope.SINGLETON })
 export class InfoService {
@@ -7,7 +8,10 @@ export class InfoService {
 
   getInfo(): Promise<Info> {
     return new Promise<Info>(function(resolve, reject) {
-      resolve();
+      resolve(new Info({
+        name: packageJson. name,
+        version: packageJson.version
+      }));
     });
   }
 }
