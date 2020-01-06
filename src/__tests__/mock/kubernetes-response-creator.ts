@@ -120,6 +120,10 @@ export default class K8SResponseCreator {
           cpu: node.cpu,
           memory: node.memory
         },
+        allocatable: {
+          cpu: node.cpu,
+          memory: node.memory
+        },
         addresses: [
           {
             type: 'InternalIP',
