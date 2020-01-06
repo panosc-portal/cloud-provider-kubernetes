@@ -11,7 +11,13 @@ export class K8sNode {
       this._k8sResponse.status != null &&
       this._k8sResponse.status.addresses != null &&
       this._k8sResponse.status.addresses[0] != null &&
-      this._k8sResponse.status.addresses[0].address != null
+      this._k8sResponse.status.addresses[0].address != null &&
+      this._k8sResponse.status.capacity.memory &&
+      this._k8sResponse.status.allocatable.memory &&
+      this._k8sResponse.status.capacity.cpu &&
+      this._k8sResponse.status.allocatable.cpu
+
+
     );
   }
 
@@ -41,10 +47,20 @@ export class K8sNode {
   }
 
   get memoryCapacityMB() {
-    return this.isValid() ? parseInt(String(this._k8sResponse.status.capacity.memory.slice(0, -2) / 1024),10) : null;
+    return this.isValid() ? this.verifyMemory(this._k8sResponse.status.capacity.memory) : null;
   }
 
-  get  memoryAllocatableMB() {
-    return this.isValid() ? parseInt(String(this._k8sResponse.status.allocatable.memory.slice(0, -2) / 1024),10) : null;
+  get memoryAllocatableMB() {
+    return this.isValid() ? this.verifyMemory(this._k8sResponse.status.allocatable.memory) : null;
+  }
+
+  verifyMemory(memoryString) {
+    if (memoryString.endsWith('Ki')) {
+      return parseInt(String(memoryString.slice(0, -2) / 1024), 10);
+    } else if (memoryString.endsWith('Mi')) {
+      return parseInt(memoryString.slice(0, -2), 10);
+    } else {
+      return null;
+    }
   }
 }

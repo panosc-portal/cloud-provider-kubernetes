@@ -22,7 +22,9 @@ export class ApplicationConfig {
     creationTimeoutS: number,
     unschedulableTimeoutS: number,
     ownerLabel: string,
-    secretsConfig: string
+    secretsConfig: string,
+    certificatesConfig:string,
+
   }
   logging: {
     level: string
@@ -63,6 +65,8 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
       unschedulableTimeoutS: 60,
       ownerLabel: 'cloud-provider',
       secretsConfig: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_SECRETS_CONFIG,
+      certificatesConfig:process.env.CLOUD_PROVIDER_K8S_KUBERNETES_CERTIFICATES_CONFIG,
+
     },
     logging: {
       level: process.env.CLOUD_PROVIDER_K8S_LOG_LEVEL
@@ -72,4 +76,4 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
       config: process.env.CLOUD_PROVIDER_K8S_SCHEDULER_CONFIG
     }
   }
-} 
+}
