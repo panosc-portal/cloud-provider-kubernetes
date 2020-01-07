@@ -56,6 +56,12 @@ export class Image {
   })
   protocols: Protocol[];
 
+  @Column({ length: 2500, nullable: true })
+  command: string;
+
+  @Column({ length: 2500, nullable: true })
+  args: string;
+
   @OneToMany(type => ImageVolume, imageVolume => imageVolume.image)
   volumes: ImageVolume[];
 

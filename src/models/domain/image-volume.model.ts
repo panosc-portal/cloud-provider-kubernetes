@@ -23,14 +23,14 @@ export class ImageVolume {
     type: 'string',
     required: true
   })
-  @Column({ unique: true })
+  @Column({ unique: true, length: 250 })
   name: string;
 
   @property({
     type: 'string',
     required: true
   })
-  @Column()
+  @Column({ length: 250 })
   path: string;
 
   @property({
