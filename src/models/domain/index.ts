@@ -9,3 +9,5 @@ export * from './metrics.model';
 export * from './node.model';
 export * from './protocol.model';
 export * from './resource-monitor.model';
+export * from './image-volume.model';
+

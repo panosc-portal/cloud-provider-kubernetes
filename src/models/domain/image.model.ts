@@ -1,6 +1,7 @@
 import { model, property } from '@loopback/repository';
-import { Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Protocol } from './protocol.model';
+import { ImageVolume } from './image-volume.model';
 
 @Entity()
 @model()
@@ -48,8 +49,15 @@ export class Image {
     eager: true,
     cascade: true
   })
-  @JoinTable({name: 'image_protocol', joinColumns: [{name: 'image_id'}], inverseJoinColumns: [{name: 'protocol_id' }]})
+  @JoinTable({
+    name: 'image_protocol',
+    joinColumns: [{ name: 'image_id' }],
+    inverseJoinColumns: [{ name: 'protocol_id' }]
+  })
   protocols: Protocol[];
+
+  @OneToMany(type => ImageVolume, imageVolume => imageVolume.image)
+  volumes: ImageVolume[];
 
   constructor(data?: Partial<Image>) {
     Object.assign(this, data);
