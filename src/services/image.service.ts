@@ -14,7 +14,7 @@ export class ImageService extends BaseService<Image, ImageRepository> {
 
   getAll(): Promise<Image[]> {
     const filter = new FilterBuilder().order('image.id').build();
-    return this._repository.find(filter, { leftJoins: ['protocols'] } as QueryOptions);
+    return this._repository.find(filter, { leftJoins: ['protocols', 'volumes'] } as QueryOptions);
   }
 
   getAllProtocols(): Promise<Protocol[]> {

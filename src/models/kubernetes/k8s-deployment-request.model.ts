@@ -1,11 +1,14 @@
-import { Image, Flavour } from '../domain';
+import { Image, Flavour, User } from '../domain';
 import { APPLICATION_CONFIG } from '../../application-config';
+import { IK8SRequestHelper } from '../../utils';
 
 export interface K8sDeploymentRequestConfig {
   name: string,
   image: Image,
   flavour: Flavour,
-  imagePullSecret?: string
+  user: User,
+  imagePullSecret?: string,
+  helper?: IK8SRequestHelper
 }
 
 export class K8sDeploymentRequest {
@@ -51,6 +54,14 @@ export class K8sDeploymentRequest {
                 ports: this._config.image.protocols.map(protocol => {
                   return { name: protocol.name.toLowerCase(), containerPort: protocol.port };
                 }),
+                command: this._config.image.command ? [this._config.image.command] : undefined,
+                args: this._config.image.args ? this._config.image.args.split(',') : undefined,
+                env: this._config.helper ? this._config.helper.getEnvVars(this._config.image, this._config.user) : undefined,
+                volumeMounts: this._config.image.volumes ? this._config.image.volumes.map(volume => ({
+                  mountPath: volume.path, 
+                  name: volume.name, 
+                  readOnly: volume.readonly
+                })) : undefined,
                 resources: {
                   limits: {
                     cpu: `${this._config.flavour.cpu}`,
@@ -60,10 +71,11 @@ export class K8sDeploymentRequest {
                     cpu: `${this._config.flavour.cpu}`,
                     memory: `${this._config.flavour.memory}Mi`
                   }
-                }
+                },
               }
             ],
-            imagePullSecrets: this._config.imagePullSecret != null ? [{ name:this._config.imagePullSecret }] : []
+            imagePullSecrets: this._config.imagePullSecret != null ? [{ name:this._config.imagePullSecret }] : [],
+            volumes: this._config.helper ? this._config.helper.getVolumes(this._config.image, this._config.user) : undefined
           }
         }
       }

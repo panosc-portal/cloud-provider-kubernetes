@@ -1,6 +1,6 @@
 import { K8sDeployment, K8sDeploymentRequest, Instance } from '../../models';
 import { KubernetesDataSource } from '../../datasources';
-import { logger, LoggedError } from '../../utils';
+import { logger, LoggedError, K8SRequestHelperLoader } from '../../utils';
 import { APPLICATION_CONFIG } from '../../application-config';
 import { K8sSecretManager } from './k8s-secret.manager';
 
@@ -44,11 +44,13 @@ export class K8sDeploymentManager {
     try {
       const image = instance.image;
       const flavour = instance.flavour;
+      const user = instance.user;
 
       // Determine if an image pull secret is needed
-      const secretName = await this._secretManager.processSecretForRepository(image.repository, namespace); 
+      const secretName = await this._secretManager.processSecretForRepository(image.repository, namespace);
 
-      const deploymentRequest = new K8sDeploymentRequest({name: computeId, image: image, flavour: flavour, imagePullSecret: secretName});
+      const requestHelper = K8SRequestHelperLoader.getHelper();
+      const deploymentRequest = new K8sDeploymentRequest({name: computeId, image: image, flavour: flavour, imagePullSecret: secretName, user: user, helper: requestHelper});
 
       logger.debug(`Creating kubernetes deployment for instance '${instance.id}' (${instance.name}) with computeId '${computeId}' in namespace '${namespace}'`);
       const deployment = await this._dataSource.createDeployment(deploymentRequest, namespace);

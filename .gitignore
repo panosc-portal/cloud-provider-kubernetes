@@ -71,3 +71,5 @@ pgdata
 .docker-repo-secrets.json
 
 /.kubernetes-certificats.json
+helpers
+

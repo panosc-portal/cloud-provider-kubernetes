@@ -7,8 +7,8 @@ values (3, "HTTPS", 443);
 insert into protocol (id, name, port) 
 values (4, "GUACD", 4822);
 
-insert into image (id, name, path, description) 
-values (1, "image 1", "repo1/image-name1", "An image");
+insert into image (id, name, path, description, command, args) 
+values (1, "image 1", "repo1/image-name1", "An image", "start.sh", "jupyter,notebook,--NotebookApp.token=''");
 insert into image (id, name, path, description) 
 values (2, "image 2", "repo2/image-name2", "Another image");
 insert into image (id, name, path, description) 
@@ -27,6 +27,9 @@ values (3, 1);
 insert into image_protocol (image_id, protocol_id)
 values (3, 4);
 
+insert into image_volume (id, name, path, readonly, image_id)
+values (1, 'volume1', '/path', false, 1);
+
 insert into flavour(id, name, description, cpu, memory)
 values (1, "flavour 1", "A flavour", 1.5, 2048);
 insert into flavour(id, name, description, cpu, memory)
@@ -34,13 +37,24 @@ values (2, "flavour 2", "Another flavour", 8, 8192);
 insert into flavour(id, name, description, cpu, memory)
 values (3, "flavour 3", "A flavour not associated to an instance", 8, 8192);
 
-insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
-values (1, "instance1", "A test instance", 1, 1, "instance1.host.eu", "BUILDING", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
-insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
-values (2, "instance2", "Another test instance", 2, 2, "instance2.host.eu", "BUILDING", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
-insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
-values (3, "instance3", "A third test instance", 2, 2, "instance3.host.eu", "BUILDING", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
-insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at, deleted)
-values (4, "instance4", "A deleted instance", 2, 2, "instance3.host.eu", "DELETED", 0, 0, 'panosc', '2019-01-01', '2019-01-01', true);
-insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
-values (5, "instance5", "A fifth test instance", 2, 2, "instance3.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
+insert into users(id, account_id, username, first_name, last_name, uid, gid, home_path)
+values (1, 123, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs");
+insert into users(id, account_id, username, first_name, last_name, uid, gid, home_path)
+values (2, 321, "doe", "jane", "doe", 1001, 2000, "/home/doe");
+insert into users(id, account_id, username, first_name, last_name, uid, gid, home_path)
+values (3, 456, "parker", "peter", "parker", 1002, 2000, "/home/parker");
+insert into users(id, account_id, username, first_name, last_name, uid, gid, home_path)
+values (4, 678, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs");
+insert into users(id, account_id, username, first_name, last_name, uid, gid, home_path)
+values (5, 321, "doe", "jane", "doe", 1001, 2000, "/home/doe");
+
+insert into instance(id, name, description, image_id, flavour_id, user_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
+values (1, "instance1", "A test instance", 1, 1, 1, "instance1.host.eu", "BUILDING", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
+insert into instance(id, name, description, image_id, flavour_id, user_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
+values (2, "instance2", "Another test instance", 2, 2, 2, "instance2.host.eu", "BUILDING", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
+insert into instance(id, name, description, image_id, flavour_id, user_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
+values (3, "instance3", "A third test instance", 2, 2, 3, "instance3.host.eu", "BUILDING", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
+insert into instance(id, name, description, image_id, flavour_id, user_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at, deleted)
+values (4, "instance4", "A deleted instance", 2, 2, 4, "instance3.host.eu", "DELETED", 0, 0, 'panosc', '2019-01-01', '2019-01-01', true);
+insert into instance(id, name, description, image_id, flavour_id, user_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
+values (5, "instance5", "A fifth test instance", 2, 2, 5, "instance3.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');

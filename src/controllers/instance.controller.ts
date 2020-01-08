@@ -1,5 +1,5 @@
 import { del, get, getModelSchemaRef, param, post, requestBody, put } from '@loopback/openapi-v3';
-import { Image, Instance, InstanceState, InstanceCommand, InstanceCommandType } from '../models';
+import { Image, Instance, InstanceState, InstanceCommand, InstanceCommandType, User } from '../models';
 import { inject } from '@loopback/context';
 import { FlavourService, ImageService, InstanceService, InstanceActionService } from '../services';
 import { InstanceCreatorDto } from './dto/instance-creator-dto';
@@ -74,13 +74,23 @@ export class InstanceController extends BaseController {
 
     this.throwBadRequestIfNull(image, 'Invalid image');
     this.throwBadRequestIfNull(flavour, 'Invalid flavour');
+    this.throwBadRequestIfNull(instanceCreator.user, 'Invalid instance user');
 
     const instance: Instance = new Instance({
       name: instanceCreator.name,
       description: instanceCreator.description,
       status: InstanceStatus.BUILDING,
       image: image,
-      flavour: flavour
+      flavour: flavour,
+      user: new User({
+        accountId: instanceCreator.user.accountId,
+        username: instanceCreator.user.username,
+        uid: instanceCreator.user.uid,
+        gid: instanceCreator.user.gid,
+        homePath: instanceCreator.user.homePath,
+        firstName: instanceCreator.user.firstName,
+        lastName: instanceCreator.user.lastName,
+      })
     });
 
     await this._instanceService.save(instance);

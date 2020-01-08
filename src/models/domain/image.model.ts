@@ -62,7 +62,7 @@ export class Image {
   @Column({ length: 2500, nullable: true })
   args: string;
 
-  @OneToMany(type => ImageVolume, imageVolume => imageVolume.image)
+  @OneToMany(type => ImageVolume, imageVolume => imageVolume.image, {eager: true, cascade: true})
   volumes: ImageVolume[];
 
   constructor(data?: Partial<Image>) {

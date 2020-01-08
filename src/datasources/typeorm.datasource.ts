@@ -1,8 +1,6 @@
 import { Connection, createConnection, EntityManager, ObjectType, Repository } from 'typeorm';
-import { lifeCycleObserver, LifeCycleObserver, inject, CoreBindings } from '@loopback/core';
+import { lifeCycleObserver, LifeCycleObserver } from '@loopback/core';
 import { logger } from '../utils';
-import { CloudProviderKubernetesApplication } from '..';
-import { timeout } from 'cron';
 import { APPLICATION_CONFIG } from '../application-config';
 
 @lifeCycleObserver('datasource')
@@ -61,7 +59,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
 
       return connection;
     } catch (error) {
-      logger.error(error.message);
+      logger.error(`Could not connect to the Postgres database : ${error.message}`);
       process.exit();
     }
   }

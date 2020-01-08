@@ -1,10 +1,11 @@
 import { model, property } from '@loopback/repository';
 import { InstanceProtocol } from './instance-protocol.model';
 import { Flavour } from './flavour.model';
-import { Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
 import { Image } from './image.model';
 import { InstanceStatus } from '../enumerations';
 import { InstanceState } from './instance-state.model';
+import { User } from './user.model';
 
 @Entity()
 @model()
@@ -108,12 +109,19 @@ export class Instance {
   @JoinColumn({ name: 'flavour_id' })
   flavour: Flavour;
 
+  @property({ type: 'number' })
   @ManyToOne(type => Image, {
     eager: true
   })
-  @property({ type: 'number' })
-  @JoinColumn({ name: 'image_id' })
+  @JoinColumn({ name: 'image_id', })
   image: Image;
+
+  @property({ type: 'number' })
+  @OneToOne(type => User, {
+    eager: true
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   get state(): InstanceState {
     return new InstanceState({

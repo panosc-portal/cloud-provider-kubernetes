@@ -1,10 +1,6 @@
-import {
-  Column,
-  Entity, ManyToOne, PrimaryGeneratedColumn, Unique
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 import { model, property } from '@loopback/repository';
 import { Image } from './image.model';
-
 
 @Entity()
 @model()
@@ -41,6 +37,11 @@ export class ImageVolume {
   readonly: boolean;
 
   @ManyToOne(type => Image, image => image.volumes)
+  @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
   image: Image;
+
+  constructor(data?: Partial<ImageVolume>) {
+    Object.assign(this, data);
+  }
 }
 

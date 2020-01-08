@@ -1,4 +1,7 @@
 export enum ProtocolName {
   SSH = 'SSH',
-  RDP = 'RDP'
+  RDP = 'RDP',
+  GUACD = 'GUACD',
+  HTTP = 'HTTP',
+  HTTPS = 'HTTPS',
 }

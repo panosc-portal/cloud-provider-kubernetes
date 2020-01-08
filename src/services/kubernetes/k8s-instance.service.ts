@@ -71,6 +71,10 @@ export class K8sInstanceService {
       throw new LoggedError(`Not creating kubernetes instance for instance '${instance.id}': image does not contain any protocols`);
     }
 
+    if (instance.user == null) {
+      throw new LoggedError(`Not creating kubernetes instance for instance '${instance.id}': no user is associated to the instance`);
+    }
+
     // Get compute Id
     const instanceComputeId = await this.UUIDGenerator(instance.name, this._defaultNamespace);
     if (instanceComputeId != null) {
