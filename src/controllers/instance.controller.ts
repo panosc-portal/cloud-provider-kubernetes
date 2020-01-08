@@ -93,12 +93,12 @@ export class InstanceController extends BaseController {
       })
     });
 
-    await this._instanceService.save(instance);
+    const persistedInstance = await this._instanceService.save(instance);
 
-    const command: InstanceCommand = new InstanceCommand(instance, InstanceCommandType.CREATE);
+    const command: InstanceCommand = new InstanceCommand(persistedInstance, InstanceCommandType.CREATE);
     this._instanceActionService.execute(command);
 
-    return instance;
+    return persistedInstance;
   }
 
   @put('/instances/{id}', {

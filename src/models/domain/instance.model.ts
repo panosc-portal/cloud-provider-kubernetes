@@ -118,7 +118,8 @@ export class Instance {
 
   @property({ type: 'number' })
   @OneToOne(type => User, {
-    eager: true
+    eager: true,
+    cascade: true
   })
   @JoinColumn({ name: 'user_id' })
   user: User;

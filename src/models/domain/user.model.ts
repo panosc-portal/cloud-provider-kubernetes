@@ -32,13 +32,13 @@ export class User {
   @property({
     type: 'string',
   })
-  @Column({ name: 'first_name',  length: 100 })
+  @Column({ name: 'first_name',  length: 100, nullable: true })
   firstName: string;
 
   @property({
     type: 'string',
   })
-  @Column({ name: 'last_name',  length: 100 })
+  @Column({ name: 'last_name',  length: 100, nullable: true })
   lastName: string;
 
   @property({
