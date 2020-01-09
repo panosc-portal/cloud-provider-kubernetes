@@ -135,7 +135,12 @@ describe('K8sDeploymentManager', () => {
     expect(instance.image.command).to.not.be.null();
     expect(instance.image.args).to.not.be.null();
 
-    const deploymentRequest = new K8sDeploymentRequest({name: instance.computeId, image: instance.image, flavour: instance.flavour, user: instance.user });
+    const deploymentRequest = new K8sDeploymentRequest({
+      name: instance.computeId,
+      image: instance.image,
+      flavour: instance.flavour,
+      user: instance.user
+    });
     expect(deploymentRequest.model.spec.template.spec.containers).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
     expect(deploymentRequest.model.spec.template.spec.containers[0].volumeMounts).to.not.be.null();
@@ -151,7 +156,12 @@ describe('K8sDeploymentManager', () => {
     expect(instance.image.command).to.not.be.null();
     expect(instance.image.args).to.not.be.null();
 
-    const deploymentRequest = new K8sDeploymentRequest({name: instance.computeId, image: instance.image, flavour: instance.flavour, user: instance.user });
+    const deploymentRequest = new K8sDeploymentRequest({
+      name: instance.computeId,
+      image: instance.image,
+      flavour: instance.flavour,
+      user: instance.user
+    });
     expect(deploymentRequest.model.spec.template.spec.containers).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
     expect(deploymentRequest.model.spec.template.spec.containers[0].command).to.not.be.null();
@@ -165,7 +175,7 @@ describe('K8sDeploymentManager', () => {
   });
 
   it('creates kubernetes deployment request with volumes from request helper', async () => {
-    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js'
+    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
 
     const requestHelper = K8SRequestHelperLoader.getHelper();
     expect(requestHelper).to.not.be.null();
@@ -179,14 +189,20 @@ describe('K8sDeploymentManager', () => {
     expect(instance.image.volumes.length).to.equal(1);
     expect(instance.image.volumes[0].name).to.equal('volume1');
 
-    const deploymentRequest = new K8sDeploymentRequest({name: instance.computeId, image: instance.image, flavour: instance.flavour, user: instance.user, helper: requestHelper});
+    const deploymentRequest = new K8sDeploymentRequest({
+      name: instance.computeId,
+      image: instance.image,
+      flavour: instance.flavour,
+      user: instance.user,
+      helper: requestHelper
+    });
     expect(deploymentRequest.model.spec.template.spec.volumes).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.volumes.length).to.equal(1);
     expect(deploymentRequest.model.spec.template.spec.volumes[0].hostPath.path).to.equal('/home/bloggs');
   });
 
   it('creates kubernetes deployment request with env vars from request helper', async () => {
-    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js'
+    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
 
     const requestHelper = K8SRequestHelperLoader.getHelper();
     expect(requestHelper).to.not.be.null();
@@ -196,9 +212,15 @@ describe('K8sDeploymentManager', () => {
 
     const instance = await instanceService.getById(1);
     expect(instance).to.not.be.null();
-    expect(instance.image.name).to.equal("image 1");
+    expect(instance.image.name).to.equal('image 1');
 
-    const deploymentRequest = new K8sDeploymentRequest({name: instance.computeId, image: instance.image, flavour: instance.flavour, user: instance.user, helper: requestHelper});
+    const deploymentRequest = new K8sDeploymentRequest({
+      name: instance.computeId,
+      image: instance.image,
+      flavour: instance.flavour,
+      user: instance.user,
+      helper: requestHelper
+    });
     expect(deploymentRequest.model.spec.template.spec.containers).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
     expect(deploymentRequest.model.spec.template.spec.containers[0].env).to.not.be.null();
@@ -207,6 +229,16 @@ describe('K8sDeploymentManager', () => {
     expect(deploymentRequest.model.spec.template.spec.containers[0].env[0].value).to.equal(instance.user.uid);
     expect(deploymentRequest.model.spec.template.spec.containers[0].env[1].name).to.equal('NB_GID');
     expect(deploymentRequest.model.spec.template.spec.containers[0].env[1].value).to.equal(instance.user.gid);
+  });
+
+  it('creates kubernetes deployment with a volume mount', async () => {
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
+    expect(k8sNamespace).to.not.be.null();
+
+    const instance = await instanceService.getById(1);
+    await k8sDeploymentManager.create(instance, 'test', 'panosc');
+    const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc');
+    expect(k8sDeployment.containers[0].volumeMounts.filter(volumeMounts => volumeMounts.name == 'volume1')).to.not.be.null();
   });
 
 });

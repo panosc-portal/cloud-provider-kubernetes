@@ -11,4 +11,4 @@ export * from './protocol.model';
 export * from './resource-monitor.model';
 export * from './user.model'
 export * from './image-volume.model';
-
+export * from './image-env.model'

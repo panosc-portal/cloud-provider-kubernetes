@@ -271,7 +271,11 @@ export default class K8SResponseCreator {
       items: [{
         metadata: { name: `${deployment.metadata.name}-12DD-46FV`, creationTimestamp: '2019-12-13T11:40:52Z' },
         status: statusContent,
-        spec: { nodeName: 'k8s-test-worker-1' }
+        spec: {
+          nodeName: 'k8s-test-worker-1',
+          volumes: deployment.spec.template.spec.volumes,
+          containers: deployment.spec.template.spec.containers
+        }
       }]
     };
   }

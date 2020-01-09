@@ -1,17 +1,17 @@
-insert into protocol (id, name, port) 
+insert into protocol (id, name, port)
 values (1, "RDP", 3389);
-insert into protocol (id, name, port) 
+insert into protocol (id, name, port)
 values (2, "SSH", 22);
-insert into protocol (id, name, port) 
+insert into protocol (id, name, port)
 values (3, "HTTPS", 443);
-insert into protocol (id, name, port) 
+insert into protocol (id, name, port)
 values (4, "GUACD", 4822);
 
-insert into image (id, name, path, description, command, args) 
+insert into image (id, name, path, description, command, args)
 values (1, "image 1", "repo1/image-name1", "An image", "start.sh", "jupyter,notebook,--NotebookApp.token=''");
-insert into image (id, name, path, description) 
+insert into image (id, name, path, description)
 values (2, "image 2", "repo2/image-name2", "Another image");
-insert into image (id, name, path, description) 
+insert into image (id, name, path, description)
 values (3, "image 3", "repo3/image-name3", "A image not associated to an instance");
 
 insert into image_protocol (image_id, protocol_id)
