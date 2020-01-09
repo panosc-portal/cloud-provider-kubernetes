@@ -57,11 +57,7 @@ export class BaseRepository<T, ID> {
   async deleteById(id: ID): Promise<boolean> {
     await this.init();
 
-    const whereClause = new WhereBuilder().eq('id', id).build();
-
-    const queryBuilder = await this.buildDelete(whereClause);
-
-    await queryBuilder.execute();
+    await this._repository.delete(id);
     return true;
   }
 

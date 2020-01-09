@@ -36,7 +36,7 @@ export class ImageVolume {
   @Column()
   readonly: boolean;
 
-  @ManyToOne(type => Image, image => image.volumes)
+  @ManyToOne(type => Image, image => image.volumes, {onDelete: 'CASCADE', nullable: false})
   @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
   image: Image;
 

@@ -1,4 +1,4 @@
-import { Image, Flavour, User } from '../domain';
+import { Image, Flavour, InstanceUser } from '../domain';
 import { APPLICATION_CONFIG } from '../../application-config';
 import { IK8SRequestHelper } from '../../utils';
 
@@ -6,7 +6,7 @@ export interface K8sDeploymentRequestConfig {
   name: string,
   image: Image,
   flavour: Flavour,
-  user: User,
+  user: InstanceUser,
   imagePullSecret?: string,
   helper?: IK8SRequestHelper
 }
@@ -51,8 +51,8 @@ export class K8sDeploymentRequest {
               {
                 name: this._config.name,
                 image: this._config.image.repository ? `${this._config.image.repository}/${this._config.image.path}` : this._config.image.path,
-                ports: this._config.image.protocols.map(protocol => {
-                  return { name: protocol.name.toLowerCase(), containerPort: protocol.port };
+                ports: this._config.image.protocols.map(imageProtocol => {
+                  return { name: imageProtocol.protocol.name.toLowerCase(), containerPort: imageProtocol.port };
                 }),
                 command: this._config.image.command ? [this._config.image.command] : undefined,
                 args: this._config.image.args ? this._config.image.args.split(',') : undefined,

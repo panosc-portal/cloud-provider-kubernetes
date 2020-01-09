@@ -1,5 +1,5 @@
 import { del, get, getModelSchemaRef, param, post, requestBody, put } from '@loopback/openapi-v3';
-import { Image, Instance, InstanceState, InstanceCommand, InstanceCommandType, User } from '../models';
+import { Instance, InstanceState, InstanceCommand, InstanceCommandType, InstanceUser } from '../models';
 import { inject } from '@loopback/context';
 import { FlavourService, ImageService, InstanceService, InstanceActionService } from '../services';
 import { InstanceCreatorDto } from './dto/instance-creator-dto';
@@ -82,7 +82,7 @@ export class InstanceController extends BaseController {
       status: InstanceStatus.BUILDING,
       image: image,
       flavour: flavour,
-      user: new User({
+      user: new InstanceUser({
         accountId: instanceCreator.user.accountId,
         username: instanceCreator.user.username,
         uid: instanceCreator.user.uid,

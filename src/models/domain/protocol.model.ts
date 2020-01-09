@@ -15,7 +15,8 @@ export class Protocol {
   id: number;
 
   @property({
-    type: 'string'
+    type: 'string',
+    require: true
   })
   @Index('protocol_name_index')
   @Column({ length: 250 })
@@ -25,8 +26,8 @@ export class Protocol {
     type: 'number',
     required: true
   })
-  @Column()
-  port: number;
+  @Column({name: 'default_port'})
+  defaultPort: number;
 
   constructor(data?: Partial<Protocol>) {
     Object.assign(this, data);

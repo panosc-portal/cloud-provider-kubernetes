@@ -30,11 +30,12 @@ export class InstanceProtocol {
   port: number;
 
   @property({
-    type: 'number'
+    type: 'number',
+    required: true
   })
-  @ManyToOne(type => Instance, instance => instance.protocols)
+  @ManyToOne(type => Instance, instance => instance.protocols, {onDelete: 'CASCADE', nullable: false})
   @JoinColumn({ name: 'instance_id' })
-  instance?: Instance;
+  instance: Instance;
 
   constructor(data?: Partial<InstanceProtocol>) {
     Object.assign(this, data);

@@ -70,9 +70,9 @@ export class FlavourController extends BaseController {
       memory: flavourCreator.memory
     });
 
-    await this._flavourService.save(flavour);
+    const persistedFlavour = await this._flavourService.save(flavour);
 
-    return flavour;
+    return persistedFlavour;
   }
 
   @put('/flavours/{id}', {

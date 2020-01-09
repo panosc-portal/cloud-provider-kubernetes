@@ -34,7 +34,7 @@ export class K8sServiceRequest {
       },
       spec: {
         type: 'NodePort',
-        ports: _config.image.protocols.map(protocol => { return {name: protocol.name.toLowerCase(), port: protocol.port}}),
+        ports: _config.image.protocols.map(imageProtocol => { return {name: imageProtocol.protocol.name.toLowerCase(), port: imageProtocol.port}}),
         selector: {
           app: this._config.name
         }

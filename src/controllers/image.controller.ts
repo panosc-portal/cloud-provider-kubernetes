@@ -5,6 +5,8 @@ import { ImageService } from '../services';
 import { BaseController } from './base.controller';
 import { ImageCreatorDto } from './dto/image-creator-dto';
 import { ImageUpdatorDto } from './dto/image-updator-dto';
+import { HttpErrors } from '@loopback/rest';
+import { ImageProtocol } from '../models/domain/image-protocol.model';
 
 export class ImageController extends BaseController {
   constructor(@inject('services.ImageService') private _imageService: ImageService) {
@@ -80,19 +82,24 @@ export class ImageController extends BaseController {
     }
   })
   async create(@requestBody() imageCreator: ImageCreatorDto): Promise<Image> {
-    const protocols = await this._imageService.getProtocolByIds(imageCreator.protocolIds);
+    const protocols = await this._imageService.getProtocolByIds(imageCreator.protocols.map(imageProtocol => imageProtocol.protocolId));
+    if (protocols.find(protocol => protocol == null) != null) {
+      throw new HttpErrors.BadRequest('A specified protocol does not exist');
+    }
 
     const image: Image = new Image({
       name: imageCreator.name,
       description: imageCreator.description,
       repository: imageCreator.repository,
       path: imageCreator.path,
-      protocols: protocols
+      command: imageCreator.command,
+      args: imageCreator.args,
+      protocols: imageCreator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)}))
     });
 
-    await this._imageService.save(image);
+    const persistedImage = await this._imageService.save(image);
 
-    return image;
+    return persistedImage;
   }
 
   @put('/images/{id}', {
@@ -115,13 +122,18 @@ export class ImageController extends BaseController {
     const image = await this._imageService.getById(id);
     this.throwNotFoundIfNull(image, 'Image with given id does not exist');
 
-    const protocols = await this._imageService.getProtocolByIds(imageUpdator.protocolIds);
+    const protocols = await this._imageService.getProtocolByIds(imageUpdator.protocols.map(imageProtocol => imageProtocol.protocolId));
+    if (protocols.find(protocol => protocol == null) != null) {
+      throw new HttpErrors.BadRequest('A specified protocol does not exist');
+    }
 
     image.name = imageUpdator.name;
-    image.description = imageUpdator.description;
+    image.description = imageUpdator.description ? imageUpdator.description : image.description;
     image.repository = imageUpdator.repository;
     image.path = imageUpdator.path;
-    image.protocols = protocols;
+    image.command = imageUpdator.command ? imageUpdator.command : image.command;
+    image.args = imageUpdator.args ? imageUpdator.args : image.args;
+    image.protocols = imageUpdator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)}))
 
     return this._imageService.save(image);
   }

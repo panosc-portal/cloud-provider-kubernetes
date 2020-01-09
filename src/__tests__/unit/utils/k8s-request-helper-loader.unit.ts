@@ -1,7 +1,7 @@
 import { expect } from '@loopback/testlab';
 import { K8SRequestHelperLoader } from '../../../utils';
 import { APPLICATION_CONFIG } from '../../../application-config';
-import { Image, ImageVolume, User } from '../../../models';
+import { Image, ImageVolume, InstanceUser } from '../../../models';
 
 describe('K8SRequestHelperLoader', () => {
 
@@ -33,7 +33,7 @@ describe('K8SRequestHelperLoader', () => {
     expect(requestHelper).to.not.be.null();
 
     const image = new Image({name: 'test', volumes: [new ImageVolume({name: 'volume1'}), new ImageVolume({name: 'volume2'})], });
-    const user = new User({username: 'testuser', homePath: '/home/testuser'});
+    const user = new InstanceUser({username: 'testuser', homePath: '/home/testuser'});
 
     const volumes = requestHelper.getVolumes(image, user);
     expect(volumes).to.not.be.null();

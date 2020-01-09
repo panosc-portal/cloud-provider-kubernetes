@@ -1,7 +1,7 @@
 import { model, property } from '@loopback/repository';
 
 @model()
-export class UserCreatorDto {
+export class InstanceUserCreatorDto {
   @property({
     type: 'number',
     required: true
@@ -42,7 +42,7 @@ export class UserCreatorDto {
   })
   homePath: string;
   
-  constructor(data?: Partial<UserCreatorDto>) {
+  constructor(data?: Partial<InstanceUserCreatorDto>) {
     Object.assign(this, data);
   }
 }

@@ -5,7 +5,7 @@ import { Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGenerat
 import { Image } from './image.model';
 import { InstanceStatus } from '../enumerations';
 import { InstanceState } from './instance-state.model';
-import { User } from './user.model';
+import { InstanceUser } from './instance-user.model';
 
 @Entity()
 @model()
@@ -96,6 +96,10 @@ export class Instance {
   @Column({ name: 'deleted', nullable: false, default: false })
   deleted: boolean;
 
+  @property({
+    type: 'array',
+    itemType: 'object'
+  })
   @OneToMany(type => InstanceProtocol, protocol => protocol.instance, {
     eager: true,
     cascade: true
@@ -103,26 +107,21 @@ export class Instance {
   protocols: InstanceProtocol[];
 
   @property({ type: 'number' })
-  @ManyToOne(type => Flavour, {
-    eager: true
-  })
+  @ManyToOne(type => Flavour, { eager: true, nullable: false })
   @JoinColumn({ name: 'flavour_id' })
   flavour: Flavour;
 
   @property({ type: 'number' })
-  @ManyToOne(type => Image, {
-    eager: true
-  })
+  @ManyToOne(type => Image, { eager: true, nullable: false })
   @JoinColumn({ name: 'image_id', })
   image: Image;
 
   @property({ type: 'number' })
-  @OneToOne(type => User, {
+  @OneToOne(type => InstanceUser, user => user.instance, {
     eager: true,
     cascade: true
   })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  user: InstanceUser;
 
   get state(): InstanceState {
     return new InstanceState({

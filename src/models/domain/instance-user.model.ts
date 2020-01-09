@@ -1,9 +1,10 @@
 import { model, property } from '@loopback/repository';
-import { Column, Entity, PrimaryGeneratedColumn, Index, Table } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Index, Table, OneToOne, JoinColumn } from 'typeorm';
+import { Instance } from './instance.model';
 
-@Entity({name: 'users'})
+@Entity()
 @model()
-export class User {
+export class InstanceUser {
   @property({
     type: 'number',
     id: true,
@@ -17,7 +18,7 @@ export class User {
     type: 'number',
     required: true
   })
-  @Index('user_account_id_index')
+  @Index('instance_user_account_id_index')
   @Column({ name: 'account_id', type: 'integer' })
   accountId: number;
 
@@ -25,7 +26,7 @@ export class User {
     type: 'string',
     required: true
   })
-  @Index('user_username_index')
+  @Index('instance_user_username_index')
   @Column({ length: 100 })
   username: string;
 
@@ -62,7 +63,11 @@ export class User {
   @Column({ name: 'home_path', length: 250 })
   homePath: string;
 
-  constructor(data?: Partial<User>) {
+  @OneToOne(type => Instance, instance => instance.user, { onDelete: 'CASCADE', nullable: false })
+  @JoinColumn({ name: 'instance_id' })
+  instance: Instance;
+  
+  constructor(data?: Partial<InstanceUser>) {
     Object.assign(this, data);
   }
 

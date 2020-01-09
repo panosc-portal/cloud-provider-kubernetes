@@ -13,7 +13,7 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
   getAll(): Promise<Instance[]> {
     const where = new WhereBuilder().eq('deleted', false).build();
     const filter = new FilterBuilder().where(where).order('instance.id').build();
-    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'protocols'] } as QueryOptions);
+    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'user', 'protocols'] } as QueryOptions);
   }
 
   getAllWithStates(states: InstanceStatus[]): Promise<Instance[]> {
@@ -22,7 +22,7 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
       .inq('status', states)
       .build();
     const filter = new FilterBuilder().where(where).order('instance.id').build();
-    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'protocols'] } as QueryOptions);
+    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'user', 'protocols'] } as QueryOptions);
   }
 
   async getAllNamespaceComputeIds(): Promise<{ namespace: string, computeId: string }[]> {
@@ -48,6 +48,6 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
   getInstancesByNodHostname(name: string): Promise<Instance[]> {
     const where = new WhereBuilder().eq('node_hostname', name).build();
     const filter = new FilterBuilder().where(where).order('instance.id').build();
-    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'protocols'] } as QueryOptions);
+    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'user', 'protocols'] } as QueryOptions);
   }
 }

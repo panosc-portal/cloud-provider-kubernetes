@@ -35,6 +35,10 @@ describe('InstanceActionService', () => {
     
     expect(instance.status).to.be.equal(InstanceStatus.ACTIVE);
     expect(instance.computeId).to.not.be.null();
+
+    expect(instance.protocols || null).to.not.be.null();
+    expect(instance.protocols.length).to.be.greaterThan(0);
+    expect(instance.protocols[0].id || null).to.not.be.null();
   });
 
   it('Queues a command', async () => {

@@ -1,19 +1,23 @@
 import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { createTestApplicationContext } from '../../helpers/context.helper';
-import { InstanceService, ImageService, FlavourService } from '../../../services';
-import { Instance, Protocol, ProtocolName, InstanceStatus, InstanceProtocol } from '../../../models';
+import { InstanceService, ImageService, FlavourService, InstanceUserService, InstanceProtocolService } from '../../../services';
+import { Instance, Protocol, ProtocolName, InstanceStatus, InstanceProtocol, InstanceUser } from '../../../models';
 
 describe('InstanceService', () => {
   let instanceService: InstanceService;
   let imageService: ImageService;
   let flavourService: FlavourService;
+  let instanceUserService: InstanceUserService;
+  let instanceProtocolService: InstanceProtocolService;
 
   before('getInstanceService', async () => {
     const testApplicationContext = createTestApplicationContext();
     imageService = testApplicationContext.imageService;
     instanceService = testApplicationContext.instanceService;
     flavourService = testApplicationContext.flavourService;
+    instanceUserService = testApplicationContext.instanceUserService;
+    instanceProtocolService = testApplicationContext.instanceProtocolService;
   });
 
   beforeEach('Initialise Database', givenInitialisedTestDatabase);
@@ -43,6 +47,7 @@ describe('InstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
+    const user = new InstanceUser({accountId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
 
     const instance = new Instance({
       name: 'instance 3',
@@ -57,9 +62,10 @@ describe('InstanceService', () => {
       updatedAt: new Date(),
       namespace: 'panosc',
       protocols: [
-        new Protocol({ name: ProtocolName.SSH, port: 2222 }),
-        new Protocol({ name: ProtocolName.RDP, port: 1234 })
-      ]
+        new InstanceProtocol({ name: ProtocolName.SSH, port: 2222 }),
+        new InstanceProtocol({ name: ProtocolName.RDP, port: 1234 })
+      ],
+      user: user
     });
 
     await instanceService.save(instance);
@@ -81,11 +87,11 @@ describe('InstanceService', () => {
     let instances = await instanceService.getAll();
     const numberOfInstancesOriginally = instances.length;
 
-    const instance = instances[0];
+    const instance = instances.find(instance => instance.id === 5);
     const image = instance.image;
-    expect(image).to.not.be.null();
+    expect(image || null).to.not.be.null();
     const flavour = instance.flavour;
-    expect(flavour).to.not.be.null();
+    expect(flavour || null).to.not.be.null();
 
     await instanceService.delete(instance);
 
@@ -93,12 +99,49 @@ describe('InstanceService', () => {
     expect(instances.length).to.equal(numberOfInstancesOriginally - 1);
 
     // Make sure image not deleted
-    const persistedImage = imageService.getById(image.id);
-    expect(persistedImage).to.not.be.null();
+    const persistedImage = await imageService.getById(image.id);
+    expect(persistedImage || null).to.not.be.null();
 
     // Make sure flavour not deleted
-    const persistedFlavour = flavourService.getById(flavour.id);
-    expect(persistedFlavour).to.not.be.null();
+    const persistedFlavour = await flavourService.getById(flavour.id);
+    expect(persistedFlavour || null).to.not.be.null();
+  });
+
+  it('deletes instance protocols when deleting an instance', async () => {
+    let instances = await instanceService.getAll();
+    const numberOfInstancesOriginally = instances.length;
+
+    const instance = instances.find(instance => instance.id === 5);
+    const protocols = instance.protocols;
+    expect(protocols || null).to.not.be.null();
+    expect(protocols.length).to.be.greaterThan(0);
+
+    await instanceService.delete(instance);
+
+    instances = await instanceService.getAll();
+    expect(instances.length).to.equal(numberOfInstancesOriginally - 1);
+
+    // make sure protocols deleted
+    const persistedInstanceProtocol = await instanceProtocolService.getById(protocols[0].id);
+    expect(persistedInstanceProtocol || null).to.be.null();
+  });
+
+  it('deletes a user when deleting an instance', async () => {
+    let instances = await instanceService.getAll();
+    const numberOfInstancesOriginally = instances.length;
+
+    const instance = instances.find(instance => instance.id === 5);
+    const user = instance.user;
+    expect(user || null).to.not.be.null();
+
+    await instanceService.delete(instance);
+
+    instances = await instanceService.getAll();
+    expect(instances.length).to.equal(numberOfInstancesOriginally - 1);
+
+    // make sure user deleted
+    const persistedUser = await instanceUserService.getById(user.id);
+    expect(persistedUser || null).to.be.null();
   });
 
   it('updates an instance', async () => {

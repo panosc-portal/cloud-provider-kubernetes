@@ -1,11 +1,11 @@
-import { Image, User } from "../models";
+import { Image, InstanceUser } from "../models";
 import { APPLICATION_CONFIG } from "../application-config";
 import { logger } from "./logger";
 
 export interface IK8SRequestHelper {
 
-  getVolumes(image: Image, user: User): any;
-  getEnvVars(image: Image, user: User): any;
+  getVolumes(image: Image, user: InstanceUser): any;
+  getEnvVars(image: Image, user: InstanceUser): any;
 }
 
 export class K8SRequestHelperLoader {
