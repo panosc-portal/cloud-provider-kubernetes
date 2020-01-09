@@ -37,7 +37,7 @@ describe('K8sInstanceService', () => {
 
   it('create kubernetes instance', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const instance = await instanceService.getById(3);
     const k8sInstance = await k8sInstanceService.create(instance);
@@ -46,7 +46,7 @@ describe('K8sInstanceService', () => {
 
   it('create and delete kubernetes instance', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const instance = await instanceService.getById(3);
     const k8sInstance = await k8sInstanceService.create(instance);
@@ -57,7 +57,7 @@ describe('K8sInstanceService', () => {
 
   it('create instance and verify label connection', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const instance = await instanceService.getById(3);
     const k8sInstance = await k8sInstanceService.create(instance);
@@ -68,7 +68,7 @@ describe('K8sInstanceService', () => {
 
   it('create instance with service error', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
@@ -84,7 +84,7 @@ describe('K8sInstanceService', () => {
 
   it('create instance with deployment error pod BackOff', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
@@ -101,7 +101,7 @@ describe('K8sInstanceService', () => {
 
   it('create instance with deployment error pod ContainerCreating timeout', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
@@ -117,7 +117,7 @@ describe('K8sInstanceService', () => {
 
   it('create instance with deployment error pod ErrImagePull', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);

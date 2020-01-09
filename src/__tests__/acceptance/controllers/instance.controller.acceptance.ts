@@ -26,11 +26,11 @@ describe('InstanceController', () => {
     const res = await client.get('/api/v1/instances').expect(200);
 
     const instances = res.body as Instance[];
-    expect(instances).to.not.be.null();
+    expect(instances || null).to.not.be.null();
 
     expect(instances.length).to.equal(4);
     instances.forEach(instance => {
-      expect(instance.id).to.not.be.null();
+      expect(instance.id || null).to.not.be.null();
     });
   });
 
@@ -38,7 +38,7 @@ describe('InstanceController', () => {
     const res = await client.get('/api/v1/instances/1').expect(200);
 
     const instance = res.body as Instance;
-    expect(instance).to.not.be.null();
+    expect(instance || null).to.not.be.null();
     expect(instance.id).to.equal(1);
     expect(instance.name).to.equal('instance1');
   });

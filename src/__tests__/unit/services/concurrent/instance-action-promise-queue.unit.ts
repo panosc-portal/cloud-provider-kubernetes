@@ -82,7 +82,7 @@ describe('InstanceActionPromiseQueue', () => {
       await queue.add(action2);
   
     } catch (error) {
-      expect(error).to.not.be.null();
+      expect(error || null).to.not.be.null();
     }
 
     expect(queue.queueLength).to.equal(0);

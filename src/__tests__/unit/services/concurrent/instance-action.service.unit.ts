@@ -25,7 +25,7 @@ describe('InstanceActionService', () => {
 
   it('Runs a command', async () => {
     let instance = await context.instanceService.getById(1);
-    expect(instance).to.not.be.null();
+    expect(instance || null).to.not.be.null();
     expect(instance.status).to.equal(InstanceStatus.BUILDING);
 
     const command = new InstanceCommand(instance, InstanceCommandType.CREATE);
@@ -34,16 +34,16 @@ describe('InstanceActionService', () => {
     instance = await context.instanceService.getById(1);
     
     expect(instance.status).to.be.equal(InstanceStatus.ACTIVE);
-    expect(instance.computeId).to.not.be.null();
+    expect(instance.computeId || null).to.not.be.null();
 
-    expect(instance.protocols || null).to.not.be.null();
+    expect(instance.protocols || null).to.not.be.null();
     expect(instance.protocols.length).to.be.greaterThan(0);
     expect(instance.protocols[0].id || null).to.not.be.null();
   });
 
   it('Queues a command', async () => {
     let instance = await context.instanceService.getById(1);
-    expect(instance).to.not.be.null();
+    expect(instance || null).to.not.be.null();
     expect(instance.status).to.equal(InstanceStatus.BUILDING);
 
     const stateCommand = new InstanceCommand(instance, InstanceCommandType.STATE);
@@ -54,19 +54,19 @@ describe('InstanceActionService', () => {
     await statePromise;
     instance = await context.instanceService.getById(1);
     expect(instance.status).to.be.equal(InstanceStatus.BUILDING);
-    expect(instance.computeId).to.be.null();
+    expect(instance.computeId || null).to.be.null();
 
     await createPromise;
     instance = await context.instanceService.getById(1);
     
     expect(instance.status).to.be.equal(InstanceStatus.ACTIVE);
-    expect(instance.computeId).to.not.be.null();
+    expect(instance.computeId || null).to.not.be.null();
   });
 
 
   it('Refuses a deplicated command', async () => {
     const instance = await context.instanceService.getById(1);
-    expect(instance).to.not.be.null();
+    expect(instance || null).to.not.be.null();
     expect(instance.status).to.equal(InstanceStatus.BUILDING);
 
     const command1 = new InstanceCommand(instance, InstanceCommandType.CREATE);

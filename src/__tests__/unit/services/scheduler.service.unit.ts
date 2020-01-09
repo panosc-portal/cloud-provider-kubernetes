@@ -21,7 +21,7 @@ describe('SchedulerService', () => {
     const className = 'InstanceStateJob';
    
     const instanceStateJob = new (JOB_PROVIDER.get(className).class)();
-    expect(instanceStateJob).to.not.be.null();
+    expect(instanceStateJob || null).to.not.be.null();
   });
 
   it('Refreshes the state of all instances', async () => {
@@ -30,7 +30,7 @@ describe('SchedulerService', () => {
     const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
-    expect(instanceStateJob).to.not.be.null();
+    expect(instanceStateJob || null).to.not.be.null();
 
     const updatedInstances = await instanceStateJob.run();
     expect(updatedInstances).to.equal(4);
@@ -42,7 +42,7 @@ describe('SchedulerService', () => {
     const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
-    expect(instanceStateJob).to.not.be.null();
+    expect(instanceStateJob || null).to.not.be.null();
 
     const updatedInstances = await instanceStateJob.run({states: [InstanceStatus.BUILDING]});
     expect(updatedInstances).to.equal(3);
@@ -62,7 +62,7 @@ describe('SchedulerService', () => {
     const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
-    expect(instanceStateJob).to.not.be.null();
+    expect(instanceStateJob || null).to.not.be.null();
 
     const updatedInstances = await instanceStateJob.run();
     expect(updatedInstances).to.equal(4);
@@ -76,7 +76,7 @@ describe('SchedulerService', () => {
     const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
-    expect(instanceStateJob).to.not.be.null();
+    expect(instanceStateJob || null).to.not.be.null();
 
     const promise1 = instanceStateJob.run();
     const promise2 = instanceStateJob.run();
@@ -85,6 +85,6 @@ describe('SchedulerService', () => {
     const updatedInstances2 = await promise2;
 
     expect(updatedInstances1).to.equal(4);
-    expect(updatedInstances2).to.be.null();
+    expect(updatedInstances2 || null).to.be.null();
   });
 });

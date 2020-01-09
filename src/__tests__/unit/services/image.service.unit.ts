@@ -26,7 +26,7 @@ describe('ImageService', () => {
   it('gets an image', async () => {
     const image = await imageService.getById(1);
 
-    expect(image).to.not.be.null();
+    expect(image || null).to.not.be.null();
     expect(image.name).to.equal('image 1');
   });
 
@@ -37,10 +37,10 @@ describe('ImageService', () => {
       description: 'A new image'
     });
     await imageService.save(image);
-    expect(image.id).to.not.be.null();
+    expect(image.id || null).to.not.be.null();
 
     const persistedImage = await imageService.getById(image.id);
-    expect(persistedImage).to.not.be.null();
+    expect(persistedImage || null).to.not.be.null();
   });
 
   it('deletes an image', async () => {
@@ -73,7 +73,7 @@ describe('ImageService', () => {
 
     // make sure protocols deleted
     const persistedImageProtocol = await imageProtocolService.getById(protocols[0].id);
-    expect(persistedImageProtocol || null).to.be.null();
+    expect(persistedImageProtocol || null).to.be.null();
   });
 
   it('deletes volumes when deleting an image', async () => {
@@ -93,7 +93,7 @@ describe('ImageService', () => {
 
     // make sure volumes deleted
     const persistedImageVolume = await imageVolumeService.getById(volumes[0].id);
-    expect(persistedImageVolume || null).to.be.null();
+    expect(persistedImageVolume || null).to.be.null();
   });
 
   it('updates an image', async () => {
@@ -103,7 +103,7 @@ describe('ImageService', () => {
     image.name = 'A new name';
 
     const persistedImage = await imageService.save(image);
-    expect(persistedImage).to.not.be.null();
+    expect(persistedImage || null).to.not.be.null();
     expect(persistedImage.id).to.equal(image.id);
     expect(persistedImage.name).to.equal(image.name);
 

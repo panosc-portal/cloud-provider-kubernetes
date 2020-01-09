@@ -22,19 +22,19 @@ describe('K8sNamespaceManager', () => {
 
   it('create kubernetes namespace', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('test');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
     expect(k8sNamespace.name).to.be.equal('test');
   });
 
   it('get a non existing namespace', async () => {
     const k8sNamespace = await k8sNamespaceManager.getWithName('test');
-    expect(k8sNamespace).to.be.null();
+    expect(k8sNamespace || null).to.be.null();
   });
 
   it('create and get kubernetes namespace', async () => {
     await k8sNamespaceManager.create('testnamespace');
     const k8sNamespace = await k8sNamespaceManager.getWithName('testnamespace');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
     expect(k8sNamespace.name).to.be.equal('testnamespace');
   });
 
@@ -45,7 +45,7 @@ describe('K8sNamespaceManager', () => {
       k8sNamespace2 = await k8sNamespaceManager.create('testnamespace');
     } catch (error) {
     }
-    expect(k8sNamespace2).to.be.null();
+    expect(k8sNamespace2 || null).to.be.null();
   });
 
   it('delete an inexistent namespace', async () => {

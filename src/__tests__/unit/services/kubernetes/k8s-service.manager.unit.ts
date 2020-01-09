@@ -29,23 +29,23 @@ describe('K8sServiceManager', () => {
 
   it('create kubernetes service', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const instance = await instanceService.getById(1);
-    expect(instance).to.not.be.null();
+    expect(instance || null).to.not.be.null();
 
     const k8sService = await k8sServiceManager.create(instance, 'test', 'panosc');
-    expect(k8sService).to.not.be.null();
+    expect(k8sService || null).to.not.be.null();
     expect(k8sService.name).to.be.equal('test');
-    expect(k8sService.ports).to.not.be.null();
+    expect(k8sService.ports || null).to.not.be.null();
   });
 
   it('creates kubernetes service request with expected ports', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const instance = await instanceService.getById(1);
-    expect(instance).to.not.be.null();
+    expect(instance || null).to.not.be.null();
 
     const k8sServiceRequest = new K8sServiceRequest({
       name: 'test',
@@ -56,13 +56,13 @@ describe('K8sServiceManager', () => {
 
   it('creates kubernetes service with expected ports', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const instance = await instanceService.getById(1);
-    expect(instance).to.not.be.null();
+    expect(instance || null).to.not.be.null();
 
     const k8sService = await k8sServiceManager.create(instance, 'test', 'panosc');
-    expect(k8sService).to.not.be.null();
+    expect(k8sService || null).to.not.be.null();
 
     expect(k8sService.ports.length).to.equal(2);
 
@@ -73,28 +73,28 @@ describe('K8sServiceManager', () => {
 
   it('get a non existing service', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const k8sService = await k8sServiceManager.getWithComputeId('test1', 'panosc');
-    expect(k8sService).to.be.null();
+    expect(k8sService || null).to.be.null();
   });
 
   it('create and get kubernetes service', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const instance = await instanceService.getById(1);
-    expect(instance).to.not.be.null();
+    expect(instance || null).to.not.be.null();
 
     await k8sServiceManager.create(instance, 'test-service', 'panosc');
     const k8sService = await k8sServiceManager.getWithComputeId('test-service', 'panosc');
-    expect(k8sService).to.not.be.null();
+    expect(k8sService || null).to.not.be.null();
     expect(k8sService.name).to.be.equal('test-service');
   });
 
   it('delete an inexistent service', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const deletedService = await k8sServiceManager.deleteWithComputeId('test', 'panosc');
     expect(deletedService).to.be.false();
@@ -102,10 +102,10 @@ describe('K8sServiceManager', () => {
 
   it('create and delete a service', async () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
-    expect(k8sNamespace).to.not.be.null();
+    expect(k8sNamespace || null).to.not.be.null();
 
     const instance = await instanceService.getById(1);
-    expect(instance).to.not.be.null();
+    expect(instance || null).to.not.be.null();
 
     await k8sServiceManager.create(instance, 'test-service', 'panosc');
     const deletedService = await k8sServiceManager.deleteWithComputeId('test-service', 'panosc');
