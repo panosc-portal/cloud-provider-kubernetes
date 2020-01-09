@@ -28,7 +28,7 @@ describe('ImageController', () => {
     const images = res.body as Image[];
     expect(images || null).to.not.be.null();
 
-    expect(images.length).to.equal(3);
+    expect(images.length).to.equal(4);
     images.forEach(image => {
       expect(image.id || null).to.not.be.null();
     });

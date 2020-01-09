@@ -3,7 +3,7 @@ import { property } from '@loopback/repository';
 import { Image } from './image.model';
 
 @Entity()
-export class ImageEnv {
+export class ImageEnvVars {
 
   @property({
     type: 'number',
@@ -14,15 +14,15 @@ export class ImageEnv {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  key: string;
+  @Column()
+  name: string;
 
   @Column()
   value: string;
 
-  @ManyToOne(type => Image,image=>image.volumes)
+  @ManyToOne(type => Image, image => image.volumes,{onDelete:'CASCADE'})
   @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
-  image: Image
+  image: Image;
 
 
 }

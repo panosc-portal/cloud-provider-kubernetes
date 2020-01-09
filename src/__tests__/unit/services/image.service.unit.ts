@@ -20,7 +20,7 @@ describe('ImageService', () => {
 
   it('gets all images', async () => {
     const images = await imageService.getAll();
-    expect(images.length).to.equal(3);
+    expect(images.length).to.equal(4);
   });
 
   it('gets an image', async () => {
@@ -45,7 +45,7 @@ describe('ImageService', () => {
 
   it('deletes an image', async () => {
     let images = await imageService.getAll();
-    expect(images.length).to.equal(3);
+    expect(images.length).to.equal(4);
 
     const image = images.find(anImage => anImage.id === 3);
     expect(image || null).to.not.be.null();
@@ -53,12 +53,12 @@ describe('ImageService', () => {
     await imageService.delete(image);
 
     images = await imageService.getAll();
-    expect(images.length).to.equal(2);
+    expect(images.length).to.equal(3);
   });
 
   it('deletes protocols when deleting an image', async () => {
     let images = await imageService.getAll();
-    expect(images.length).to.equal(3);
+    expect(images.length).to.equal(4);
 
     const image = images.find(anImage => anImage.id === 3);
     expect(image || null).to.not.be.null();
@@ -69,7 +69,7 @@ describe('ImageService', () => {
     await imageService.delete(image);
 
     images = await imageService.getAll();
-    expect(images.length).to.equal(2);
+    expect(images.length).to.equal(3);
 
     // make sure protocols deleted
     const persistedImageProtocol = await imageProtocolService.getById(protocols[0].id);
@@ -78,7 +78,7 @@ describe('ImageService', () => {
 
   it('deletes volumes when deleting an image', async () => {
     let images = await imageService.getAll();
-    expect(images.length).to.equal(3);
+    expect(images.length).to.equal(4);
 
     const image = images.find(anImage => anImage.id === 3);
     expect(image || null).to.not.be.null();
@@ -89,7 +89,7 @@ describe('ImageService', () => {
     await imageService.delete(image);
 
     images = await imageService.getAll();
-    expect(images.length).to.equal(2);
+    expect(images.length).to.equal(3);
 
     // make sure volumes deleted
     const persistedImageVolume = await imageVolumeService.getById(volumes[0].id);

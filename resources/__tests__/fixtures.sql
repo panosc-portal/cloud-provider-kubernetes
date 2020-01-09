@@ -15,6 +15,8 @@ insert into image (id, name, path, description)
 values (2, "image 2", "repo2/image-name2", "Another image");
 insert into image (id, name, path, description)
 values (3, "image 3", "repo3/image-name3", "A image not associated to an instance");
+insert into image (id, name, path, description)
+values (4, "image 4", "repo4/image-name4", "Another image");
 
 insert into image_protocol (id, port, image_id, protocol_id)
 values (1, 3389, 1, 1);
@@ -36,6 +38,21 @@ values (2, 'volume2', '/path', true, 2);
 insert into image_volume (id, name, path, readonly, image_id)
 values (3, 'volume3', '/path', false, 3);
 
+
+insert into image_env_vars (id, name, value, image_id)
+values (1, 'NB_UID', 200, 2);
+insert into image_env_vars (id, name, value, image_id)
+values (2, 'NB_GID', 158 , 2);
+insert into image_env_vars (id, name, value, image_id)
+values (3, 'TEST', 'Test value', 2);
+
+insert into image_env_vars (id, name, value, image_id)
+values (4, 'NB_UID', 3000, 4);
+insert into image_env_vars (id, name, value, image_id)
+values (5, 'NB_GID', 3001 , 4);
+insert into image_env_vars (id, name, value, image_id)
+values (6, 'TEST', 'Test value 2', 4);
+
 insert into flavour(id, name, description, cpu, memory)
 values (1, "flavour 1", "A flavour", 1.5, 2048);
 insert into flavour(id, name, description, cpu, memory)
@@ -53,6 +70,8 @@ insert into instance(id, name, description, image_id, flavour_id, hostname, stat
 values (4, "instance4", "A deleted instance", 2, 2, "instance3.host.eu", "DELETED", 0, 0, 'panosc', '2019-01-01', '2019-01-01', true);
 insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
 values (5, "instance5", "A fifth test instance", 2, 2, "instance3.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
+insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
+values (6, "instance6", "", 4, 2, "instance6.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
 
 insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
 values (1, 123, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs", 1);
@@ -64,6 +83,8 @@ insert into instance_user(id, account_id, username, first_name, last_name, uid, 
 values (4, 678, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs", 4);
 insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
 values (5, 321, "doe", "jane", "doe", 1001, 2000, "/home/doe", 5);
+insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
+values (6, 321, "doe", "jane", "doe", 1005, 2000, "/home/doe", 6);
 
 insert into instance_protocol (id, name, port, instance_id)
 values (1, "RDP", 30389, 5);

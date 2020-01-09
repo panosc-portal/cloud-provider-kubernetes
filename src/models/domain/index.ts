@@ -1,5 +1,4 @@
 export * from './flavour.model';
-export * from './image-env.model'
 export * from './image-protocol.model';
 export * from './image-volume.model';
 export * from './image.model';
@@ -13,3 +12,5 @@ export * from './metrics.model';
 export * from './node.model';
 export * from './protocol.model';
 export * from './resource-monitor.model';
+export * from './image-volume.model';
+export * from './image-env-vars.model'

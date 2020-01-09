@@ -241,4 +241,29 @@ describe('K8sDeploymentManager', () => {
     expect(k8sDeployment.containers[0].volumeMounts.filter(volumeMounts => volumeMounts.name == 'volume1') || null).to.not.be.null();
   });
 
+  it('creates kubernetes deployment with database and helper env vars', async () => {
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
+    expect(k8sNamespace).to.not.be.null();
+
+    const instance = await instanceService.getById(2);
+    await k8sDeploymentManager.create(instance, 'test', 'panosc');
+    const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc');
+    expect(k8sDeployment.containers[0].env.length).to.equal(3);
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_UID').value).to.be.equal(1001);
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_GID').value).to.be.equal(2000);
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'TEST').value).to.be.equal('Test value');
+  });
+
+  it('creates kubernetes deployment with database env vars', async () => {
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
+    expect(k8sNamespace).to.not.be.null();
+
+    const instance = await instanceService.getById(6);
+    await k8sDeploymentManager.create(instance, 'test', 'panosc');
+    const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc');
+    expect(k8sDeployment.containers[0].env.length).to.equal(3);
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_UID').value).to.be.equal('3000');
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_GID').value).to.be.equal('3001');
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'TEST').value).to.be.equal('Test value 2');
+  });
 });

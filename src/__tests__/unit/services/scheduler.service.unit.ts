@@ -16,29 +16,29 @@ describe('SchedulerService', () => {
     instanceService = testApplicationContext.instanceService;
     instanceActionService = testApplicationContext.instanceActionService;
   });
- 
+
   it('instantiates a class from a className', async () => {
     const className = 'InstanceStateJob';
-   
+
     const instanceStateJob = new (JOB_PROVIDER.get(className).class)();
     expect(instanceStateJob || null).to.not.be.null();
   });
 
   it('Refreshes the state of all instances', async () => {
     const className = 'InstanceStateJob';
-   
+
     const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
     expect(instanceStateJob || null).to.not.be.null();
 
     const updatedInstances = await instanceStateJob.run();
-    expect(updatedInstances).to.equal(4);
+    expect(updatedInstances).to.equal(5);
   });
 
   it('Refreshes the state of all building instances', async () => {
     const className = 'InstanceStateJob';
-   
+
     const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
@@ -65,14 +65,14 @@ describe('SchedulerService', () => {
     expect(instanceStateJob || null).to.not.be.null();
 
     const updatedInstances = await instanceStateJob.run();
-    expect(updatedInstances).to.equal(4);
+    expect(updatedInstances).to.equal(5);
     const numberOfInstances3 = (await instanceService.getAll()).length;
     expect(numberOfInstances3).to.equal(numberOfInstances1);
   });
 
   it('Will not run parallel identical jobs', async () => {
     const className = 'InstanceStateJob';
-   
+
     const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
@@ -84,7 +84,7 @@ describe('SchedulerService', () => {
     const updatedInstances1 = await promise1;
     const updatedInstances2 = await promise2;
 
-    expect(updatedInstances1).to.equal(4);
+    expect(updatedInstances1).to.equal(5);
     expect(updatedInstances2 || null).to.be.null();
   });
 });

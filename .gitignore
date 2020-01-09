@@ -73,3 +73,4 @@ pgdata
 /.kubernetes-certificats.json
 helpers
 
+/helpers/

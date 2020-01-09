@@ -2,8 +2,8 @@ import { model, property } from '@loopback/repository';
 import { Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Protocol } from './protocol.model';
 import { ImageVolume } from './image-volume.model';
+import { ImageEnvVars } from './image-env-vars.model';
 import { ImageProtocol } from './image-protocol.model';
-import { ImageEnv } from './image-env.model';
 
 @Entity()
 @model()
@@ -72,8 +72,8 @@ export class Image {
   @OneToMany(type => ImageVolume, imageVolume => imageVolume.image, {eager: true, cascade: true})
   volumes: ImageVolume[];
 
-  @OneToMany(type => ImageEnv, imageEnv => imageEnv.image, { eager: true, cascade: true })
-  environments: ImageEnv[];
+  @OneToMany(type => ImageEnvVars, imageEnvVars => imageEnvVars.image, { eager: true, cascade: true })
+  envVars: ImageEnvVars[];
 
   constructor(data?: Partial<Image>) {
     Object.assign(this, data);

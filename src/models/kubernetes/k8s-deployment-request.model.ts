@@ -22,6 +22,37 @@ export class K8sDeploymentRequest {
     return this._model;
   }
 
+  getEnvVars(helper, image, user): any {
+    let imageEnvVars;
+    if (image.envVars.length > 0) {
+      imageEnvVars = image.envVars;
+      imageEnvVars.forEach(imageEnvVar => delete imageEnvVar.id);
+    } else {
+      imageEnvVars = null;
+    }
+
+    if (imageEnvVars && helper) {
+      const helperEnvVars = helper.getEnvVars(image, user);
+      if (helperEnvVars) {
+        imageEnvVars.forEach(imageEnvVar => {
+          const helperEnvVar = helperEnvVars.find(helperEnvVar => imageEnvVar.name === helperEnvVar.name);
+          if (helperEnvVar) {
+            imageEnvVar.value = helperEnvVar.value;
+          }
+        });
+      }
+      return imageEnvVars;
+    } else if (imageEnvVars && !helper) {
+      return imageEnvVars;
+    } else if (!imageEnvVars && helper) {
+      return helper.getEnvVars(image, user);
+    } else {
+      return null;
+    }
+
+
+  }
+
   constructor(private _config: K8sDeploymentRequestConfig) {
     this._model = {
       apiVersion: 'apps/v1',
@@ -56,10 +87,10 @@ export class K8sDeploymentRequest {
                 }),
                 command: this._config.image.command ? [this._config.image.command] : undefined,
                 args: this._config.image.args ? this._config.image.args.split(',') : undefined,
-                env: this._config.helper ? this._config.helper.getEnvVars(this._config.image, this._config.user) : undefined,
+                env: this.getEnvVars(this._config.helper, this._config.image, this._config.user),
                 volumeMounts: this._config.image.volumes ? this._config.image.volumes.map(volume => ({
-                  mountPath: volume.path, 
-                  name: volume.name, 
+                  mountPath: volume.path,
+                  name: volume.name,
                   readOnly: volume.readonly
                 })) : undefined,
                 resources: {
@@ -71,10 +102,10 @@ export class K8sDeploymentRequest {
                     cpu: `${this._config.flavour.cpu}`,
                     memory: `${this._config.flavour.memory}Mi`
                   }
-                },
+                }
               }
             ],
-            imagePullSecrets: this._config.imagePullSecret != null ? [{ name:this._config.imagePullSecret }] : [],
+            imagePullSecrets: this._config.imagePullSecret != null ? [{ name: this._config.imagePullSecret }] : [],
             volumes: this._config.helper ? this._config.helper.getVolumes(this._config.image, this._config.user) : undefined
           }
         }
