@@ -1,6 +1,6 @@
 import { Image, Flavour, InstanceUser } from '../domain';
 import { APPLICATION_CONFIG } from '../../application-config';
-import { IK8SRequestHelper, K8SRequestHelperLoader } from '../../utils';
+import { IK8SRequestHelper } from '../../utils';
 
 export interface K8sDeploymentRequestConfig {
   name: string,
@@ -22,16 +22,16 @@ export class K8sDeploymentRequest {
     return this._model;
   }
 
-  getEnvVars(helper: IK8SRequestHelper, image: Image, user: InstanceUser): any {
+  getEnvVars(): any {
     const envVars = {};
-    if (image.envVars) {
+    if (this._config.image.envVars) {
       // Get env vars from image
-      image.envVars.forEach(envVar => envVars[envVar.name] = envVar.value);
+      this._config.image.envVars.forEach(envVar => envVars[envVar.name] = envVar.value);
     }
 
-    if (helper) {
+    if (this._config.helper && this._config.helper.getEnvVars) {
       // Get env vars from helper
-      const helperEnvVars = helper.getEnvVars(image, user);
+      const helperEnvVars = this._config.helper.getEnvVars(this._config.image, this._config.user);
       if (helperEnvVars) {
         // Add or override env var
         helperEnvVars.forEach(envVar => envVars[envVar.name] = envVar.value);
@@ -40,6 +40,16 @@ export class K8sDeploymentRequest {
 
     const envVarArray = Object.keys(envVars).map(key => ({name: key, value: envVars[key]}));
     return envVarArray;
+  }
+
+  getSecurityContext(): any {
+    const helperRunAsUID = (this._config.helper && this._config.helper.getRunAsUID) ? this._config.helper.getRunAsUID(this._config.image, this._config.user) : null;
+    const imageRunAsUID = this._config.image.runAsUID;
+
+    const runAsUID = helperRunAsUID ? helperRunAsUID : imageRunAsUID;
+    return (runAsUID != null) ? {
+      runAsUser: runAsUID
+    } : undefined;
   }
 
   constructor(private _config: K8sDeploymentRequestConfig) {
@@ -76,12 +86,13 @@ export class K8sDeploymentRequest {
                 }),
                 command: this._config.image.command ? [this._config.image.command] : undefined,
                 args: this._config.image.args ? this._config.image.args.split(',') : undefined,
-                env: this.getEnvVars(this._config.helper, this._config.image, this._config.user),
+                env: this.getEnvVars(),
                 volumeMounts: this._config.image.volumes ? this._config.image.volumes.map(volume => ({
                   mountPath: volume.path,
                   name: volume.name,
                   readOnly: volume.readonly
                 })) : undefined,
+                securityContext: this.getSecurityContext(),
                 resources: {
                   limits: {
                     cpu: `${this._config.flavour.cpu}`,
@@ -95,7 +106,7 @@ export class K8sDeploymentRequest {
               }
             ],
             imagePullSecrets: this._config.imagePullSecret != null ? [{ name: this._config.imagePullSecret }] : [],
-            volumes: this._config.helper ? this._config.helper.getVolumes(this._config.image, this._config.user) : undefined
+            volumes: (this._config.helper && this._config.helper.getVolumes) ? this._config.helper.getVolumes(this._config.image, this._config.user) : undefined
           }
         }
       }

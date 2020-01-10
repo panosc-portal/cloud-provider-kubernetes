@@ -69,6 +69,12 @@ export class Image {
   @Column({ length: 2500, nullable: true })
   args: string;
 
+  @property({
+    type: 'number'
+  })
+  @Column({ name: 'run_as_uid', nullable: true })
+  runAsUID: number;
+
   @OneToMany(type => ImageVolume, imageVolume => imageVolume.image, {eager: true, cascade: true})
   volumes: ImageVolume[];
 

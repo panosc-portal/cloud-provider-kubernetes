@@ -82,6 +82,9 @@ export class ImageController extends BaseController {
     }
   })
   async create(@requestBody() imageCreator: ImageCreatorDto): Promise<Image> {
+    this.throwBadRequestIfNull(imageCreator.protocols, 'Image must have protocols specified');
+    this.throwBadRequestIfEmpty(imageCreator.protocols, 'Image must have protocols specified');
+
     const protocols = await this._imageService.getProtocolByIds(imageCreator.protocols.map(imageProtocol => imageProtocol.protocolId));
     if (protocols.find(protocol => protocol == null) != null) {
       throw new HttpErrors.BadRequest('A specified protocol does not exist');
@@ -94,6 +97,7 @@ export class ImageController extends BaseController {
       path: imageCreator.path,
       command: imageCreator.command,
       args: imageCreator.args,
+      runAsUID: imageCreator.runAsUID,
       protocols: imageCreator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)}))
     });
 
@@ -133,7 +137,8 @@ export class ImageController extends BaseController {
     image.path = imageUpdator.path;
     image.command = imageUpdator.command ? imageUpdator.command : image.command;
     image.args = imageUpdator.args ? imageUpdator.args : image.args;
-    image.protocols = imageUpdator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)}))
+    image.runAsUID = imageUpdator.runAsUID ? imageUpdator.runAsUID : image.runAsUID;
+    image.protocols = (imageUpdator.protocols && imageUpdator.protocols.length > 0) ? imageUpdator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)})) : image.protocols;
 
     return this._imageService.save(image);
   }

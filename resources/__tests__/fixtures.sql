@@ -9,12 +9,12 @@ values (4, "HTTPS", 443);
 insert into protocol (id, name, default_port)
 values (5, "GUACD", 4822);
 
-insert into image (id, name, path, description, command, args)
-values (1, "image 1", "repo1/image-name1", "An image", "start.sh", "jupyter,notebook,--NotebookApp.token=''");
+insert into image (id, name, path, description, command, args, run_as_uid)
+values (1, "image 1", "repo1/image-name1", "An image", "start.sh", "jupyter,notebook,--NotebookApp.token=''", 0);
 insert into image (id, name, path, description)
 values (2, "image 2", "repo2/image-name2", "Another image");
-insert into image (id, name, path, description)
-values (3, "image 3", "repo3/image-name3", "A image not associated to an instance");
+insert into image (id, name, path, description, run_as_uid)
+values (3, "image 3", "repo3/image-name3", "A image not associated to an instance", 0);
 insert into image (id, name, path, description)
 values (4, "image 4", "repo4/image-name4", "Another image");
 
@@ -37,7 +37,6 @@ insert into image_volume (id, name, path, readonly, image_id)
 values (2, 'volume2', '/path', true, 2);
 insert into image_volume (id, name, path, readonly, image_id)
 values (3, 'volume3', '/path', false, 3);
-
 
 insert into image_env_vars (id, name, value, image_id)
 values (1, 'NB_UID', 200, 2);

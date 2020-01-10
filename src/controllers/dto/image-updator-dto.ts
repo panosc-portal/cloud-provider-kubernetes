@@ -38,6 +38,11 @@ export class ImageUpdatorDto {
   args?: string;
 
   @property({
+    type: 'number',
+  })
+  runAsUID?: number;
+
+  @property({
     type: 'string'
   })
   description?: string;

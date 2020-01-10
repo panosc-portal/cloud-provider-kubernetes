@@ -15,6 +15,12 @@ export class BaseController {
     }
   }
 
+  throwBadRequestIfEmpty(array: any[], message?: string) {
+    if (array.length == 0) {
+      throw new HttpErrors.BadRequest(message);
+    }
+  }
+
   throwBadRequestIfNotEqual(value1: any, value2: any, message?: string) {
     if (value1 !== value2) {
       throw new HttpErrors.BadRequest(message);

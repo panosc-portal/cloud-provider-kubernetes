@@ -6,6 +6,7 @@ export interface IK8SRequestHelper {
 
   getVolumes(image: Image, user: InstanceUser): any;
   getEnvVars(image: Image, user: InstanceUser): {name: string, value: string}[];
+  getRunAsUID(image: Image, user: InstanceUser): number;
 }
 
 export class K8SRequestHelperLoader {

@@ -267,6 +267,75 @@ describe('K8sDeploymentManager', () => {
     expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'TEST').value).to.be.equal('Test value 2');
   });
 
+  it('creates kubernetes deployment with security context from the database', async () => {
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
+    expect(k8sNamespace || null).to.not.be.null();
+
+    const instance = await instanceService.getById(1);
+    expect(instance || null).to.not.be.null();
+
+    const deploymentRequest = new K8sDeploymentRequest({
+      name: instance.computeId,
+      image: instance.image,
+      flavour: instance.flavour,
+      user: instance.user,
+    });
+    expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
+    expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext || null).to.not.be.null();
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(0);
+  });
+
+  it('creates kubernetes deployment with security context from the request helper', async () => {
+    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
+
+    const requestHelper = K8SRequestHelperLoader.getHelper();
+    expect(requestHelper || null).to.not.be.null();
+
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
+    expect(k8sNamespace || null).to.not.be.null();
+
+    const instance = await instanceService.getById(2);
+    expect(instance || null).to.not.be.null();
+
+    const deploymentRequest = new K8sDeploymentRequest({
+      name: instance.computeId,
+      image: instance.image,
+      flavour: instance.flavour,
+      user: instance.user,
+      helper: requestHelper
+    });
+    expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
+    expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext || null).to.not.be.null();
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(instance.user.uid);
+  });
+
+  it('creates kubernetes deployment with security context from database overriden by the request helper', async () => {
+    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
+
+    const requestHelper = K8SRequestHelperLoader.getHelper();
+    expect(requestHelper || null).to.not.be.null();
+
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
+    expect(k8sNamespace || null).to.not.be.null();
+
+    const instance = await instanceService.getById(3);
+    expect(instance || null).to.not.be.null();
+
+    const deploymentRequest = new K8sDeploymentRequest({
+      name: instance.computeId,
+      image: instance.image,
+      flavour: instance.flavour,
+      user: instance.user,
+      helper: requestHelper
+    });
+    expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
+    expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext || null).to.not.be.null();
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(instance.user.uid);
+  });
+
   it('creates kubernetes deployment request with protocols', async () => {
 
     const requestHelper = K8SRequestHelperLoader.getHelper();
