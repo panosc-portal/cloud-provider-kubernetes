@@ -47,7 +47,7 @@ export class K8sDeploymentRequest {
     } else if (!imageEnvVars && helper) {
       return helper.getEnvVars(image, user);
     } else {
-      return null;
+      return undefined;
     }
 
 

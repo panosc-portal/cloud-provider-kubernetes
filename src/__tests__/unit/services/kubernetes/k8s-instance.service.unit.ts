@@ -1,6 +1,12 @@
 import { expect } from '@loopback/testlab';
 import { createTestApplicationContext } from '../../../helpers/context.helper';
-import { FlavourService, ImageService, InstanceService, K8sInstanceService, K8sNamespaceManager } from '../../../../services';
+import {
+  FlavourService,
+  ImageService,
+  InstanceService,
+  K8sInstanceService,
+  K8sNamespaceManager
+} from '../../../../services';
 import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 import { Instance, InstanceUser } from '../../../../models';
@@ -72,9 +78,9 @@ describe('K8sInstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
-    const user = new InstanceUser({id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const user = new InstanceUser({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
 
-    const instance = new Instance({id: 999, image: image, flavour: flavour, name: 'endpoint-error', user: user});
+    const instance = new Instance({ id: 999, image: image, flavour: flavour, name: 'endpoint-error', user: user });
 
     const k8sInstance = await k8sInstanceService.create(instance);
 
@@ -88,9 +94,9 @@ describe('K8sInstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
-    const user = new InstanceUser({id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const user = new InstanceUser({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
 
-    const instance = new Instance({id: 999, image: image, flavour: flavour, name: 'pod-crash-loop', user: user});
+    const instance = new Instance({ id: 999, image: image, flavour: flavour, name: 'pod-crash-loop', user: user });
 
     const k8sInstance = await k8sInstanceService.create(instance);
 
@@ -105,9 +111,15 @@ describe('K8sInstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
-    const user = new InstanceUser({id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const user = new InstanceUser({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
 
-    const instance = new Instance({id: 999, image: image, flavour: flavour, name: 'pod-container-creating-timeout', user: user});
+    const instance = new Instance({
+      id: 999,
+      image: image,
+      flavour: flavour,
+      name: 'pod-container-creating-timeout',
+      user: user
+    });
 
     const k8sInstance = await k8sInstanceService.create(instance);
 
@@ -121,9 +133,9 @@ describe('K8sInstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
-    const user = new InstanceUser({id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const user = new InstanceUser({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
 
-    const instance = new Instance({id: 999, image: image, flavour: flavour, name: 'pod-err-image-pull', user: user});
+    const instance = new Instance({ id: 999, image: image, flavour: flavour, name: 'pod-err-image-pull', user: user });
 
     const k8sInstance = await k8sInstanceService.create(instance);
 
@@ -132,4 +144,41 @@ describe('K8sInstanceService', () => {
 
   });
 
+  it('create instance with ssh and rdp protocols and check service and deployment response', async () => {
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
+    expect(k8sNamespace || null).to.not.be.null();
+
+    const instance = await instanceService.getById(1);
+    const k8sInstance = await k8sInstanceService.create(instance);
+    const k8sDeploymentPorts = k8sInstance.deployment.ports;
+    const k8sServicePorts = k8sInstance.service.ports;
+
+    expect(k8sDeploymentPorts.length).to.equal(2);
+    expect(k8sDeploymentPorts[0].name).to.equal('ssh');
+    expect(k8sDeploymentPorts[0].containerPort).to.equal(22);
+    expect(k8sDeploymentPorts[1].name).to.equal('rdp');
+    expect(k8sDeploymentPorts[1].containerPort).to.equal(3389);
+
+    expect(k8sServicePorts.length).to.equal(2);
+    expect(k8sServicePorts[0].name).to.equal('ssh');
+    expect(k8sServicePorts[0].port).to.equal(22);
+    expect(k8sServicePorts[1].name).to.equal('rdp');
+    expect(k8sServicePorts[1].port).to.equal(3389);
+  });
+
+  it('create instance without protocols', async () => {
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
+    expect(k8sNamespace || null).to.not.be.null();
+
+    const instance = await instanceService.getById(6);
+    let caughtError = null;
+    try {
+      await k8sInstanceService.create(instance);
+    } catch (error) {
+      caughtError = error;
+    }
+    expect(caughtError).to.not.be.null();
+    expect(caughtError.message).to.endWith('image does not contain any protocols');
+
+  });
 });
