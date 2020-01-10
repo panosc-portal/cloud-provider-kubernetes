@@ -2,26 +2,22 @@ const getVolumes = function(image, user) {
   const volumes = [
     {
       name: 'volume1',
-      data: {
-        hostPath: {
-          path: user.homePath,
-          type: 'Directory'
-        }
+      hostPath: {
+        path: user.homePath,
+        type: 'Directory'
       }
     },
     {
       name: 'volume2',
-      data: {
-        hostPath: {
-          path: process.env.NODE_ENV,
-          type: 'Directory'
-        }
+      hostPath: {
+        path: process.env.NODE_ENV,
+        type: 'Directory'
       }
     }
   ];
 
   const volumeNames = image.volumes ? image.volumes.map(volume => volume.name) : [];
-  return volumes.filter(volume => volumeNames.includes(volume.name)).map(volume => volume.data);
+  return volumes.filter(volume => volumeNames.includes(volume.name));
 };
 
 const getEnvVars = function(image, user) {
@@ -29,14 +25,14 @@ const getEnvVars = function(image, user) {
     {
       imageName: 'image 1',
       data: [
-        { name: 'NB_UID', value: user.uid },
-        { name: 'NB_GID', value: user.gid }
+        { name: 'NB_UID', value: `${user.uid}` },
+        { name: 'NB_GID', value: `${user.gid}` }
       ]
     },{
       imageName: 'image 2',
       data: [
-        { name: 'NB_UID', value: user.uid },
-        { name: 'NB_GID', value: user.gid }
+        { name: 'NB_UID', value: `${user.uid}` },
+        { name: 'NB_GID', value: `${user.gid}` }
       ]
     }
   ];

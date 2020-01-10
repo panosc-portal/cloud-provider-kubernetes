@@ -226,9 +226,9 @@ describe('K8sDeploymentManager', () => {
     expect(deploymentRequest.model.spec.template.spec.containers[0].env || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers[0].env.length).to.equal(2);
     expect(deploymentRequest.model.spec.template.spec.containers[0].env[0].name).to.equal('NB_UID');
-    expect(deploymentRequest.model.spec.template.spec.containers[0].env[0].value).to.equal(instance.user.uid);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].env[0].value).to.equal(`${instance.user.uid}`);
     expect(deploymentRequest.model.spec.template.spec.containers[0].env[1].name).to.equal('NB_GID');
-    expect(deploymentRequest.model.spec.template.spec.containers[0].env[1].value).to.equal(instance.user.gid);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].env[1].value).to.equal(`${instance.user.gid}`);
   });
 
   it('creates kubernetes deployment with a volume mount', async () => {
@@ -249,8 +249,8 @@ describe('K8sDeploymentManager', () => {
     await k8sDeploymentManager.create(instance, 'test', 'panosc');
     const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc');
     expect(k8sDeployment.containers[0].env.length).to.equal(3);
-    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_UID').value).to.be.equal(1001);
-    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_GID').value).to.be.equal(2000);
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_UID').value).to.be.equal(`${1001}`);
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_GID').value).to.be.equal(`${2000}`);
     expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'TEST').value).to.be.equal('Test value');
   });
 

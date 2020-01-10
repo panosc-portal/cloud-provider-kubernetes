@@ -71,7 +71,7 @@ values (4, "instance4", "A deleted instance", 2, 2, "instance3.host.eu", "DELETE
 insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
 values (5, "instance5", "A fifth test instance", 2, 2, "instance3.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
 insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
-values (6, "instance6", "", 4, 2, "instance6.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
+values (6, "instance6", "A 6th test instance", 4, 2, "instance6.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
 
 insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
 values (1, 123, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs", 1);

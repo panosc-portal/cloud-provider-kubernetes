@@ -1,6 +1,6 @@
 import { Image, Flavour, InstanceUser } from '../domain';
 import { APPLICATION_CONFIG } from '../../application-config';
-import { IK8SRequestHelper } from '../../utils';
+import { IK8SRequestHelper, K8SRequestHelperLoader } from '../../utils';
 
 export interface K8sDeploymentRequestConfig {
   name: string,
@@ -22,35 +22,24 @@ export class K8sDeploymentRequest {
     return this._model;
   }
 
-  getEnvVars(helper, image, user): any {
-    let imageEnvVars;
-    if (image.envVars.length > 0) {
-      imageEnvVars = image.envVars;
-      imageEnvVars.forEach(imageEnvVar => delete imageEnvVar.id);
-    } else {
-      imageEnvVars = null;
+  getEnvVars(helper: IK8SRequestHelper, image: Image, user: InstanceUser): any {
+    const envVars = {};
+    if (image.envVars) {
+      // Get env vars from image
+      image.envVars.forEach(envVar => envVars[envVar.name] = envVar.value);
     }
 
-    if (imageEnvVars && helper) {
+    if (helper) {
+      // Get env vars from helper
       const helperEnvVars = helper.getEnvVars(image, user);
       if (helperEnvVars) {
-        imageEnvVars.forEach(imageEnvVar => {
-          const helperEnvVar = helperEnvVars.find(helperEnvVar => imageEnvVar.name === helperEnvVar.name);
-          if (helperEnvVar) {
-            imageEnvVar.value = helperEnvVar.value;
-          }
-        });
+        // Add or override env var
+        helperEnvVars.forEach(envVar => envVars[envVar.name] = envVar.value);
       }
-      return imageEnvVars;
-    } else if (imageEnvVars && !helper) {
-      return imageEnvVars;
-    } else if (!imageEnvVars && helper) {
-      return helper.getEnvVars(image, user);
-    } else {
-      return undefined;
     }
 
-
+    const envVarArray = Object.keys(envVars).map(key => ({name: key, value: envVars[key]}));
+    return envVarArray;
   }
 
   constructor(private _config: K8sDeploymentRequestConfig) {

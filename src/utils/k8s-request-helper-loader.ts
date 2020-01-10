@@ -5,7 +5,7 @@ import { logger } from "./logger";
 export interface IK8SRequestHelper {
 
   getVolumes(image: Image, user: InstanceUser): any;
-  getEnvVars(image: Image, user: InstanceUser): any;
+  getEnvVars(image: Image, user: InstanceUser): {name: string, value: string}[];
 }
 
 export class K8SRequestHelperLoader {
