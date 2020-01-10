@@ -9,6 +9,10 @@ export class ImageRepository extends BaseRepository<Image, number> {
     super(dataSource, Image);
   }
 
+  find(): Promise<Image[]> {
+    return super.find({ order: { id: 'ASC' } });
+  }
+
   async getUsageCount(): Promise<{imageId: number, imageName: string, instanceCount: number}[]> {
     try {
       const command = `

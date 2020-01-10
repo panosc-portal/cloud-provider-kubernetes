@@ -12,7 +12,7 @@ export class ImageCreatorDto {
   @property({
     type: 'string',
   })
-  repository: string;
+  repository?: string;
 
   @property({
     type: 'string',
@@ -23,19 +23,19 @@ export class ImageCreatorDto {
   @property({
     type: 'string',
   })
-  command: string;
+  command?: string;
 
   @property({
     type: 'string',
   })
-  args: string;
+  args?: string;
 
   @property({
     type: 'string'
   })
   description?: string;
 
-  @property({ type: 'array', itemType: 'object' })
+  @property({ type: 'array', itemType: ImageProtocolCreatorDto })
   protocols: ImageProtocolCreatorDto[];
 
   constructor(data?: Partial<ImageCreatorDto>) {

@@ -22,7 +22,7 @@ export class ImageProtocol {
   @Column()
   port: number;
 
-  @property({ type: 'number', required: true })
+  @property({ type: Protocol, required: true })
   @ManyToOne(type => Protocol, { eager: true, nullable: false })
   @JoinColumn({ name: 'protocol_id', })
   protocol: Protocol;

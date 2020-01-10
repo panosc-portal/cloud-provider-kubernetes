@@ -1,7 +1,7 @@
-import { bind, BindingScope, inject } from '@loopback/core';
+import { bind, BindingScope } from '@loopback/core';
 import { Instance, InstanceStatus } from '../models';
-import { InstanceRepository, QueryOptions } from '../repositories';
-import { repository, FilterBuilder, WhereBuilder, Where } from '@loopback/repository';
+import { InstanceRepository } from '../repositories';
+import { repository, WhereBuilder, Where } from '@loopback/repository';
 import { BaseService } from './base.service';
 
 @bind({ scope: BindingScope.SINGLETON })
@@ -10,19 +10,8 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
     super(repo);
   }
 
-  getAll(): Promise<Instance[]> {
-    const where = new WhereBuilder().eq('deleted', false).build();
-    const filter = new FilterBuilder().where(where).order('instance.id').build();
-    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'user', 'protocols'] } as QueryOptions);
-  }
-
   getAllWithStates(states: InstanceStatus[]): Promise<Instance[]> {
-    const where = new WhereBuilder()
-      .eq('deleted', false)
-      .inq('status', states)
-      .build();
-    const filter = new FilterBuilder().where(where).order('instance.id').build();
-    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'user', 'protocols'] } as QueryOptions);
+    return this._repository.getAllWithStates(states);
   }
 
   async getAllNamespaceComputeIds(): Promise<{ namespace: string, computeId: string }[]> {
@@ -45,9 +34,7 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
     return this._repository.count(where);
   }
 
-  getInstancesByNodHostname(name: string): Promise<Instance[]> {
-    const where = new WhereBuilder().eq('node_hostname', name).build();
-    const filter = new FilterBuilder().where(where).order('instance.id').build();
-    return this._repository.find(filter, { leftJoins: ['image', 'flavour', 'user', 'protocols'] } as QueryOptions);
+  getInstancesByNodeHostname(name: string): Promise<Instance[]> {
+    return this._repository.getInstancesByNodeHostname(name);
   }
 }

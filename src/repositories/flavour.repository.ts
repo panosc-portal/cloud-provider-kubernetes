@@ -9,6 +9,10 @@ export class FlavourRepository extends BaseRepository<Flavour, number> {
     super(dataSource, Flavour);
   }
 
+  find(): Promise<Flavour[]> {
+    return super.find({order: {cpu: 'ASC', memory: 'ASC'}});
+  }
+
   async getUsageCount(): Promise<{flavourId: number, flavourName: string, instanceCount: number}[]> {
     try {
       const command = `

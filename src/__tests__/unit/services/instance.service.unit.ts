@@ -77,10 +77,83 @@ describe('InstanceService', () => {
     expect(persistedInstance.image.id).to.equal(1);
     expect(persistedInstance.flavour || null).to.not.be.null();
     expect(persistedInstance.flavour.id).to.equal(2);
+  });
+
+  it('saves protocols with an instance', async () => {
+    const instances = await instanceService.getAll();
+    expect(instances.length).to.equal(4);
+
+    const image = await imageService.getById(1);
+    const flavour = await flavourService.getById(2);
+    const user = new InstanceUser({accountId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+
+    const instance = new Instance({
+      name: 'instance 3',
+      description: 'A new instance',
+      image: image,
+      flavour: flavour,
+      hostname: 'test.host.eu',
+      status: InstanceStatus.BUILDING,
+      currentCPU: 0,
+      currentMemory: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      namespace: 'panosc',
+      protocols: [
+        new InstanceProtocol({ name: ProtocolName.SSH, port: 2222 }),
+        new InstanceProtocol({ name: ProtocolName.RDP, port: 1234 })
+      ],
+      user: user
+    });
+
+    await instanceService.save(instance);
+    expect(instance.id || null).to.not.be.null();
+
+    const persistedInstance = await instanceService.getById(instance.id);
+    expect(persistedInstance || null).to.not.be.null();
+    expect(persistedInstance.protocols || null).to.not.be.null();
     expect(persistedInstance.protocols.length).to.equal(2);
     persistedInstance.protocols.forEach(protocol => {
       expect(protocol.id || null).to.not.be.null();
     });
+  });
+
+
+  it('saves a user with an instance', async () => {
+    const instances = await instanceService.getAll();
+    expect(instances.length).to.equal(4);
+
+    const image = await imageService.getById(1);
+    const flavour = await flavourService.getById(2);
+    const user = new InstanceUser({accountId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+
+    const instance = new Instance({
+      name: 'instance 3',
+      description: 'A new instance',
+      image: image,
+      flavour: flavour,
+      hostname: 'test.host.eu',
+      status: InstanceStatus.BUILDING,
+      currentCPU: 0,
+      currentMemory: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      namespace: 'panosc',
+      protocols: [
+        new InstanceProtocol({ name: ProtocolName.SSH, port: 2222 }),
+        new InstanceProtocol({ name: ProtocolName.RDP, port: 1234 })
+      ],
+      user: user
+    });
+
+    await instanceService.save(instance);
+    expect(instance.id || null).to.not.be.null();
+
+    const persistedInstance = await instanceService.getById(instance.id);
+    expect(persistedInstance || null).to.not.be.null();
+    expect(persistedInstance.user || null).to.not.be.null();
+    expect(persistedInstance.user.id || null).to.not.be.null();
+    expect(persistedInstance.user.username).to.equal('testuser');
   });
 
   it('deletes an instance', async () => {

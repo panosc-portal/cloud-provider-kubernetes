@@ -61,7 +61,7 @@ export class NodeController extends BaseController {
   })
   async getInstancesByNodeId(@param.path.string('name') name: string): Promise<Instance[]> {
 
-    const instances = await this._instanceService.getInstancesByNodHostname(name);
+    const instances = await this._instanceService.getInstancesByNodeHostname(name);
     this.throwNotFoundIfNull(instances, 'Node with given name does not exist');
 
     return instances;

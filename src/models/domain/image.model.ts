@@ -49,7 +49,7 @@ export class Image {
 
   @property({
     type: 'array',
-    itemType: 'object'
+    itemType: ImageProtocol
   })
   @OneToMany(type => ImageProtocol, protocol => protocol.image, {
     eager: true,

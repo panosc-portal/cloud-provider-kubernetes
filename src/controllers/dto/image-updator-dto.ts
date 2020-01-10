@@ -19,7 +19,7 @@ export class ImageUpdatorDto {
     type: 'string',
     required: true
   })
-  repository: string;
+  repository?: string;
 
   @property({
     type: 'string',
@@ -42,7 +42,7 @@ export class ImageUpdatorDto {
   })
   description?: string;
 
-  @property({ type: 'array', itemType: 'object' })
+  @property({ type: 'array', itemType: ImageProtocolCreatorDto })
   protocols: ImageProtocolCreatorDto[];
 
   constructor(data?: Partial<ImageUpdatorDto>) {

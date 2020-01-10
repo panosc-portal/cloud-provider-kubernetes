@@ -1,5 +1,5 @@
 import { TypeORMDataSource } from '../datasources';
-import { Repository, ObjectType, OrderByCondition, SelectQueryBuilder } from 'typeorm';
+import { Repository, ObjectType, OrderByCondition, SelectQueryBuilder, FindManyOptions } from 'typeorm';
 import { Filter, Where, Command, NamedParameters, PositionalParameters, WhereBuilder, AnyObject } from '@loopback/repository';
 
 interface ParamterizedClause {
@@ -33,18 +33,10 @@ export class BaseRepository<T, ID> {
     return result;
   }
 
-  async find(filter?: Filter, options?: QueryOptions): Promise<T[]> {
+  async find(options?: FindManyOptions<T>): Promise<T[]> {
     await this.init();
-    const entityName = this._entityClass.name.toLowerCase();
 
-    let queryBuilder = await this.buildQuery(entityName, filter);
-    if (options != null && options.leftJoins != null) {
-      options.leftJoins.forEach((relation: string) => {
-        queryBuilder = queryBuilder.leftJoinAndSelect(`${entityName}.${relation}`, relation);
-      });
-    }
-
-    const result = queryBuilder.getMany();
+    const result = await this._repository.find(options);
     return result;
   }
 
@@ -68,21 +60,6 @@ export class BaseRepository<T, ID> {
     return this.findById(id);
   }
 
-  async updateAll(data: T, where?: Where): Promise<boolean> {
-    await this.init();
-    const queryBuilder = await this.buildUpdate(data, where);
-    await queryBuilder.execute();
-    return true;
-  }
-
-  async deleteAll(where?: Where): Promise<boolean> {
-    await this.init();
-    const queryBuilder = await this.buildDelete(where);
-
-    await queryBuilder.execute();
-    return true;
-  }
-
   async count(where?: Where): Promise<number> {
     await this.init();
 
@@ -104,43 +81,6 @@ export class BaseRepository<T, ID> {
     await this.init();
     const result = await this._repository.query(<string>command, <any[]>parameters);
     return result;
-  }
-
-  /**
-   * Convert order clauses to OrderByCondition
-   * @param order An array of orders
-   */
-  buildOrder(order: string[]) {
-    const orderBy: OrderByCondition = {};
-    for (const o of order) {
-      const match = /^([^\s]+)( (ASC|DESC))?$/.exec(o);
-      if (!match) continue;
-      const dir = (match[3] || 'ASC') as 'ASC' | 'DESC';
-      orderBy[match[1]] = dir;
-    }
-    return orderBy;
-  }
-
-  /**
-   * Build a TypeORM query from LoopBack Filter
-   * @param filter Filter object
-   */
-  async buildQuery(name: string, filter?: Filter): Promise<SelectQueryBuilder<T>> {
-    await this.init();
-    const queryBuilder = this._repository.createQueryBuilder(name);
-    if (!filter) return queryBuilder;
-    queryBuilder.limit(filter.limit).offset(filter.offset);
-    if (filter.fields) {
-      queryBuilder.select(Object.keys(filter.fields));
-    }
-    if (filter.order) {
-      queryBuilder.orderBy(this.buildOrder(filter.order));
-    }
-    if (filter.where) {
-      const whereClause = this.buildWhere(filter.where);
-      queryBuilder.where(whereClause.clause, whereClause.parameters);
-    }
-    return queryBuilder;
   }
 
   /**
@@ -250,40 +190,4 @@ export class BaseRepository<T, ID> {
     };
   }
 
-  /**
-   * Build an `update` statement from LoopBack-style parameters
-   * @param dataObject Data object to be updated
-   * @param where Where object
-   */
-  async buildUpdate(dataObject: T, where?: Where) {
-    await this.init();
-    const queryBuilder = this._repository
-      .createQueryBuilder()
-      .update(this._entityClass)
-      .set(dataObject);
-
-    if (where) {
-      const whereClause = this.buildWhere(where);
-      queryBuilder.where(whereClause.clause, whereClause.parameters);
-    }
-    return queryBuilder;
-  }
-
-  /**
-   * Build a `delete` statement from LoopBack-style parameters
-   * @param where Where object
-   */
-  async buildDelete(where?: Where) {
-    await this.init();
-    const queryBuilder = this._repository
-      .createQueryBuilder()
-      .delete()
-      .from(this._entityClass);
-
-    if (where) {
-      const whereClause = this.buildWhere(where);
-      queryBuilder.where(whereClause.clause, whereClause.parameters);
-    }
-    return queryBuilder;
-  }
 }

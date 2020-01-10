@@ -106,17 +106,17 @@ export class Instance {
   })
   protocols: InstanceProtocol[];
 
-  @property({ type: 'number' })
+  @property({ type: Flavour })
   @ManyToOne(type => Flavour, { eager: true, nullable: false })
   @JoinColumn({ name: 'flavour_id' })
   flavour: Flavour;
 
-  @property({ type: 'number' })
+  @property({ type: Image })
   @ManyToOne(type => Image, { eager: true, nullable: false })
   @JoinColumn({ name: 'image_id', })
   image: Image;
 
-  @property({ type: 'number' })
+  @property({ type: InstanceUser })
   @OneToOne(type => InstanceUser, user => user.instance, {
     eager: true,
     cascade: true
