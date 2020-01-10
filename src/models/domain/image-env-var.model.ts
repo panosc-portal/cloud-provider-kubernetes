@@ -1,9 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { property } from '@loopback/repository';
+import { model, property } from '@loopback/repository';
 import { Image } from './image.model';
 
 @Entity()
-export class ImageEnvVars {
+@model()
+export class ImageEnvVar {
 
   @property({
     type: 'number',
@@ -28,7 +29,7 @@ export class ImageEnvVars {
   @Column()
   value: string;
 
-  @ManyToOne(type => Image, image => image.volumes,{onDelete:'CASCADE'})
+  @ManyToOne(type => Image, image => image.envVars,{onDelete:'CASCADE'})
   @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
   image: Image;
 

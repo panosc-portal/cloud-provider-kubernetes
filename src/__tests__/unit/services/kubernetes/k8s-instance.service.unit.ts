@@ -170,7 +170,7 @@ describe('K8sInstanceService', () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace || null).to.not.be.null();
 
-    const instance = await instanceService.getById(6);
+    const instance = await instanceService.getById(8);
     let caughtError = null;
     try {
       await k8sInstanceService.create(instance);

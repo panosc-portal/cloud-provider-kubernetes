@@ -13,4 +13,4 @@ export * from './node.model';
 export * from './protocol.model';
 export * from './resource-monitor.model';
 export * from './image-volume.model';
-export * from './image-env-vars.model'
+export * from './image-env-var.model'

@@ -2,8 +2,9 @@ import { model, property } from '@loopback/repository';
 import { Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Protocol } from './protocol.model';
 import { ImageVolume } from './image-volume.model';
-import { ImageEnvVars } from './image-env-vars.model';
+import { ImageEnvVar } from './image-env-var.model';
 import { ImageProtocol } from './image-protocol.model';
+import { Instance } from './instance.model';
 
 @Entity()
 @model()
@@ -51,7 +52,7 @@ export class Image {
     type: 'array',
     itemType: 'object'
   })
-  @OneToMany(type => ImageProtocol, protocol => protocol.image, {
+  @OneToMany(type => ImageProtocol, imageProtocol => imageProtocol.image, {
     eager: true,
     cascade: true
   })
@@ -75,11 +76,16 @@ export class Image {
   @Column({ name: 'run_as_uid', nullable: true })
   runAsUID: number;
 
-  @OneToMany(type => ImageVolume, imageVolume => imageVolume.image, {eager: true, cascade: true})
+  @property({ type: 'array', itemType: ImageVolume })
+  @OneToMany(type => ImageVolume, imageVolume => imageVolume.image, { eager: true, cascade: true })
   volumes: ImageVolume[];
 
-  @OneToMany(type => ImageEnvVars, imageEnvVars => imageEnvVars.image, { eager: true, cascade: true })
-  envVars: ImageEnvVars[];
+  @property({ type: 'array', itemType: ImageEnvVar })
+  @OneToMany(type => ImageEnvVar, imageEnvVars => imageEnvVars.image, { eager: true, cascade: true })
+  envVars: ImageEnvVar[];
+
+  @OneToMany(type => Instance, instance => instance.image, { cascade: true })
+  instances: Instance[];
 
   constructor(data?: Partial<Image>) {
     Object.assign(this, data);

@@ -28,7 +28,7 @@ describe('InstanceController', () => {
     const instances = res.body as Instance[];
     expect(instances || null).to.not.be.null();
 
-    expect(instances.length).to.equal(5);
+    expect(instances.length).to.equal(7);
     instances.forEach(instance => {
       expect(instance.id || null).to.not.be.null();
     });

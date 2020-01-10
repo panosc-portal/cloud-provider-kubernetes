@@ -112,7 +112,7 @@ export class Instance {
   flavour: Flavour;
 
   @property({ type: Image })
-  @ManyToOne(type => Image, { eager: true, nullable: false })
+  @ManyToOne(type => Image, image=>image.instances, { eager: true, nullable: false,onDelete:'CASCADE' })
   @JoinColumn({ name: 'image_id', })
   image: Image;
 

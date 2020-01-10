@@ -33,7 +33,7 @@ describe('SchedulerService', () => {
     expect(instanceStateJob || null).to.not.be.null();
 
     const updatedInstances = await instanceStateJob.run();
-    expect(updatedInstances).to.equal(5);
+    expect(updatedInstances).to.equal(7);
   });
 
   it('Refreshes the state of all building instances', async () => {
@@ -65,7 +65,7 @@ describe('SchedulerService', () => {
     expect(instanceStateJob || null).to.not.be.null();
 
     const updatedInstances = await instanceStateJob.run();
-    expect(updatedInstances).to.equal(5);
+    expect(updatedInstances).to.equal(7);
     const numberOfInstances3 = (await instanceService.getAll()).length;
     expect(numberOfInstances3).to.equal(numberOfInstances1);
   });
@@ -84,7 +84,7 @@ describe('SchedulerService', () => {
     const updatedInstances1 = await promise1;
     const updatedInstances2 = await promise2;
 
-    expect(updatedInstances1).to.equal(5);
+    expect(updatedInstances1).to.equal(7);
     expect(updatedInstances2 || null).to.be.null();
   });
 });

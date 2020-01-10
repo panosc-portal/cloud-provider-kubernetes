@@ -24,7 +24,7 @@ export class ImageProtocol {
 
   @property({ type: Protocol, required: true })
   @ManyToOne(type => Protocol, { eager: true, nullable: false })
-  @JoinColumn({ name: 'protocol_id', })
+  @JoinColumn({ name: 'protocol_id' })
   protocol: Protocol;
 
   @ManyToOne(type => Image, image => image.protocols, {onDelete: 'CASCADE', nullable: false})

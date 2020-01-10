@@ -258,7 +258,7 @@ describe('K8sDeploymentManager', () => {
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
     expect(k8sNamespace).to.not.be.null();
 
-    const instance = await instanceService.getById(6);
+    const instance = await instanceService.getById(7);
     await k8sDeploymentManager.create(instance, 'test', 'panosc');
     const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc');
     expect(k8sDeployment.containers[0].env.length).to.equal(3);
@@ -356,9 +356,26 @@ describe('K8sDeploymentManager', () => {
       helper: requestHelper
     });
     expect(deploymentRequest.model.spec.template.spec.containers[0].ports.length).to.equal(2);
-    expect(deploymentRequest.model.spec.template.spec.containers[0].ports[0].name ).to.equal('ssh');
+    expect(deploymentRequest.model.spec.template.spec.containers[0].ports[0].name).to.equal('ssh');
     expect(deploymentRequest.model.spec.template.spec.containers[0].ports[0].containerPort).to.equal(22);
     expect(deploymentRequest.model.spec.template.spec.containers[0].ports[1].name).to.equal('rdp');
     expect(deploymentRequest.model.spec.template.spec.containers[0].ports[1].containerPort).to.equal(3389);
+  });
+
+  it('create kubernetes deployment with upper case volume', async () => {
+    const k8sNamespace = await k8sNamespaceManager.create('panosc');
+    expect(k8sNamespace || null).to.not.be.null();
+
+    const instance = await instanceService.getById(6);
+    expect(instance || null).to.not.be.null();
+
+    let hasError = false;
+    try {
+      await k8sDeploymentManager.create(instance,'test', 'panosc');
+    } catch (error) {
+      hasError = true;
+    }
+    expect(hasError).to.be.true();
+
   });
 });

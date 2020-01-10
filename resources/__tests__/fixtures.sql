@@ -17,6 +17,8 @@ insert into image (id, name, path, description, run_as_uid)
 values (3, "image 3", "repo3/image-name3", "A image not associated to an instance", 0);
 insert into image (id, name, path, description)
 values (4, "image 4", "repo4/image-name4", "Another image");
+insert into image (id, name, path, description)
+values (5, "image 5", "repo5/image-name5", "Image with no protocols");
 
 insert into image_protocol (id, port, image_id, protocol_id)
 values (1, 3389, 1, 1);
@@ -37,20 +39,22 @@ insert into image_volume (id, name, path, readonly, image_id)
 values (2, 'volume2', '/path', true, 2);
 insert into image_volume (id, name, path, readonly, image_id)
 values (3, 'volume3', '/path', false, 3);
+insert into image_volume (id, name, path, readonly, image_id)
+values (4, 'VOLUME4', '/path', false, 4);
 
-insert into image_env_vars (id, name, value, image_id)
+insert into image_env_var (id, name, value, image_id)
 values (1, 'NB_UID', 200, 2);
-insert into image_env_vars (id, name, value, image_id)
+insert into image_env_var (id, name, value, image_id)
 values (2, 'NB_GID', 158 , 2);
-insert into image_env_vars (id, name, value, image_id)
+insert into image_env_var (id, name, value, image_id)
 values (3, 'TEST', 'Test value', 2);
 
-insert into image_env_vars (id, name, value, image_id)
-values (4, 'NB_UID', 3000, 4);
-insert into image_env_vars (id, name, value, image_id)
-values (5, 'NB_GID', 3001 , 4);
-insert into image_env_vars (id, name, value, image_id)
-values (6, 'TEST', 'Test value 2', 4);
+insert into image_env_var (id, name, value, image_id)
+values (4, 'NB_UID', 3000, 3);
+insert into image_env_var (id, name, value, image_id)
+values (5, 'NB_GID', 3001 , 3);
+insert into image_env_var (id, name, value, image_id)
+values (6, 'TEST', 'Test value 2', 3);
 
 insert into flavour(id, name, description, cpu, memory)
 values (1, "flavour 1", "A flavour", 1.5, 2048);
@@ -71,6 +75,10 @@ insert into instance(id, name, description, image_id, flavour_id, hostname, stat
 values (5, "instance5", "A fifth test instance", 2, 2, "instance3.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
 insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
 values (6, "instance6", "A 6th test instance", 4, 2, "instance6.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
+insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
+values (7, "instance7", "A 7th test instance", 3, 2, "instance7.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
+insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
+values (8, "instance8", "A 8th test instance", 5, 2, "instance8.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
 
 insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
 values (1, 123, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs", 1);
@@ -84,6 +92,9 @@ insert into instance_user(id, account_id, username, first_name, last_name, uid, 
 values (5, 321, "doe", "jane", "doe", 1001, 2000, "/home/doe", 5);
 insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
 values (6, 321, "doe", "jane", "doe", 1005, 2000, "/home/doe", 6);
+insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
+values (7, 321, "doe", "jane", "doe", 1005, 2000, "/home/doe", 7);
+
 
 insert into instance_protocol (id, name, port, instance_id)
 values (1, "RDP", 30389, 5);

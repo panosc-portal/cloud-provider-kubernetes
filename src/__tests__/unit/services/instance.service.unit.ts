@@ -25,13 +25,13 @@ describe('InstanceService', () => {
   it('gets all instances', async () => {
     const instances = await instanceService.getAll();
 
-    expect(instances.length).to.equal(5);
+    expect(instances.length).to.equal(7);
   });
 
   it('gets all instances with states', async () => {
     const instances = await instanceService.getAllWithStates([InstanceStatus.ACTIVE, InstanceStatus.BUILDING]);
 
-    expect(instances.length).to.equal(5);
+    expect(instances.length).to.equal(7);
   });
 
   it('gets an instance', async () => {
@@ -43,7 +43,7 @@ describe('InstanceService', () => {
 
   it('saves an instance', async () => {
     const instances = await instanceService.getAll();
-    expect(instances.length).to.equal(5);
+    expect(instances.length).to.equal(7);
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
@@ -81,7 +81,7 @@ describe('InstanceService', () => {
 
   it('saves protocols with an instance', async () => {
     const instances = await instanceService.getAll();
-    expect(instances.length).to.equal(5);
+    expect(instances.length).to.equal(7);
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
@@ -121,7 +121,7 @@ describe('InstanceService', () => {
 
   it('saves a user with an instance', async () => {
     const instances = await instanceService.getAll();
-    expect(instances.length).to.equal(5);
+    expect(instances.length).to.equal(7);
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);

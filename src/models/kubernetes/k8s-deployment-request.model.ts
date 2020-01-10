@@ -38,8 +38,48 @@ export class K8sDeploymentRequest {
       }
     }
 
-    const envVarArray = Object.keys(envVars).map(key => ({name: key, value: envVars[key]}));
+    const envVarArray = Object.keys(envVars).map(key => ({ name: key, value: envVars[key] }));
     return envVarArray;
+  }
+
+  isValid(): boolean {
+    const volumeMounts = this._model.spec.template.spec.containers[0].volumeMounts;
+    const volumes = this._model.spec.template.spec.volumes;
+
+    if (volumeMounts) {
+      if (volumes) {
+        let validVolumes = true;
+        let validName = true;
+
+        // verify that each volume as a name, path and type attributes and verify if volumes name are valid
+        for (const volume of volumes) {
+          const namePattern = RegExp(/^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/);
+          if (('name' in volume && 'hostPath' in volume && 'path' in volume.hostPath && 'type' in volume.hostPath)) {
+            validName = namePattern.test(volume.name);
+            if (!validName) {
+              break;
+            }
+          }else{
+            validVolumes = false;
+            break;
+          }
+        }
+        if(!validVolumes || !validName){
+          return false
+        }
+
+        // verify that all volumeMounts have a volume
+        volumeMounts.forEach((volumeMount) => {
+          const match = volumes.find((volume) => volume.name == volumeMount.name);
+          if (!match) {
+            return false;
+          }
+        });
+      } else {
+        return false;
+      }
+    }
+    return true;
   }
 
   getSecurityContext(): any {
