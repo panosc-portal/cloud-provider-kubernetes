@@ -1,5 +1,5 @@
 import { get, getModelSchemaRef, param, put, requestBody, post, del } from '@loopback/openapi-v3';
-import { Image, Protocol } from '../models';
+import { Image, Protocol, ImageVolume, ImageEnvVar } from '../models';
 import { inject } from '@loopback/context';
 import { ImageService } from '../services';
 import { BaseController } from './base.controller';
@@ -98,7 +98,9 @@ export class ImageController extends BaseController {
       command: imageCreator.command,
       args: imageCreator.args,
       runAsUID: imageCreator.runAsUID,
-      protocols: imageCreator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)}))
+      protocols: imageCreator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)})),
+      volumes: imageCreator.volumes.map(imageVolume => new ImageVolume({name: imageVolume.name, path: imageVolume.path, readOnly: imageVolume.readOnly})),
+      envVars: imageCreator.envVars.map(imageEnvVar => new ImageEnvVar({name: imageEnvVar.name, value: imageEnvVar.value}))
     });
 
     const persistedImage = await this._imageService.save(image);
@@ -139,6 +141,8 @@ export class ImageController extends BaseController {
     image.args = imageUpdator.args ? imageUpdator.args : image.args;
     image.runAsUID = imageUpdator.runAsUID ? imageUpdator.runAsUID : image.runAsUID;
     image.protocols = (imageUpdator.protocols && imageUpdator.protocols.length > 0) ? imageUpdator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)})) : image.protocols;
+    image.volumes = (imageUpdator.volumes && imageUpdator.volumes.length > 0) ? imageUpdator.volumes.map(imageVolume => new ImageVolume({name: imageVolume.name, path: imageVolume.path, readOnly: imageVolume.readOnly})) : image.volumes;
+    image.envVars = (imageUpdator.envVars && imageUpdator.envVars.length > 0) ? imageUpdator.envVars.map(imageEnvVar => new ImageEnvVar({name: imageEnvVar.name, value: imageEnvVar.value})) : image.envVars;
 
     return this._imageService.save(image);
   }

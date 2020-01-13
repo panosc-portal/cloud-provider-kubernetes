@@ -33,4 +33,7 @@ export class ImageEnvVar {
   @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
   image: Image;
 
+  constructor(data?: Partial<ImageEnvVar>) {
+    Object.assign(this, data);
+  }
 }

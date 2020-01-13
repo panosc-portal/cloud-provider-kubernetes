@@ -1,5 +1,7 @@
 import { model, property } from '@loopback/repository';
 import { ImageProtocolCreatorDto } from './image-protocol-creator-dto';
+import { ImageVolumeCreatorDto } from './image-volume-creator-dto';
+import { ImageEnvVarCreatorDto } from './image-env-var-creator-dto';
 
 @model()
 export class ImageUpdatorDto {
@@ -49,6 +51,12 @@ export class ImageUpdatorDto {
 
   @property({ type: 'array', itemType: ImageProtocolCreatorDto })
   protocols: ImageProtocolCreatorDto[];
+
+  @property({ type: 'array', itemType: ImageVolumeCreatorDto })
+  volumes: ImageVolumeCreatorDto[];
+
+  @property({ type: 'array', itemType: ImageEnvVarCreatorDto })
+  envVars: ImageEnvVarCreatorDto[];
 
   constructor(data?: Partial<ImageUpdatorDto>) {
     Object.assign(this, data);
