@@ -22,26 +22,6 @@ export class K8sDeploymentRequest {
     return this._model;
   }
 
-  getEnvVars(): any {
-    const envVars = {};
-    if (this._config.image.envVars) {
-      // Get env vars from image
-      this._config.image.envVars.forEach(envVar => envVars[envVar.name] = envVar.value);
-    }
-
-    if (this._config.helper && this._config.helper.getEnvVars) {
-      // Get env vars from helper
-      const helperEnvVars = this._config.helper.getEnvVars(this._config.image, this._config.user);
-      if (helperEnvVars) {
-        // Add or override env var
-        helperEnvVars.forEach(envVar => envVars[envVar.name] = envVar.value);
-      }
-    }
-
-    const envVarArray = Object.keys(envVars).map(key => ({ name: key, value: envVars[key] }));
-    return envVarArray;
-  }
-
   isValid(): boolean {
     const volumeMounts = this._model.spec.template.spec.containers[0].volumeMounts.length ! > 0 ? this._model.spec.template.spec.containers[0].volumeMounts : null;
     const volumes = this._model.spec.template.spec.volumes != undefined ? this._model.spec.template.spec.volumes : null;
@@ -82,16 +62,6 @@ export class K8sDeploymentRequest {
     return true;
   }
 
-  getSecurityContext(): any {
-    const helperRunAsUID = (this._config.helper && this._config.helper.getRunAsUID) ? this._config.helper.getRunAsUID(this._config.image, this._config.user) : null;
-    const imageRunAsUID = this._config.image.runAsUID;
-
-    const runAsUID = helperRunAsUID ? helperRunAsUID : imageRunAsUID;
-    return (runAsUID != null) ? {
-      runAsUser: runAsUID
-    } : undefined;
-  }
-
   constructor(private _config: K8sDeploymentRequestConfig) {
     this._model = {
       apiVersion: 'apps/v1',
@@ -126,13 +96,9 @@ export class K8sDeploymentRequest {
                 }),
                 command: this._config.image.command ? [this._config.image.command] : undefined,
                 args: this._config.image.args ? this._config.image.args.split(',') : undefined,
-                env: this.getEnvVars(),
-                volumeMounts: this._config.image.volumes ? this._config.image.volumes.map(volume => ({
-                  mountPath: volume.path,
-                  name: volume.name,
-                  readOnly: volume.readonly
-                })) : undefined,
-                securityContext: this.getSecurityContext(),
+                env: this._getEnvVars(),
+                volumeMounts: this._getVolumeMounts(),
+                securityContext: this._getSecurityContext(),
                 resources: {
                   limits: {
                     cpu: `${this._config.flavour.cpu}`,
@@ -146,10 +112,74 @@ export class K8sDeploymentRequest {
               }
             ],
             imagePullSecrets: this._config.imagePullSecret != null ? [{ name: this._config.imagePullSecret }] : [],
-            volumes: (this._config.helper && this._config.helper.getVolumes) ? this._config.helper.getVolumes(this._config.image, this._config.user) : undefined
+            volumes: this._getVolumes()
           }
         }
       }
     };
   }
+
+  private _getVolumeMounts(): any {
+    if (this._config.image.volumes) {
+      const volumeMounts = this._config.image.volumes.map(volume => ({
+        mountPath: volume.path,
+        name: volume.name,
+        readOnly: volume.readOnly
+      }));
+
+      if (this._config.helper && this._config.helper.getVolumes) {
+        this._config.helper.getVolumes(this._config.image, this._config.user)
+          .filter(volumeData => volumeData.volumeMount != null)
+          .forEach(volumeData => {
+            const volumeMount = volumeMounts.find(aVolumeMount => aVolumeMount.name === volumeData.name);
+            volumeMount.mountPath = volumeData.volumeMount.mountPath ? volumeData.volumeMount.mountPath : volumeMount.mountPath;
+            volumeMount.readOnly = volumeData.volumeMount.readOnly ? volumeData.volumeMount.readOnly : volumeMount.readOnly;
+          });
+      }
+
+      return volumeMounts;
+    }
+
+    return undefined;
+  }
+
+  private _getVolumes(): any {
+    return (this._config.helper && this._config.helper.getVolumes) ?
+      this._config.helper.getVolumes(this._config.image, this._config.user).map(volumeData => {
+        const volume = volumeData.volume;
+        volume.name = volumeData.name;
+        return volume;
+      }): undefined;
+  }
+
+  private _getEnvVars(): any {
+    const envVars = {};
+    if (this._config.image.envVars) {
+      // Get env vars from image
+      this._config.image.envVars.forEach(envVar => envVars[envVar.name] = envVar.value);
+    }
+
+    if (this._config.helper && this._config.helper.getEnvVars) {
+      // Get env vars from helper
+      const helperEnvVars = this._config.helper.getEnvVars(this._config.image, this._config.user);
+      if (helperEnvVars) {
+        // Add or override env var
+        helperEnvVars.forEach(envVar => envVars[envVar.name] = envVar.value);
+      }
+    }
+
+    const envVarArray = Object.keys(envVars).map(key => ({ name: key, value: envVars[key] }));
+    return envVarArray;
+  }
+
+  private _getSecurityContext(): any {
+    const helperRunAsUID = (this._config.helper && this._config.helper.getRunAsUID) ? this._config.helper.getRunAsUID(this._config.image, this._config.user) : null;
+    const imageRunAsUID = this._config.image.runAsUID;
+
+    const runAsUID = helperRunAsUID ? helperRunAsUID : imageRunAsUID;
+    return (runAsUID != null) ? {
+      runAsUser: runAsUID
+    } : undefined;
+  }
+
 }

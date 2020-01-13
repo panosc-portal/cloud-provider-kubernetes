@@ -1,32 +1,42 @@
 const getVolumes = function(image, user) {
-    const volumes = [
-      {
-        name: 'volume1',
+  const volumes = [
+    {
+      name: 'volume1',
+      volumeMount: {
+        mountPath: `/home/${user.username}`
+      },
+      volume: {
         hostPath: {
           path: user.homePath,
           type: 'Directory'
         }
-      },
-      {
-        name: 'volume2',
+      }
+    }, {
+      name: 'volume2',
+      volume: {
         hostPath: {
           path: process.env.NODE_ENV,
           type: 'Directory'
         }
-      }, {
-        name: 'volume3',
+      }
+    }, {
+      name: 'volume3',
+      volume: {
         hostPath: {
           path: '/tmp',
           type: 'Directory'
         }
-      }, {
-        name: 'VOLUME4',
+      }
+    }, {
+      name: 'VOLUME4',
+      volume: {
         hostPath: {
           path: '/test',
           type: 'Directory'
         }
       }
-    ];
+    }
+  ];
 
     const volumeNames = image.volumes ? image.volumes.map(volume => volume.name) : [];
     return volumes.filter(volume => volumeNames.includes(volume.name));

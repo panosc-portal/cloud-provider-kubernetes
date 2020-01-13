@@ -33,13 +33,13 @@ values (5, 3389, 3, 1);
 insert into image_protocol (id, port, image_id, protocol_id)
 values (6, 443, 3, 4);
 
-insert into image_volume (id, name, path, readonly, image_id)
+insert into image_volume (id, name, path, read_only, image_id)
 values (1, 'volume1', '/path', false, 1);
-insert into image_volume (id, name, path, readonly, image_id)
+insert into image_volume (id, name, path, read_only, image_id)
 values (2, 'volume2', '/path', true, 2);
-insert into image_volume (id, name, path, readonly, image_id)
+insert into image_volume (id, name, path, read_only, image_id)
 values (3, 'volume3', '/path', false, 3);
-insert into image_volume (id, name, path, readonly, image_id)
+insert into image_volume (id, name, path, read_only, image_id)
 values (4, 'VOLUME4', '/path', false, 4);
 
 insert into image_env_var (id, name, value, image_id)

@@ -38,12 +38,14 @@ describe('K8SRequestHelperLoader', () => {
     const volumes = requestHelper.getVolumes(image, user);
     expect(volumes || null).to.not.be.null();
     expect(volumes.length).to.equal(2);
-    expect(volumes[0].hostPath || null).to.not.be.null();
-    expect(volumes[0].hostPath.path || null).to.not.be.null();
-    expect(volumes[0].hostPath.path).to.equal('/home/testuser');
-    expect(volumes[1].hostPath || null).to.not.be.null();
-    expect(volumes[1].hostPath.path || null).to.not.be.null();
-    expect(volumes[1].hostPath.path).to.equal('test');
+    expect(volumes[0].volumeMount.mountPath || null).to.not.be.null();
+    expect(volumes[0].volumeMount.mountPath).to.equal('/home/testuser');
+    expect(volumes[0].volume.hostPath || null).to.not.be.null();
+    expect(volumes[0].volume.hostPath.path || null).to.not.be.null();
+    expect(volumes[0].volume.hostPath.path).to.equal('/home/testuser');
+    expect(volumes[1].volume.hostPath || null).to.not.be.null();
+    expect(volumes[1].volume.hostPath.path || null).to.not.be.null();
+    expect(volumes[1].volume.hostPath.path).to.equal('test');
   });
 
 });

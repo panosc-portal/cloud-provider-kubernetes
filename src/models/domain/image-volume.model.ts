@@ -33,8 +33,8 @@ export class ImageVolume {
     type: 'boolean',
     required: true
   })
-  @Column()
-  readonly: boolean;
+  @Column({ name: 'read_only' })
+  readOnly: boolean;
 
   @ManyToOne(type => Image, image => image.volumes, {onDelete: 'CASCADE', nullable: false})
   @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
