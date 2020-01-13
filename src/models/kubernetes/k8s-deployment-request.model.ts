@@ -23,7 +23,7 @@ export class K8sDeploymentRequest {
   }
 
   isValid(): boolean {
-    const volumeMounts = this._model.spec.template.spec.containers[0].volumeMounts.length ! > 0 ? this._model.spec.template.spec.containers[0].volumeMounts : null;
+    const volumeMounts = this._model.spec.template.spec.containers[0].volumeMounts.length != 0 ? this._model.spec.template.spec.containers[0].volumeMounts : null;
     const volumes = this._model.spec.template.spec.volumes != undefined ? this._model.spec.template.spec.volumes : null;
 
     if (volumeMounts) {
@@ -49,12 +49,13 @@ export class K8sDeploymentRequest {
         }
 
         // verify that all volumeMounts have a volume
-        volumeMounts.forEach((volumeMount) => {
-          const match = volumes.find((volume) => volume.name == volumeMount.name);
-          if (!match) {
-            return false;
-          }
-        });
+        let match = true;
+        let i = 0;
+        while (match && volumeMounts.length > i) {
+          match = volumes.find((volume) => volume.name == volumeMounts[i].name) != null;
+          i++;
+        }
+        return match
       } else {
         return false;
       }
