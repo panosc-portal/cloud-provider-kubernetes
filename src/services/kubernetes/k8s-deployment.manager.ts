@@ -50,9 +50,16 @@ export class K8sDeploymentManager {
       const secretName = await this._secretManager.processSecretForRepository(image.repository, namespace);
 
       const requestHelper = K8SRequestHelperLoader.getHelper();
-      const deploymentRequest = new K8sDeploymentRequest({name: computeId, image: image, flavour: flavour, imagePullSecret: secretName, user: user, helper: requestHelper});
+      const deploymentRequest = new K8sDeploymentRequest({
+        name: computeId,
+        image: image,
+        flavour: flavour,
+        imagePullSecret: secretName,
+        user: user,
+        helper: requestHelper
+      });
 
-      if(deploymentRequest.isValid()){
+      if (deploymentRequest.isValid()) {
         logger.debug(`Creating kubernetes deployment for instance '${instance.id}' (${instance.name}) with computeId '${computeId}' in namespace '${namespace}'`);
         const deployment = await this._dataSource.createDeployment(deploymentRequest, namespace);
         const podList = await this._dataSource.getPodsForDeployment(deploymentRequest.name, namespace);
@@ -66,10 +73,9 @@ export class K8sDeploymentManager {
         } else {
           throw new LoggedError(`Kubernetes deployment for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}' is not valid`);
         }
-      }else {
-        throw new LoggedError(`Kubernetes deployment request for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}' is not valid`)
+      } else {
+        throw new LoggedError(`Kubernetes deployment request for instance '${instance.id}' (${instance.name}) with compute Id '${computeId}' is not valid`);
       }
-
 
 
     } catch (error) {
@@ -95,14 +101,17 @@ export class K8sDeploymentManager {
     }
   }
 
-  async cleanup(validInstances: {namespace: string, computeId: string}[]): Promise<number> {
+  async cleanup(validInstances: { namespace: string, computeId: string }[]): Promise<number> {
     try {
       const deploymentsResponse = await this._dataSource.getAllDeploymentsWithLabelSelector(`owner=${APPLICATION_CONFIG().kubernetes.ownerLabel}`);
-      const deployments = deploymentsResponse.map((deployment: any) => ({name: deployment.metadata.name, namespace: deployment.metadata.namespace}));
+      const deployments = deploymentsResponse.map((deployment: any) => ({
+        name: deployment.metadata.name,
+        namespace: deployment.metadata.namespace
+      }));
 
       const invalidDeployments = deployments.filter((deployment: any) => {
         return (validInstances.find(instance => instance.computeId === deployment.name && instance.namespace === deployment.namespace) == null);
-      })
+      });
 
       // Delete invalid deployments
       if (invalidDeployments.length > 0) {

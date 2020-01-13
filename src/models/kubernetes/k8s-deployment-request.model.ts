@@ -43,7 +43,7 @@ export class K8sDeploymentRequest {
   }
 
   isValid(): boolean {
-    const volumeMounts = this._model.spec.template.spec.containers[0].volumeMounts.length !> 0 ? this._model.spec.template.spec.containers[0].volumeMounts : null;
+    const volumeMounts = this._model.spec.template.spec.containers[0].volumeMounts.length ! > 0 ? this._model.spec.template.spec.containers[0].volumeMounts : null;
     const volumes = this._model.spec.template.spec.volumes != undefined ? this._model.spec.template.spec.volumes : null;
 
     if (volumeMounts) {
