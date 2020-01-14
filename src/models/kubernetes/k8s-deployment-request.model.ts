@@ -23,39 +23,41 @@ export class K8sDeploymentRequest {
   }
 
   isValid(): boolean {
-    const volumeMounts = this._model.spec.template.spec.containers[0].volumeMounts.length != 0 ? this._model.spec.template.spec.containers[0].volumeMounts : null;
-    const volumes = this._model.spec.template.spec.volumes != undefined ? this._model.spec.template.spec.volumes : null;
+    const volumeMounts = this._model.spec.template.spec.containers[0].volumeMounts;
+    const volumes = this._model.spec.template.spec.volumes;
 
-    if (volumeMounts) {
+    if (volumeMounts || volumeMounts.length > 0) {
       if (volumes) {
-        let validVolumes = true;
         let validName = true;
 
-        // verify that each volume as a name, path and type attributes and verify if volumes name are valid
-        for (const volume of volumes) {
-          const namePattern = RegExp(/^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/);
-          if (('name' in volume && 'hostPath' in volume && 'path' in volume.hostPath && 'type' in volume.hostPath)) {
-            validName = namePattern.test(volume.name);
-            if (!validName) {
-              break;
-            }
+        // verify if volumes name are valid
+        let i = 0;
+        const namePattern = RegExp(/^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/);
+
+        while (validName && volumes.length > i) {
+          if (volumes[i].name) {
+            validName = namePattern.test(volumes[i].name);
           } else {
-            validVolumes = false;
-            break;
+            validName = false;
           }
+          i++;
         }
-        if (!validVolumes || !validName) {
+        if (!validName) {
           return false;
         }
 
         // verify that all volumeMounts have a volume
         let match = true;
-        let i = 0;
+        i = 0;
         while (match && volumeMounts.length > i) {
-          match = volumes.find((volume) => volume.name == volumeMounts[i].name) != null;
+          if (volumeMounts[i].name) {
+            match = volumes.find((volume) => volume.name == volumeMounts[i].name) != null;
+          } else {
+            match = false;
+          }
           i++;
         }
-        return match
+        return match;
       } else {
         return false;
       }
@@ -130,6 +132,7 @@ export class K8sDeploymentRequest {
 
       if (this._config.helper && this._config.helper.getVolumes) {
         this._config.helper.getVolumes(this._config.image, this._config.user)
+          .filter(volumeData => volumeData != null)
           .filter(volumeData => volumeData.volumeMount != null)
           .forEach(volumeData => {
             const volumeMount = volumeMounts.find(aVolumeMount => aVolumeMount.name === volumeData.name);
@@ -150,7 +153,7 @@ export class K8sDeploymentRequest {
         const volume = volumeData.volume;
         volume.name = volumeData.name;
         return volume;
-      }): undefined;
+      }) : undefined;
   }
 
   private _getEnvVars(): any {
