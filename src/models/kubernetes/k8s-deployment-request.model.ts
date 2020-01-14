@@ -1,6 +1,6 @@
 import { Image, Flavour, InstanceUser } from '../domain';
 import { APPLICATION_CONFIG } from '../../application-config';
-import { IK8SRequestHelper } from '../../utils';
+import { IK8SRequestHelper } from './k8s-request-helper.model';
 
 export interface K8sDeploymentRequestConfig {
   name: string,

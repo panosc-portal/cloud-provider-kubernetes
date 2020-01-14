@@ -9,4 +9,5 @@ export * from './k8s-secret-request.model';
 export * from './k8s-service.model';
 export * from './k8s-service-request.model';
 export * from './k8s-instance-state.model';
+export * from './k8s-request-helper.model';
 export * from './k8s-node.model'

@@ -3,6 +3,7 @@ import { FlavourService, ImageService, InstanceService, K8sInstanceService, K8sN
 import { testDataSource } from '../fixtures/datasources/testdb.datasource';
 import { KubernetesDataSource } from '../../datasources';
 import { ProtocolRepository } from '../../repositories/protocol.repository';
+import { APPLICATION_CONFIG } from '../../application-config';
 
 export interface TestApplicationContext {
   flavourRepository: FlavourRepository;

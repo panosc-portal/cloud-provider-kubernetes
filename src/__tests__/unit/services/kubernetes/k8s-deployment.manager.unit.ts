@@ -1,11 +1,10 @@
 import { expect } from '@loopback/testlab';
 import { createTestApplicationContext } from '../../../helpers/context.helper';
-import { K8sDeploymentManager, K8sNamespaceManager, InstanceService } from '../../../../services';
+import { K8sDeploymentManager, K8sNamespaceManager, InstanceService, K8SRequestHelperService } from '../../../../services';
 import { K8sDeploymentRequest } from '../../../../models';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
 import { APPLICATION_CONFIG } from '../../../../application-config';
-import { K8SRequestHelperLoader } from '../../../../utils';
 
 describe('K8sDeploymentManager', () => {
   let k8sNamespaceManager: K8sNamespaceManager;
@@ -177,7 +176,8 @@ describe('K8sDeploymentManager', () => {
   it('creates kubernetes deployment request with volumes from request helper', async () => {
     APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
 
-    const requestHelper = K8SRequestHelperLoader.getHelper();
+    const k8SRequestHelperService = new K8SRequestHelperService();
+    const requestHelper = k8SRequestHelperService.getHelper();
     expect(requestHelper || null).to.not.be.null();
 
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
@@ -204,7 +204,8 @@ describe('K8sDeploymentManager', () => {
   it('creates kubernetes deployment request with env vars from request helper', async () => {
     APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
 
-    const requestHelper = K8SRequestHelperLoader.getHelper();
+    const k8SRequestHelperService = new K8SRequestHelperService();
+    const requestHelper = k8SRequestHelperService.getHelper();
     expect(requestHelper || null).to.not.be.null();
 
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
@@ -289,7 +290,8 @@ describe('K8sDeploymentManager', () => {
   it('creates kubernetes deployment with security context from the request helper', async () => {
     APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
 
-    const requestHelper = K8SRequestHelperLoader.getHelper();
+    const k8SRequestHelperService = new K8SRequestHelperService();
+    const requestHelper = k8SRequestHelperService.getHelper();
     expect(requestHelper || null).to.not.be.null();
 
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
@@ -314,7 +316,8 @@ describe('K8sDeploymentManager', () => {
   it('creates kubernetes deployment with security context from database overriden by the request helper', async () => {
     APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
 
-    const requestHelper = K8SRequestHelperLoader.getHelper();
+    const k8SRequestHelperService = new K8SRequestHelperService();
+    const requestHelper = k8SRequestHelperService.getHelper();
     expect(requestHelper || null).to.not.be.null();
 
     const k8sNamespace = await k8sNamespaceManager.create('panosc');
@@ -338,7 +341,8 @@ describe('K8sDeploymentManager', () => {
 
   it('creates kubernetes deployment request with protocols', async () => {
 
-    const requestHelper = K8SRequestHelperLoader.getHelper();
+    const k8SRequestHelperService = new K8SRequestHelperService();
+    const requestHelper = k8SRequestHelperService.getHelper();
     expect(requestHelper || null).to.not.be.null();
 
     const k8sNamespace = await k8sNamespaceManager.create('panosc');

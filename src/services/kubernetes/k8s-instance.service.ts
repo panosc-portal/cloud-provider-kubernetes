@@ -7,6 +7,7 @@ import { logger, LoggedError } from '../../utils';
 import { K8sNamespaceManager } from './k8s-namespace.manager';
 import * as uuidv4 from 'uuid/v4';
 import { APPLICATION_CONFIG } from '../../application-config';
+import { K8SRequestHelperService } from './k8s-request-helper.service';
 
 @lifeCycleObserver('server')
 @bind({ scope: BindingScope.SINGLETON })
