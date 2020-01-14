@@ -32,7 +32,7 @@ describe('SchedulerService', () => {
     instanceStateJob['_instanceActionService'] = instanceActionService;
     expect(instanceStateJob || null).to.not.be.null();
 
-    const updatedInstances = await instanceStateJob.run();
+    const updatedInstances = await instanceStateJob.run('InstanceStateJob');
     expect(updatedInstances).to.equal(7);
   });
 
@@ -44,7 +44,7 @@ describe('SchedulerService', () => {
     instanceStateJob['_instanceActionService'] = instanceActionService;
     expect(instanceStateJob || null).to.not.be.null();
 
-    const updatedInstances = await instanceStateJob.run({states: [InstanceStatus.BUILDING]});
+    const updatedInstances = await instanceStateJob.run('InstanceStateJob', {states: [InstanceStatus.BUILDING]});
     expect(updatedInstances).to.equal(3);
   });
 
@@ -64,7 +64,7 @@ describe('SchedulerService', () => {
     instanceStateJob['_instanceActionService'] = instanceActionService;
     expect(instanceStateJob || null).to.not.be.null();
 
-    const updatedInstances = await instanceStateJob.run();
+    const updatedInstances = await instanceStateJob.run('InstanceStateJob');
     expect(updatedInstances).to.equal(7);
     const numberOfInstances3 = (await instanceService.getAll()).length;
     expect(numberOfInstances3).to.equal(numberOfInstances1);
@@ -78,8 +78,8 @@ describe('SchedulerService', () => {
     instanceStateJob['_instanceActionService'] = instanceActionService;
     expect(instanceStateJob || null).to.not.be.null();
 
-    const promise1 = instanceStateJob.run();
-    const promise2 = instanceStateJob.run();
+    const promise1 = instanceStateJob.run('InstanceStateJob');
+    const promise2 = instanceStateJob.run('InstanceStateJob');
 
     const updatedInstances1 = await promise1;
     const updatedInstances2 = await promise2;

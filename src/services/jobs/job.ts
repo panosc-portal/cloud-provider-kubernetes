@@ -7,10 +7,10 @@ export abstract class Job {
   constructor() {
   }
 
-  run(params?: any): Promise<any> {
+  run(name: string, params?: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (this._running) {
-        logger.debug('Job already running');
+        logger.debug(`Job '${name}' is already running`);
         resolve(null);
 
       } else {
@@ -22,7 +22,7 @@ export abstract class Job {
           })
           .catch(error => {
             this._running = false;
-            logger.error(`Caught an error while running job: ${error.message}`);
+            logger.error(`Caught an error while running job '${name}': ${error.message}`);
             reject(error);
           });
       }

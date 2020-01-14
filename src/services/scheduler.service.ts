@@ -68,7 +68,7 @@ export class SchedulerService {
                 }
         
                 if (jobIsOk) {
-                  const cronJob = new CronJob(jobConfig.cronExpression, () => jobRunner.run(jobConfig.params));
+                  const cronJob = new CronJob(jobConfig.cronExpression, () => jobRunner.run(jobConfig.name, jobConfig.params));
                   this._jobs.set(jobConfig.name, cronJob);
                   cronJob.start();
                 }
