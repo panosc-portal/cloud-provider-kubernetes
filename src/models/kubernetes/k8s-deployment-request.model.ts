@@ -95,7 +95,7 @@ export class K8sDeploymentRequest {
                 name: this._config.name,
                 image: this._config.image.repository ? `${this._config.image.repository}/${this._config.image.path}` : this._config.image.path,
                 ports: this._config.image.protocols.map(imageProtocol => {
-                  return { name: imageProtocol.protocol.name.toLowerCase(), containerPort: imageProtocol.port };
+                  return { name: imageProtocol.protocol.name.toLowerCase(), containerPort: imageProtocol.getPort() };
                 }),
                 command: this._config.image.command ? [this._config.image.command] : undefined,
                 args: this._config.image.args ? this._config.image.args.split(',') : undefined,

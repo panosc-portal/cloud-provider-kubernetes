@@ -13,6 +13,10 @@ export class ProtocolRepository extends BaseRepository<Protocol, number> {
     return super.find({ order: { id: 'ASC' } });
   }
 
+  getProtocolById(protocolId: number) {
+    return super.find({ where: { id: protocolId}, order: {id: 'ASC'} });
+  }
+
   getProtocolByIds(protocolIds: number[]) {
     return super.find({ where: { id: In(protocolIds)}, order: {id: 'ASC'} });
   }

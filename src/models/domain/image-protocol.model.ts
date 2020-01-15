@@ -16,10 +16,9 @@ export class ImageProtocol {
   id: number;
 
   @property({
-    type: 'number',
-    required: true
+    type: 'number'
   })
-  @Column()
+  @Column({nullable: true})
   port: number;
 
   @property({ type: Protocol, required: true })
@@ -33,5 +32,13 @@ export class ImageProtocol {
 
   constructor(data?: Partial<ImageProtocol>) {
     Object.assign(this, data);
+  }
+
+  getPort(): number {
+    if (this.port == null) {
+      return this.protocol.defaultPort;
+    }
+
+    return this.port;
   }
 }

@@ -16,6 +16,10 @@ export class ImageService extends BaseService<Image, ImageRepository> {
     return this._protocolRepository.find();
   }
 
+  getProtocolById(protocolId: number) {
+    return this._protocolRepository.getProtocolById(protocolId);
+  }
+
   getProtocolByIds(protocolIds: number[]) {
     return this._protocolRepository.getProtocolByIds(protocolIds);
   }
