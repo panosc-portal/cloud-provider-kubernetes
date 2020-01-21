@@ -1,6 +1,7 @@
 import { Image, Flavour, InstanceUser } from '../domain';
 import { APPLICATION_CONFIG } from '../../application-config';
 import { IK8SRequestHelper } from './k8s-request-helper.model';
+import { logger } from '../../utils';
 
 export interface K8sDeploymentRequestConfig {
   name: string,
@@ -26,7 +27,7 @@ export class K8sDeploymentRequest {
     const volumeMounts = this._model.spec.template.spec.containers[0].volumeMounts;
     const volumes = this._model.spec.template.spec.volumes;
 
-    if (volumeMounts || volumeMounts.length > 0) {
+    if (volumeMounts && volumeMounts.length > 0) {
       if (volumes) {
         let validName = true;
 
@@ -43,6 +44,7 @@ export class K8sDeploymentRequest {
           i++;
         }
         if (!validName) {
+          logger.error(`Kubernetes deployment-request volume ${volumes[i].name} is not a valid name`);
           return false;
         }
 
@@ -57,7 +59,10 @@ export class K8sDeploymentRequest {
           }
           i++;
         }
-        return match;
+        if (!match) {
+          logger.error(`Kubernetes deployment-request did not have a volume for volumeMount ${volumeMounts[i].name}`);
+          return false
+        }
       } else {
         return false;
       }
