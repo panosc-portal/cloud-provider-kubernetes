@@ -2,8 +2,9 @@ import { lifeCycleObserver, LifeCycleObserver, ValueOrPromise } from '@loopback/
 import { K8SConfigCreator } from './kubeconfig';
 import { ApiRoot } from 'kubernetes-client';
 import { KubeConfig } from '@kubernetes/client-node';
-import { logger } from '../utils';
+import { LoggedError, logger } from '../utils';
 import { K8sDeploymentRequest, K8sNamespaceRequest, K8sSecretRequest, K8sServiceRequest } from '../models';
+import { APPLICATION_CONFIG } from '../application-config';
 const Request = require('kubernetes-client/backends/request');
 const Client = require('kubernetes-client').Client;
 
@@ -15,18 +16,27 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
   constructor() {
     try {
-      const kubeconfig = new KubeConfig();
 
-      const k8Sconfig = new K8SConfigCreator().getConfig();
-  
-      kubeconfig.loadFromString(JSON.stringify(k8Sconfig));
-      const backend = new Request({ kubeconfig });
-      this._k8sClient = new Client({ backend, version: '1.13' });
+      if (APPLICATION_CONFIG().kubernetes.host) {
+        logger.info('Using defined variables for kubernetes configuration');
+        const kubeconfig = new KubeConfig();
+        const k8Sconfig = new K8SConfigCreator().getConfig();
 
+        kubeconfig.loadFromString(JSON.stringify(k8Sconfig));
+        const backend = new Request({ kubeconfig });
+        this._k8sClient = new Client({ backend, version: '1.13' });
+
+      } else if (process.env.KUBERNETES_SERVICE_HOST) {
+        logger.info('Using kubernetes cluster configuration');
+        this._k8sClient = new Client({version: '1.13' });
+
+      }else {
+        throw new LoggedError('Did not manage to define configuration')
+      }
     } catch (error) {
       logger.error(`Failed to create Kubernetes Client: ${error.message}`);
       this._k8sClient = null;
-    }  
+    }
   }
 
   /**
@@ -54,7 +64,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s namespace response with name '${namespaceName}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -70,7 +80,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s namespace response with name '${namespaceRequest.name}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -95,7 +105,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s deployment response for instance with compute Id '${computeId}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -111,7 +121,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s deployments response for label selector '${labelSelector}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -126,7 +136,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s deployment response for instance with compute Id '${deploymentRequest.name}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -167,7 +177,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s service response for instance with compute Id '${computeId}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -183,7 +193,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s services response for label selector '${labelSelector}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -199,7 +209,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s service response for instance with compute Id '${serviceRequest.name}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -224,7 +234,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s service endpoints response for instance with compute Id '${computeId}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -240,7 +250,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s node response for node with name '${nodeName}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -256,7 +266,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s response for geting all nodes does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -272,7 +282,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s secret response for secret with name '${secretName}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -288,7 +298,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
       } else {
         throw new Error(`k8s secret response for secret with name '${secretRequest.name}' does not have a body`);
       }
-    
+
     } else {
       throw new Error('k8s client has not been created');
     }

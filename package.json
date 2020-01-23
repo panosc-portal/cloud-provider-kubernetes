@@ -62,7 +62,7 @@
     "cron": "^1.7.2",
     "dotenv": "^8.2.0",
     "is-port-reachable": "^3.0.0",
-    "kubernetes-client": "^8.3.5",
+    "kubernetes-client": "^8.3.6",
     "loopback-connector-postgresql": "^3.8.0",
     "loopback-connector-rest": "^3.6.0",
     "node-filter-async": "^1.1.3",

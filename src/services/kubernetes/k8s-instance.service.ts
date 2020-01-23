@@ -8,6 +8,7 @@ import { K8sNamespaceManager } from './k8s-namespace.manager';
 import * as uuidv4 from 'uuid/v4';
 import { APPLICATION_CONFIG } from '../../application-config';
 import { K8SRequestHelperService } from './k8s-request-helper.service';
+import { K8sNodeService } from './k8s-node.service';
 
 @lifeCycleObserver('server')
 @bind({ scope: BindingScope.SINGLETON })
@@ -15,6 +16,8 @@ export class K8sInstanceService {
   private _deploymentManager: K8sDeploymentManager;
   private _serviceManager: K8sServiceManager;
   private _namespaceManager: K8sNamespaceManager;
+  private _nodeService:  K8sNodeService;
+
 
   private _defaultNamespace = APPLICATION_CONFIG().kubernetes.defaultNamespace;
 
@@ -34,10 +37,13 @@ export class K8sInstanceService {
     return this._namespaceManager;
   }
 
+
+
   constructor(@inject('datasources.kubernetes') dataSource: KubernetesDataSource) {
     this._deploymentManager = new K8sDeploymentManager(dataSource);
     this._serviceManager = new K8sServiceManager(dataSource);
     this._namespaceManager = new K8sNamespaceManager(dataSource);
+    this._nodeService = new K8sNodeService(dataSource)
   }
 
   async get(computeId: string, namespace: string): Promise<K8sInstance> {
@@ -84,15 +90,16 @@ export class K8sInstanceService {
       try {
         // Create namespace if required
         await this._namespaceManager.createIfNotExist(this._defaultNamespace);
-    
+
         // Create deployment
         const deployment = await this._deploymentManager.create(instance, instanceComputeId, this._defaultNamespace);
 
         // Create service
         const service = await this._serviceManager.create(instance, instanceComputeId, this._defaultNamespace);
 
-        // Get master node IP from environment variable
-        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, this._defaultNamespace, APPLICATION_CONFIG().kubernetes.host);
+        const masterNode = await this._nodeService.getMaster();
+
+        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, this._defaultNamespace,  masterNode.hostname);
 
       } catch (error) {
         // Cleanup

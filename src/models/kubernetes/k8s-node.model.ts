@@ -35,7 +35,7 @@ export class K8sNode {
 
 
   get hostname() {
-    return this.isValid() ? this._k8sResponse.status.addresses[1].address : null;
+    return this.isValid() ? this._k8sResponse.status.addresses[0].address : null;
   }
 
   get cpuCapacity() {
