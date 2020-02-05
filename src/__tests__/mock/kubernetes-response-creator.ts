@@ -97,24 +97,20 @@ export default class K8SResponseCreator {
   }
 
   getNode(node) {
-    let spec;
+    let metadata;
     if (node.master) {
-      spec = {
-        traits: [
-          {
-            key: 'node-role.kubernetes.io/master'
-          }
-        ]
+      metadata = {
+        name: node.name,
+        labels: {
+          'node-role.kubernetes.io/master': ''
+        }
       };
     } else {
-      spec = {};
+      metadata = { name: node.name };
     }
 
     return {
-      metadata: {
-        name: node.name
-      },
-      spec: spec,
+      metadata: metadata,
       status: {
         capacity: {
           cpu: node.cpu,

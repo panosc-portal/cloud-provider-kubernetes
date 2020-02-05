@@ -23,9 +23,8 @@ export class K8sNode {
 
   isMaster() {
     return (
-      this._k8sResponse.spec.traits != null &&
-      this._k8sResponse.spec.traits[0] != null &&
-      this._k8sResponse.spec.traits[0].key === 'node-role.kubernetes.io/master'
+      this._k8sResponse.metadata.labels != null &&
+      'node-role.kubernetes.io/master' in this._k8sResponse.metadata.labels
     );
   }
 
