@@ -63,7 +63,7 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
         protocol: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_PROTOCOL,
         host: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_HOST,
         port: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_PORT,
-        defaultNamespace: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE != null ? process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE : 'panosc',
+        defaultNamespace: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE != null ? process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE : 'panosc-kubernetes-instances',
         creationTimeoutS: 600,
         unschedulableTimeoutS: 60,
         ownerLabel: 'cloud-provider',
@@ -80,6 +80,6 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
       }
     }
   }
-  
+
   return applicationConfig;
 }
