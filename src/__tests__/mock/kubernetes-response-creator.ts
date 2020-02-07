@@ -259,7 +259,8 @@ export default class K8SResponseCreator {
               running: {}
             },
             ready: true
-          }]
+          }],
+        hostIP: '192.168.1.25'
       };
     }
     return {

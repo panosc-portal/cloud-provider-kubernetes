@@ -1,9 +1,20 @@
-import { InstanceCommand, Instance, InstanceCommandType, InstanceState, InstanceStatus, K8sInstance, ProtocolName, InstanceProtocol, K8sInstanceStatus } from '../../../models';
+import {
+  InstanceCommand,
+  Instance,
+  InstanceCommandType,
+  InstanceState,
+  InstanceStatus,
+  K8sInstance,
+  ProtocolName,
+  InstanceProtocol,
+  K8sInstanceStatus
+} from '../../../models';
 import { InstanceService } from '../../instance.service';
 import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
 import { logger } from '../../../utils';
 
-const noop = function() {};
+const noop = function() {
+};
 
 export interface InstanceActionListener {
   onTerminated: (instanceAction: InstanceAction) => void;
@@ -31,7 +42,7 @@ export abstract class InstanceAction {
   }
 
   constructor(private _instanceCommand: InstanceCommand, private _instanceService: InstanceService, private _k8sInstanceService: K8sInstanceService, listener: InstanceActionListener) {
-    this._listener = listener != null ? listener : {onTerminated: noop, onError: noop};
+    this._listener = listener != null ? listener : { onTerminated: noop, onError: noop };
   }
 
   execute(): Promise<void> {
@@ -52,7 +63,7 @@ export abstract class InstanceAction {
     return await this._instanceService.getById(this._instanceCommand.instance.id);
   }
 
-  protected async _updateInstanceState(nextState: InstanceState, nodeName?: string) {
+  protected async _updateInstanceState(nextState: InstanceState, nodeName?: string, hostname?: string) {
     const instance = await this.getInstance();
     const currentState = instance.state;
 
@@ -65,6 +76,7 @@ export abstract class InstanceAction {
 
     instance.state = state;
     instance.nodeHostname = nodeName;
+    instance.hostname = hostname;
 
     await this.instanceService.save(instance);
   }
@@ -83,7 +95,10 @@ export abstract class InstanceAction {
       instance.namespace = k8sInstance.namespace;
 
       // Get status of k8sInstance and set in instance if a default one hasn't been specific
-      instance.state = instanceState != null ? instanceState : new InstanceState({status: this._convertStatus(instance.status, k8sInstance.state.status), message: k8sInstance.state.message});
+      instance.state = instanceState != null ? instanceState : new InstanceState({
+        status: this._convertStatus(instance.status, k8sInstance.state.status),
+        message: k8sInstance.state.message
+      });
 
       // Get IP Address
       instance.hostname = k8sInstance.hostname;
@@ -93,7 +108,10 @@ export abstract class InstanceAction {
 
       // Get protocols
       instance.protocols = k8sInstance.protocols.map(k8sProtocol => {
-        const protocol = new InstanceProtocol({name: ProtocolName[k8sProtocol.name.toUpperCase()], port: k8sProtocol.externalPort});
+        const protocol = new InstanceProtocol({
+          name: ProtocolName[k8sProtocol.name.toUpperCase()],
+          port: k8sProtocol.externalPort
+        });
         if (protocol.name != null) {
           return protocol;
         } else {
@@ -104,7 +122,7 @@ export abstract class InstanceAction {
 
     } catch (error) {
       logger.error(`Error in creation of kubernetes instance: ${error.message}`);
-      instance.state = new InstanceState({status: InstanceStatus.ERROR, message: error.message});
+      instance.state = new InstanceState({ status: InstanceStatus.ERROR, message: error.message });
     }
 
     await this.instanceService.save(instance);
@@ -135,5 +153,6 @@ export abstract class InstanceAction {
       return InstanceStatus[k8sInstanceStatus];
     }
   }
+
   protected abstract _run(): Promise<void>;
 }

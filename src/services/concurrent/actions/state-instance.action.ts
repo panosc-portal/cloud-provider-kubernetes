@@ -20,9 +20,15 @@ export class StateInstanceAction extends InstanceAction {
 
       let nextInstanceState: InstanceState;
       let nodeName: string = null;
-      if (computeId == null || namespace == null) {
+      let hostname: string = null;
+      if (computeId == null || namespace == null) {
         if (currentInstanceStatus === InstanceStatus.DELETING) {
-          nextInstanceState = new InstanceState({ status: InstanceStatus.DELETED, message: 'Instance deleted', cpu: 0, memory: 0 });
+          nextInstanceState = new InstanceState({
+            status: InstanceStatus.DELETED,
+            message: 'Instance deleted',
+            cpu: 0,
+            memory: 0
+          });
 
         } else {
           return;
@@ -35,7 +41,12 @@ export class StateInstanceAction extends InstanceAction {
             logger.warn(`K8S Instance with Id ${computeId} has been deleted on the server`);
           }
 
-          nextInstanceState = new InstanceState({ status: InstanceStatus.DELETED, message: 'Instance deleted', cpu: 0, memory: 0 });
+          nextInstanceState = new InstanceState({
+            status: InstanceStatus.DELETED,
+            message: 'Instance deleted',
+            cpu: 0,
+            memory: 0
+          });
 
         } else {
           nextInstanceState = new InstanceState({
@@ -45,6 +56,7 @@ export class StateInstanceAction extends InstanceAction {
             memory: k8sInstance.currentMemory
           });
           nodeName = k8sInstance.nodeName;
+          hostname = k8sInstance.hostname;
 
           logger.debug(`Instance ${computeId} state: ${nextInstanceState.status} ${nextInstanceState.message}`);
         }
@@ -77,7 +89,7 @@ export class StateInstanceAction extends InstanceAction {
       }
 
 
-      await this._updateInstanceState(nextInstanceState, nodeName);
+      await this._updateInstanceState(nextInstanceState, nodeName, hostname);
 
 
     } catch (error) {

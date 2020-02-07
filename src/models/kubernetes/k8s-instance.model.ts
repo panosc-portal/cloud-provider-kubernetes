@@ -57,7 +57,7 @@ export class K8sInstance {
     return this._hostname;
   }
 
-  constructor(private _deployment: K8sDeployment, private _service: K8sService, private _computeId: string, private _namespace: string, private _hostname: string) {
+  constructor(private _deployment: K8sDeployment, private _service: K8sService, private _computeId: string, private _namespace: string, private _hostname?: string) {
     this._state = K8sInstanceStatusHelper.getK8sInstanceState(this._deployment, this._service);
   }
 }

@@ -53,7 +53,7 @@ export class K8sInstanceService {
       const service = await this._serviceManager.getWithComputeId(computeId, namespace);
 
       if (deployment != null && service != null) {
-        k8sInstance = new K8sInstance(deployment, service, computeId, namespace, APPLICATION_CONFIG().kubernetes.host);
+        k8sInstance = new K8sInstance(deployment, service, computeId, namespace,deployment.podHostIP);
 
       } else if (deployment == null && service != null) {
         logger.error(`Deployment missing from kubernetes instance with compute Id '${computeId}': deleting kubernetes instance`);
@@ -99,7 +99,7 @@ export class K8sInstanceService {
 
         const masterNode = await this._nodeService.getMaster();
 
-        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, this._defaultNamespace,  masterNode.hostname);
+        k8sInstance = new K8sInstance(deployment, service, instanceComputeId, this._defaultNamespace);
 
       } catch (error) {
         // Cleanup

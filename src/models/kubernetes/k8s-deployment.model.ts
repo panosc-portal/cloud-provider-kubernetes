@@ -44,6 +44,10 @@ export class K8sDeployment {
     return this.hasPods() ? this._k8sPodListResponse.items[0].spec.nodeName : null;
   }
 
+  get podHostIP(){
+    return this.hasPods() ? this._k8sPodListResponse.items[0].status.hostIP : null;
+  }
+
 
   constructor(private _name: string, private _k8sDeploymentResponse: any, private _k8sPodListResponse: any) {
   }
