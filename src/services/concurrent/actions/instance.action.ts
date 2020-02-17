@@ -63,7 +63,7 @@ export abstract class InstanceAction {
     return await this._instanceService.getById(this._instanceCommand.instance.id);
   }
 
-  protected async _updateInstanceState(nextState: InstanceState, nodeName?: string, hostname?: string) {
+  protected async _updateInstanceState(nextState: InstanceState, nodeName?: string) {
     const instance = await this.getInstance();
     const currentState = instance.state;
 
@@ -76,7 +76,6 @@ export abstract class InstanceAction {
 
     instance.state = state;
     instance.nodeHostname = nodeName;
-    instance.hostname = hostname;
 
     await this.instanceService.save(instance);
   }
@@ -100,7 +99,7 @@ export abstract class InstanceAction {
         message: k8sInstance.state.message
       });
 
-      // Get IP Address
+      //Get instance hostname
       instance.hostname = k8sInstance.hostname;
 
       // Get name of node that is carrying the instance pod

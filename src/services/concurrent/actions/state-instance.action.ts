@@ -1,7 +1,7 @@
 import { InstanceCommand, InstanceState, InstanceStatus, K8sInstanceStatus } from '../../../models';
 import { InstanceAction, InstanceActionListener } from './instance.action';
 import { InstanceService } from '../../instance.service';
-import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
+import { K8sInstanceService } from '../../kubernetes';
 import { logger } from '../../../utils';
 import * as isPortReachable from 'is-port-reachable';
 
@@ -20,7 +20,6 @@ export class StateInstanceAction extends InstanceAction {
 
       let nextInstanceState: InstanceState;
       let nodeName: string = null;
-      let hostname: string = null;
       if (computeId == null || namespace == null) {
         if (currentInstanceStatus === InstanceStatus.DELETING) {
           nextInstanceState = new InstanceState({
@@ -56,7 +55,6 @@ export class StateInstanceAction extends InstanceAction {
             memory: k8sInstance.currentMemory
           });
           nodeName = k8sInstance.nodeName;
-          hostname = k8sInstance.hostname;
 
           logger.debug(`Instance ${computeId} state: ${nextInstanceState.status} ${nextInstanceState.message}`);
         }
@@ -89,7 +87,7 @@ export class StateInstanceAction extends InstanceAction {
       }
 
 
-      await this._updateInstanceState(nextInstanceState, nodeName, hostname);
+      await this._updateInstanceState(nextInstanceState, nodeName);
 
 
     } catch (error) {
