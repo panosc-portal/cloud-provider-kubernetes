@@ -9,7 +9,7 @@ export * from './node.service';
 export * from './health.service';
 export * from './info.service';
 export * from './scheduler.service';
-export * from './instance-user.service';
+export * from './instance-account.service';
 export * from './kubernetes';
 export * from './concurrent';
 export * from './jobs';

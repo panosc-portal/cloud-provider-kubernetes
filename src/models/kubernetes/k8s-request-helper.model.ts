@@ -1,4 +1,4 @@
-import { Image, InstanceUser } from "../domain";
+import { Image, InstanceAccount } from "../domain";
 
 export interface IK8SRequestHelperVolumeData {
   name: string,
@@ -12,7 +12,7 @@ export interface IK8SRequestHelperVolumeData {
 
 export interface IK8SRequestHelper {
 
-  getVolumes(image: Image, user: InstanceUser): IK8SRequestHelperVolumeData[];
-  getEnvVars(image: Image, user: InstanceUser): {name: string, value: string}[];
-  getRunAsUID(image: Image, user: InstanceUser): number;
+  getVolumes(image: Image, account: InstanceAccount): IK8SRequestHelperVolumeData[];
+  getEnvVars(image: Image, account: InstanceAccount): {name: string, value: string}[];
+  getRunAsUID(image: Image, account: InstanceAccount): number;
 }

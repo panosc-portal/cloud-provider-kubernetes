@@ -6,7 +6,7 @@ export * from './info.model';
 export * from './instance-command.model';
 export * from './instance-protocol.model';
 export * from './instance-state.model';
-export * from './instance-user.model'
+export * from './instance-account.model'
 export * from './instance.model';
 export * from './metrics.model';
 export * from './node.model';

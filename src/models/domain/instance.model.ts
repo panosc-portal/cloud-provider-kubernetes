@@ -5,7 +5,7 @@ import { Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGenerat
 import { Image } from './image.model';
 import { InstanceStatus } from '../enumerations';
 import { InstanceState } from './instance-state.model';
-import { InstanceUser } from './instance-user.model';
+import { InstanceAccount } from './instance-account.model';
 
 @Entity()
 @model()
@@ -116,12 +116,12 @@ export class Instance {
   @JoinColumn({ name: 'image_id', })
   image: Image;
 
-  @property({ type: InstanceUser })
-  @OneToOne(type => InstanceUser, user => user.instance, {
+  @property({ type: InstanceAccount })
+  @OneToOne(type => InstanceAccount, account => account.instance, {
     eager: true,
     cascade: true
   })
-  user: InstanceUser;
+  account: InstanceAccount;
 
   get state(): InstanceState {
     return new InstanceState({

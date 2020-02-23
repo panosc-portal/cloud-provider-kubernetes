@@ -8,6 +8,8 @@ module.exports = {
         private: '^_',
         protected: '^_'
       }
-    ]
+    ],
+    '@typescript-eslint/no-floating-promises': 'off',
+    '@typescript-eslint/interface-name-prefix': 'off',
   }
 };

@@ -1,13 +1,13 @@
-const getVolumes = function(image, user) {
+const getVolumes = function(image, account) {
   const volumes = [
     {
       name: 'volume1',
       volumeMount: {
-        mountPath: `/home/${user.username}`
+        mountPath: `/home/${account.username}`
       },
       volume: {
         hostPath: {
-          path: user.homePath,
+          path: account.homePath,
           type: 'Directory'
         }
       }
@@ -43,39 +43,39 @@ const getVolumes = function(image, user) {
   }
 ;
 
-const getEnvVars = function(image, user) {
+const getEnvVars = function(image, account) {
   const allEnvVars = [
     {
       imageName: 'image 1',
       data: [
-        { name: 'NB_UID', value: `${user.uid}` },
-        { name: 'NB_GID', value: `${user.gid}` }
+        { name: 'NB_UID', value: `${account.uid}` },
+        { name: 'NB_GID', value: `${account.gid}` }
       ]
     }, {
       imageName: 'image 2',
       data: [
-        { name: 'NB_UID', value: `${user.uid}` },
-        { name: 'NB_GID', value: `${user.gid}` }
+        { name: 'NB_UID', value: `${account.uid}` },
+        { name: 'NB_GID', value: `${account.gid}` }
       ]
     }
   ];
 
-  const envVars = allEnvVars.find(envVars => envVars.imageName === image.name);
+  const envVars = allEnvVars.find(someEnvVars => someEnvVars.imageName === image.name);
   return envVars? envVars.data : null;
 };
 
-const getRunAsUID = function(image, user) {
+const getRunAsUID = function(image, account) {
   const containerUIDs = [
     {
       imageName: 'image 2',
-      runAsUID: user.uid
+      runAsUID: account.uid
     }, {
       imageName: 'image 3',
-      runAsUID: user.uid
+      runAsUID: account.uid
     }
   ];
 
-  const containerUID = containerUIDs.find(containerUID => containerUID.imageName === image.name);
+  const containerUID = containerUIDs.find(aContainerUID => aContainerUID.imageName === image.name);
   return containerUID ? containerUID.runAsUID : null;
 };
 

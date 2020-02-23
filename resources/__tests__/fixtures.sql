@@ -80,20 +80,20 @@ values (7, "instance7", "A 7th test instance", 3, 2, "instance7.host.eu", "ACTIV
 insert into instance(id, name, description, image_id, flavour_id, hostname, status, current_cpu, current_memory, namespace, created_at, updated_at)
 values (8, "instance8", "A 8th test instance", 5, 2, "instance8.host.eu", "ACTIVE", 0, 0, 'panosc', '2019-01-01', '2019-01-01');
 
-insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
-values (1, 123, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs", 1);
-insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
-values (2, 321, "doe", "jane", "doe", 1001, 2000, "/home/doe", 2);
-insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
-values (3, 456, "parker", "peter", "parker", 1002, 2000, "/home/parker", 3);
-insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
-values (4, 678, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs", 4);
-insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
-values (5, 321, "doe", "jane", "doe", 1001, 2000, "/home/doe", 5);
-insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
-values (6, 321, "doe", "jane", "doe", 1005, 2000, "/home/doe", 6);
-insert into instance_user(id, account_id, username, first_name, last_name, uid, gid, home_path, instance_id)
-values (7, 321, "doe", "jane", "doe", 1005, 2000, "/home/doe", 7);
+insert into instance_account(id, user_id, username, first_name, last_name, uid, gid, home_path, email, instance_id)
+values (1, 123, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs", "joe@bloggs", 1);
+insert into instance_account(id, user_id, username, first_name, last_name, uid, gid, home_path, email, instance_id)
+values (2, 321, "doe", "jane", "doe", 1001, 2000, "/home/doe", "jane@doe", 2);
+insert into instance_account(id, user_id, username, first_name, last_name, uid, gid, home_path, email, instance_id)
+values (3, 456, "parker", "peter", "parker", 1002, 2000, "/home/parker", "peter@parker", 3);
+insert into instance_account(id, user_id, username, first_name, last_name, uid, gid, home_path, email, instance_id)
+values (4, 678, "bloggs", "joe", "bloggs", 1000, 2000, "/home/bloggs", "joe@bloggs", 4);
+insert into instance_account(id, user_id, username, first_name, last_name, uid, gid, home_path, email, instance_id)
+values (5, 321, "doe", "jane", "doe", 1001, 2000, "/home/doe", "jane@doe", 5);
+insert into instance_account(id, user_id, username, first_name, last_name, uid, gid, home_path, email, instance_id)
+values (6, 321, "doe", "jane", "doe", 1005, 2000, "/home/doe", "jane@doe", 6);
+insert into instance_account(id, user_id, username, first_name, last_name, uid, gid, home_path, email, instance_id)
+values (7, 321, "doe", "jane", "doe", 1005, 2000, "/home/doe", "jane@doe", 7);
 
 
 insert into instance_protocol (id, name, port, instance_id)

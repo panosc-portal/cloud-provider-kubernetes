@@ -1,13 +1,12 @@
 import { bind, BindingScope, inject, lifeCycleObserver } from '@loopback/core';
 import { K8sServiceManager } from './k8s-service.manager';
-import { Instance, K8sInstance, K8sDeployment, K8sService } from '../../models';
+import { Instance, K8sInstance } from '../../models';
 import { K8sDeploymentManager } from './k8s-deployment.manager';
 import { KubernetesDataSource } from '../../datasources';
 import { logger, LoggedError } from '../../utils';
 import { K8sNamespaceManager } from './k8s-namespace.manager';
 import * as uuidv4 from 'uuid/v4';
 import { APPLICATION_CONFIG } from '../../application-config';
-import { K8SRequestHelperService } from './k8s-request-helper.service';
 import { K8sNodeService } from './k8s-node.service';
 
 @lifeCycleObserver('server')
@@ -81,8 +80,8 @@ export class K8sInstanceService {
       throw new LoggedError(`Not creating kubernetes instance for instance '${instance.id}': image does not contain any protocols`);
     }
 
-    if (instance.user == null) {
-      throw new LoggedError(`Not creating kubernetes instance for instance '${instance.id}': no user is associated to the instance`);
+    if (instance.account == null) {
+      throw new LoggedError(`Not creating kubernetes instance for instance '${instance.id}': no account is associated to the instance`);
     }
 
     // Get compute Id

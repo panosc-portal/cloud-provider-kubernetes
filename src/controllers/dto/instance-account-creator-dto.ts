@@ -1,12 +1,12 @@
 import { model, property } from '@loopback/repository';
 
 @model()
-export class InstanceUserCreatorDto {
+export class InstanceAccountCreatorDto {
   @property({
     type: 'number',
     required: true
   })
-  accountId: number;
+  userId: number;
 
   @property({
     type: 'string',
@@ -41,8 +41,14 @@ export class InstanceUserCreatorDto {
     required: true
   })
   homePath: string;
+
+  @property({
+    type: 'string',
+    required: true
+  })
+  email: string;
   
-  constructor(data?: Partial<InstanceUserCreatorDto>) {
+  constructor(data?: Partial<InstanceAccountCreatorDto>) {
     Object.assign(this, data);
   }
 }

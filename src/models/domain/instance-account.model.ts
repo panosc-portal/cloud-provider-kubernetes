@@ -1,10 +1,10 @@
 import { model, property } from '@loopback/repository';
-import { Column, Entity, PrimaryGeneratedColumn, Index, Table, OneToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Index, OneToOne, JoinColumn } from 'typeorm';
 import { Instance } from './instance.model';
 
 @Entity()
 @model()
-export class InstanceUser {
+export class InstanceAccount {
   @property({
     type: 'number',
     id: true,
@@ -18,15 +18,15 @@ export class InstanceUser {
     type: 'number',
     required: true
   })
-  @Index('instance_user_account_id_index')
-  @Column({ name: 'account_id', type: 'integer' })
-  accountId: number;
+  @Index('instance_account_user_id_index')
+  @Column({ name: 'user_id', type: 'integer' })
+  userId: number;
 
   @property({
     type: 'string',
     required: true
   })
-  @Index('instance_user_username_index')
+  @Index('instance_account_username_index')
   @Column({ length: 100 })
   username: string;
 
@@ -63,11 +63,18 @@ export class InstanceUser {
   @Column({ name: 'home_path', length: 250 })
   homePath: string;
 
-  @OneToOne(type => Instance, instance => instance.user, { onDelete: 'CASCADE', nullable: false })
+  @property({
+    type: 'string',
+    required: false
+  })
+  @Column({ length: 250, nullable: true })
+  email: string;
+
+  @OneToOne(type => Instance, instance => instance.account, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'instance_id' })
   instance: Instance;
   
-  constructor(data?: Partial<InstanceUser>) {
+  constructor(data?: Partial<InstanceAccount>) {
     Object.assign(this, data);
   }
 

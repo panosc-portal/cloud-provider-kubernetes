@@ -30,8 +30,8 @@ export class KubernetesDataSource implements LifeCycleObserver {
         logger.info('Using kubernetes cluster configuration');
         this._k8sClient = new Client({version: '1.13' });
 
-      }else {
-        throw new LoggedError('Did not manage to define configuration')
+      } else {
+        throw new LoggedError('Did not manage to define kubernetes configuration')
       }
     } catch (error) {
       logger.error(`Failed to create Kubernetes Client: ${error.message}`);

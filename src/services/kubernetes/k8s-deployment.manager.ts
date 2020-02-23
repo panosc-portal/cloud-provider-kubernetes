@@ -47,13 +47,13 @@ export class K8sDeploymentManager {
     try {
       const image = instance.image;
       const flavour = instance.flavour;
-      const user = instance.user;
+      const account = instance.account;
 
       // Determine if an image pull secret is needed
       const secretName = await this._secretManager.processSecretForRepository(image.repository, namespace);
 
-      const requestHelper = this._requestHelperService.getAndValidateHelper(image, user);
-      const deploymentRequest = new K8sDeploymentRequest({name: computeId, image: image, flavour: flavour, imagePullSecret: secretName, user: user, helper: requestHelper });
+      const requestHelper = this._requestHelperService.getAndValidateHelper(image, account);
+      const deploymentRequest = new K8sDeploymentRequest({name: computeId, image: image, flavour: flavour, imagePullSecret: secretName, account: account, helper: requestHelper });
 
       if (deploymentRequest.isValid()) {
         logger.debug(`Creating kubernetes deployment for instance '${instance.id}' (${instance.name}) with computeId '${computeId}' in namespace '${namespace}'`);

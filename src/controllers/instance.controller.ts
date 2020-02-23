@@ -1,5 +1,5 @@
 import { del, get, getModelSchemaRef, param, post, requestBody, put } from '@loopback/openapi-v3';
-import { Instance, InstanceState, InstanceCommand, InstanceCommandType, InstanceUser } from '../models';
+import { Instance, InstanceState, InstanceCommand, InstanceCommandType, InstanceAccount } from '../models';
 import { inject } from '@loopback/context';
 import { FlavourService, ImageService, InstanceService, InstanceActionService } from '../services';
 import { InstanceCreatorDto } from './dto/instance-creator-dto';
@@ -74,7 +74,7 @@ export class InstanceController extends BaseController {
 
     this.throwBadRequestIfNull(image, 'Invalid image');
     this.throwBadRequestIfNull(flavour, 'Invalid flavour');
-    this.throwBadRequestIfNull(instanceCreator.user, 'Invalid instance user');
+    this.throwBadRequestIfNull(instanceCreator.account, 'Invalid instance account');
 
     const instance: Instance = new Instance({
       name: instanceCreator.name,
@@ -82,14 +82,15 @@ export class InstanceController extends BaseController {
       status: InstanceStatus.BUILDING,
       image: image,
       flavour: flavour,
-      user: new InstanceUser({
-        accountId: instanceCreator.user.accountId,
-        username: instanceCreator.user.username,
-        uid: instanceCreator.user.uid,
-        gid: instanceCreator.user.gid,
-        homePath: instanceCreator.user.homePath,
-        firstName: instanceCreator.user.firstName,
-        lastName: instanceCreator.user.lastName,
+      account: new InstanceAccount({
+        userId: instanceCreator.account.userId,
+        username: instanceCreator.account.username,
+        uid: instanceCreator.account.uid,
+        gid: instanceCreator.account.gid,
+        homePath: instanceCreator.account.homePath,
+        firstName: instanceCreator.account.firstName,
+        lastName: instanceCreator.account.lastName,
+        email: instanceCreator.account.email,
       })
     });
 

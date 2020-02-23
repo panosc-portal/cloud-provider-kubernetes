@@ -9,7 +9,7 @@ import {
 } from '../../../../services';
 import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
-import { Instance, InstanceUser } from '../../../../models';
+import { Instance, InstanceAccount } from '../../../../models';
 
 describe('K8sInstanceService', () => {
   let k8sInstanceService: K8sInstanceService;
@@ -78,9 +78,9 @@ describe('K8sInstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
-    const user = new InstanceUser({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
+    const account = new InstanceAccount({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
 
-    const instance = new Instance({ id: 999, image: image, flavour: flavour, name: 'endpoint-error', user: user });
+    const instance = new Instance({ id: 999, image: image, flavour: flavour, name: 'endpoint-error', account: account });
 
     const k8sInstance = await k8sInstanceService.create(instance);
 
@@ -94,9 +94,9 @@ describe('K8sInstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
-    const user = new InstanceUser({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
+    const account = new InstanceAccount({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
 
-    const instance = new Instance({ id: 999, image: image, flavour: flavour, name: 'pod-crash-loop', user: user });
+    const instance = new Instance({ id: 999, image: image, flavour: flavour, name: 'pod-crash-loop', account: account });
 
     const k8sInstance = await k8sInstanceService.create(instance);
 
@@ -111,14 +111,14 @@ describe('K8sInstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
-    const user = new InstanceUser({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
+    const account = new InstanceAccount({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
 
     const instance = new Instance({
       id: 999,
       image: image,
       flavour: flavour,
       name: 'pod-container-creating-timeout',
-      user: user
+      account: account
     });
 
     const k8sInstance = await k8sInstanceService.create(instance);
@@ -133,9 +133,9 @@ describe('K8sInstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(1);
-    const user = new InstanceUser({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
+    const account = new InstanceAccount({ id: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser' });
 
-    const instance = new Instance({ id: 999, image: image, flavour: flavour, name: 'pod-err-image-pull', user: user });
+    const instance = new Instance({ id: 999, image: image, flavour: flavour, name: 'pod-err-image-pull', account: account });
 
     const k8sInstance = await k8sInstanceService.create(instance);
 

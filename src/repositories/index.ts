@@ -5,4 +5,4 @@ export * from './image-protocol.repository';
 export * from './image-volume.repository';
 export * from './instance.repository';
 export * from './instance-protocol.repository';
-export * from './instance-user.repository';
+export * from './instance-account.repository';

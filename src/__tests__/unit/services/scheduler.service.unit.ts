@@ -52,7 +52,7 @@ describe('SchedulerService', () => {
     const numberOfInstances1 = (await instanceService.getAll()).length;
     const instance = await instanceService.getById(1);
     instance.id = null;
-    instance.user.id = null;
+    instance.account.id = null;
     instance.status = InstanceStatus.DELETED;
     await instanceService.save(instance);
     const numberOfInstances2 = (await instanceService.getAll()).length;

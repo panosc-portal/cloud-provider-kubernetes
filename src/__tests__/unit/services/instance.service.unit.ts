@@ -1,14 +1,14 @@
 import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { createTestApplicationContext } from '../../helpers/context.helper';
-import { InstanceService, ImageService, FlavourService, InstanceUserService, InstanceProtocolService } from '../../../services';
-import { Instance, Protocol, ProtocolName, InstanceStatus, InstanceProtocol, InstanceUser } from '../../../models';
+import { InstanceService, ImageService, FlavourService, InstanceAccountService, InstanceProtocolService } from '../../../services';
+import { Instance, ProtocolName, InstanceStatus, InstanceProtocol, InstanceAccount } from '../../../models';
 
 describe('InstanceService', () => {
   let instanceService: InstanceService;
   let imageService: ImageService;
   let flavourService: FlavourService;
-  let instanceUserService: InstanceUserService;
+  let instanceAccountService: InstanceAccountService;
   let instanceProtocolService: InstanceProtocolService;
 
   before('getInstanceService', async () => {
@@ -16,7 +16,7 @@ describe('InstanceService', () => {
     imageService = testApplicationContext.imageService;
     instanceService = testApplicationContext.instanceService;
     flavourService = testApplicationContext.flavourService;
-    instanceUserService = testApplicationContext.instanceUserService;
+    instanceAccountService = testApplicationContext.instanceAccountService;
     instanceProtocolService = testApplicationContext.instanceProtocolService;
   });
 
@@ -47,7 +47,7 @@ describe('InstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
-    const user = new InstanceUser({accountId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const account = new InstanceAccount({userId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
 
     const instance = new Instance({
       name: 'instance 3',
@@ -65,7 +65,7 @@ describe('InstanceService', () => {
         new InstanceProtocol({ name: ProtocolName.SSH, port: 2222 }),
         new InstanceProtocol({ name: ProtocolName.RDP, port: 1234 })
       ],
-      user: user
+      account: account
     });
 
     await instanceService.save(instance);
@@ -85,7 +85,7 @@ describe('InstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
-    const user = new InstanceUser({accountId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const account = new InstanceAccount({userId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
 
     const instance = new Instance({
       name: 'instance 3',
@@ -103,7 +103,7 @@ describe('InstanceService', () => {
         new InstanceProtocol({ name: ProtocolName.SSH, port: 2222 }),
         new InstanceProtocol({ name: ProtocolName.RDP, port: 1234 })
       ],
-      user: user
+      account: account
     });
 
     await instanceService.save(instance);
@@ -119,13 +119,13 @@ describe('InstanceService', () => {
   });
 
 
-  it('saves a user with an instance', async () => {
+  it('saves an account with an instance', async () => {
     const instances = await instanceService.getAll();
     expect(instances.length).to.equal(7);
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
-    const user = new InstanceUser({accountId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const account = new InstanceAccount({userId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
 
     const instance = new Instance({
       name: 'instance 3',
@@ -143,7 +143,7 @@ describe('InstanceService', () => {
         new InstanceProtocol({ name: ProtocolName.SSH, port: 2222 }),
         new InstanceProtocol({ name: ProtocolName.RDP, port: 1234 })
       ],
-      user: user
+      account: account
     });
 
     await instanceService.save(instance);
@@ -151,16 +151,16 @@ describe('InstanceService', () => {
 
     const persistedInstance = await instanceService.getById(instance.id);
     expect(persistedInstance || null).to.not.be.null();
-    expect(persistedInstance.user || null).to.not.be.null();
-    expect(persistedInstance.user.id || null).to.not.be.null();
-    expect(persistedInstance.user.username).to.equal('testuser');
+    expect(persistedInstance.account || null).to.not.be.null();
+    expect(persistedInstance.account.id || null).to.not.be.null();
+    expect(persistedInstance.account.username).to.equal('testuser');
   });
 
   it('deletes an instance', async () => {
     let instances = await instanceService.getAll();
     const numberOfInstancesOriginally = instances.length;
 
-    const instance = instances.find(instance => instance.id === 5);
+    const instance = instances.find(anInstance => anInstance.id === 5);
     const image = instance.image;
     expect(image || null).to.not.be.null();
     const flavour = instance.flavour;
@@ -184,7 +184,7 @@ describe('InstanceService', () => {
     let instances = await instanceService.getAll();
     const numberOfInstancesOriginally = instances.length;
 
-    const instance = instances.find(instance => instance.id === 5);
+    const instance = instances.find(anInstance => anInstance.id === 5);
     const protocols = instance.protocols;
     expect(protocols || null).to.not.be.null();
     expect(protocols.length).to.be.greaterThan(0);
@@ -199,22 +199,22 @@ describe('InstanceService', () => {
     expect(persistedInstanceProtocol || null).to.be.null();
   });
 
-  it('deletes a user when deleting an instance', async () => {
+  it('deletes an account when deleting an instance', async () => {
     let instances = await instanceService.getAll();
     const numberOfInstancesOriginally = instances.length;
 
-    const instance = instances.find(instance => instance.id === 5);
-    const user = instance.user;
-    expect(user || null).to.not.be.null();
+    const instance = instances.find(anInstance => anInstance.id === 5);
+    const account = instance.account;
+    expect(account || null).to.not.be.null();
 
     await instanceService.delete(instance);
 
     instances = await instanceService.getAll();
     expect(instances.length).to.equal(numberOfInstancesOriginally - 1);
 
-    // make sure user deleted
-    const persistedUser = await instanceUserService.getById(user.id);
-    expect(persistedUser || null).to.be.null();
+    // make sure account deleted
+    const persistedAccount = await instanceAccountService.getById(account.id);
+    expect(persistedAccount || null).to.be.null();
   });
 
   it('updates an instance', async () => {

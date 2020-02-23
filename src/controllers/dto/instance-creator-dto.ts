@@ -1,5 +1,5 @@
 import { model, property } from '@loopback/repository';
-import { InstanceUserCreatorDto } from './instance-user-creator-dto';
+import { InstanceAccountCreatorDto } from './instance-account-creator-dto';
 
 @model()
 export class InstanceCreatorDto {
@@ -16,7 +16,7 @@ export class InstanceCreatorDto {
   imageId: number;
 
   @property()
-  user: InstanceUserCreatorDto;
+  account: InstanceAccountCreatorDto;
 
   constructor(data?: Partial<InstanceCreatorDto>) {
     Object.assign(this, data);

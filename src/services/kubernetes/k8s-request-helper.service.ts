@@ -1,4 +1,4 @@
-import { Image, InstanceUser, IK8SRequestHelperVolumeData, IK8SRequestHelper } from "../../models";
+import { Image, InstanceAccount, IK8SRequestHelperVolumeData, IK8SRequestHelper } from "../../models";
 import { APPLICATION_CONFIG } from "../../application-config";
 import { logger } from "../../utils/logger";
 
@@ -27,7 +27,7 @@ export class K8SRequestHelperService {
     return this._requestHelper;
   }
 
-  getAndValidateHelper(image: Image, user: InstanceUser) {
+  getAndValidateHelper(image: Image, user: InstanceAccount) {
     this.getHelper();
     if (this._requestHelper && this.validateHelper(image, user)) {
       return this._requestHelper;
@@ -36,7 +36,7 @@ export class K8SRequestHelperService {
     return null;
   }
 
-  validateHelper(image: Image, user: InstanceUser) {
+  validateHelper(image: Image, user: InstanceAccount) {
     try {
       const volumes: IK8SRequestHelperVolumeData[] = this._requestHelper.getVolumes ? this._requestHelper.getVolumes(image, user) || [] : [];
       const envVars: {name: string, value: string}[] = this._requestHelper.getEnvVars ? this._requestHelper.getEnvVars(image, user) || [] : [];

@@ -51,7 +51,7 @@ describe('K8sDeploymentManager', () => {
       name: 'test',
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user
+      account: instance.account
     });
     expect(k8sDeploymentRequest.model.spec.template.spec.containers[0].ports.length).to.equal(2);
   });
@@ -138,7 +138,7 @@ describe('K8sDeploymentManager', () => {
       name: instance.computeId,
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user
+      account: instance.account
     });
     expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
@@ -159,7 +159,7 @@ describe('K8sDeploymentManager', () => {
       name: instance.computeId,
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user
+      account: instance.account
     });
     expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
@@ -193,7 +193,7 @@ describe('K8sDeploymentManager', () => {
       name: instance.computeId,
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user,
+      account: instance.account,
       helper: requestHelper
     });
     expect(deploymentRequest.model.spec.template.spec.volumes || null).to.not.be.null();
@@ -219,7 +219,7 @@ describe('K8sDeploymentManager', () => {
       name: instance.computeId,
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user,
+      account: instance.account,
       helper: requestHelper
     });
     expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
@@ -227,9 +227,9 @@ describe('K8sDeploymentManager', () => {
     expect(deploymentRequest.model.spec.template.spec.containers[0].env || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers[0].env.length).to.equal(2);
     expect(deploymentRequest.model.spec.template.spec.containers[0].env[0].name).to.equal('NB_UID');
-    expect(deploymentRequest.model.spec.template.spec.containers[0].env[0].value).to.equal(`${instance.user.uid}`);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].env[0].value).to.equal(`${instance.account.uid}`);
     expect(deploymentRequest.model.spec.template.spec.containers[0].env[1].name).to.equal('NB_GID');
-    expect(deploymentRequest.model.spec.template.spec.containers[0].env[1].value).to.equal(`${instance.user.gid}`);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].env[1].value).to.equal(`${instance.account.gid}`);
   });
 
   it('creates kubernetes deployment with a volume mount', async () => {
@@ -239,7 +239,7 @@ describe('K8sDeploymentManager', () => {
     const instance = await instanceService.getById(1);
     await k8sDeploymentManager.create(instance, 'test', 'panosc-kubernetes-instances');
     const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc-kubernetes-instances');
-    expect(k8sDeployment.containers[0].volumeMounts.filter(volumeMounts => volumeMounts.name == 'volume1') || null).to.not.be.null();
+    expect(k8sDeployment.containers[0].volumeMounts.filter(volumeMounts => volumeMounts.name === 'volume1') || null).to.not.be.null();
   });
 
   it('creates kubernetes deployment with database and helper env vars', async () => {
@@ -250,9 +250,9 @@ describe('K8sDeploymentManager', () => {
     await k8sDeploymentManager.create(instance, 'test', 'panosc-kubernetes-instances');
     const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc-kubernetes-instances');
     expect(k8sDeployment.containers[0].env.length).to.equal(3);
-    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_UID').value).to.be.equal(`${1001}`);
-    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_GID').value).to.be.equal(`${2000}`);
-    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'TEST').value).to.be.equal('Test value');
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name === 'NB_UID').value).to.be.equal(`${1001}`);
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name === 'NB_GID').value).to.be.equal(`${2000}`);
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name === 'TEST').value).to.be.equal('Test value');
   });
 
   it('creates kubernetes deployment with database env vars', async () => {
@@ -263,9 +263,9 @@ describe('K8sDeploymentManager', () => {
     await k8sDeploymentManager.create(instance, 'test', 'panosc-kubernetes-instances');
     const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc-kubernetes-instances');
     expect(k8sDeployment.containers[0].env.length).to.equal(3);
-    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_UID').value).to.be.equal('3000');
-    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'NB_GID').value).to.be.equal('3001');
-    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name == 'TEST').value).to.be.equal('Test value 2');
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name === 'NB_UID').value).to.be.equal('3000');
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name === 'NB_GID').value).to.be.equal('3001');
+    expect(k8sDeployment.containers[0].env.find(envVar => envVar.name === 'TEST').value).to.be.equal('Test value 2');
   });
 
   it('creates kubernetes deployment with security context from the database', async () => {
@@ -279,7 +279,7 @@ describe('K8sDeploymentManager', () => {
       name: instance.computeId,
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user,
+      account: instance.account,
     });
     expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
@@ -304,13 +304,13 @@ describe('K8sDeploymentManager', () => {
       name: instance.computeId,
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user,
+      account: instance.account,
       helper: requestHelper
     });
     expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
     expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext || null).to.not.be.null();
-    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(instance.user.uid);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(instance.account.uid);
   });
 
   it('creates kubernetes deployment with security context from database overriden by the request helper', async () => {
@@ -330,13 +330,13 @@ describe('K8sDeploymentManager', () => {
       name: instance.computeId,
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user,
+      account: instance.account,
       helper: requestHelper
     });
     expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
     expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext || null).to.not.be.null();
-    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(instance.user.uid);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(instance.account.uid);
   });
 
   it('creates kubernetes deployment request with protocols', async () => {
@@ -356,7 +356,7 @@ describe('K8sDeploymentManager', () => {
       name: instance.computeId,
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user,
+      account: instance.account,
       helper: requestHelper
     });
     expect(deploymentRequest.model.spec.template.spec.containers[0].ports.length).to.equal(2);

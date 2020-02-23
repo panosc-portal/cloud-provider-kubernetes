@@ -59,7 +59,7 @@ export class TypeORMDataSource implements LifeCycleObserver {
 
       return connection;
     } catch (error) {
-      logger.error(`Could not connect to the Postgres database : ${error.message}`);
+      logger.error(`Could not connect to the database : ${error.message}`);
       process.exit();
     }
   }
