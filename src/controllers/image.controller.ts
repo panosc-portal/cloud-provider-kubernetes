@@ -95,6 +95,7 @@ export class ImageController extends BaseController {
       description: imageCreator.description,
       repository: imageCreator.repository,
       path: imageCreator.path,
+      environmentType: imageCreator.environmentType,
       command: imageCreator.command,
       args: imageCreator.args,
       runAsUID: imageCreator.runAsUID,
@@ -137,6 +138,7 @@ export class ImageController extends BaseController {
     image.description = imageUpdator.description ? imageUpdator.description : image.description;
     image.repository = imageUpdator.repository;
     image.path = imageUpdator.path;
+    image.environmentType = imageUpdator.environmentType;
     image.command = imageUpdator.command ? imageUpdator.command : image.command;
     image.args = imageUpdator.args ? imageUpdator.args : image.args;
     image.runAsUID = imageUpdator.runAsUID ? imageUpdator.runAsUID : image.runAsUID;

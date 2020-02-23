@@ -2,6 +2,7 @@ import { model, property } from '@loopback/repository';
 import { ImageProtocolCreatorDto } from './image-protocol-creator-dto';
 import { ImageVolumeCreatorDto } from './image-volume-creator-dto';
 import { ImageEnvVarCreatorDto } from './image-env-var-creator-dto';
+import { EnvironmentType } from '../../models';
 
 @model()
 export class ImageCreatorDto {
@@ -21,6 +22,12 @@ export class ImageCreatorDto {
     required: true
   })
   path: string;
+
+  @property({
+    type: 'string',
+    required: true
+  })
+  environmentType: EnvironmentType;
 
   @property({
     type: 'string',

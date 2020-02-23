@@ -33,7 +33,7 @@ export class InstanceStateJob extends Job {
     // Cleanup all instances that have been deleted - set soft deleted flag
     if (instances.length > 0) {
       const runningInstances = await filterAsync(instances, async instance => {
-        if (instance.status == InstanceStatus.DELETED) {
+        if (instance.status === InstanceStatus.DELETED) {
           instance.deleted = true;
           await this._instanceService.save(instance);
           logger.info(`Instance ${instance.id} has DELETED state: deleting it`);

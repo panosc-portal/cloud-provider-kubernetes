@@ -1,10 +1,10 @@
 import { model, property } from '@loopback/repository';
-import { Entity, PrimaryGeneratedColumn, Column, Index, ManyToMany, JoinTable, OneToMany } from 'typeorm';
-import { Protocol } from './protocol.model';
+import { Entity, PrimaryGeneratedColumn, Column, Index, OneToMany } from 'typeorm';
 import { ImageVolume } from './image-volume.model';
 import { ImageEnvVar } from './image-env-var.model';
 import { ImageProtocol } from './image-protocol.model';
 import { Instance } from './instance.model';
+import { EnvironmentType } from '../enumerations';
 
 @Entity()
 @model()
@@ -41,6 +41,14 @@ export class Image {
   @Index('image_path_index')
   @Column({ length: 250 })
   path: string;
+
+  @property({
+    type: 'string',
+    require: true
+  })
+  @Index('image_environment_type_index')
+  @Column({ name: 'environment_type', length: 100 })
+  environmentType: EnvironmentType;
 
   @property({
     type: 'string'

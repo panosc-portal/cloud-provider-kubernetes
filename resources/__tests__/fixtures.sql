@@ -9,16 +9,16 @@ values (4, "HTTPS", 443);
 insert into protocol (id, name, default_port)
 values (5, "GUACD", 4822);
 
-insert into image (id, name, path, description, command, args, run_as_uid)
-values (1, "image 1", "repo1/image-name1", "An image", "start.sh", "jupyter,notebook,--NotebookApp.token=''", 0);
-insert into image (id, name, path, description)
-values (2, "image 2", "repo2/image-name2", "Another image");
-insert into image (id, name, path, description, run_as_uid)
-values (3, "image 3", "repo3/image-name3", "A image not associated to an instance", 0);
-insert into image (id, name, path, description)
-values (4, "image 4", "repo4/image-name4", "Another image");
-insert into image (id, name, path, description)
-values (5, "image 5", "repo5/image-name5", "Image with no protocols");
+insert into image (id, name, path, environment_type, description, command, args, run_as_uid)
+values (1, "image 1", "repo1/image-name1", "JUPYTER_NOTEBOOK", "An image", "start.sh", "jupyter,notebook,--NotebookApp.token=''", 0);
+insert into image (id, name, path, environment_type, description)
+values (2, "image 2", "repo2/image-name2", "REMOTE_DESKTOP", "Another image");
+insert into image (id, name, path, environment_type, description, run_as_uid)
+values (3, "image 3", "repo3/image-name3", "JUPYTER_NOTEBOOK", "A image not associated to an instance", 0);
+insert into image (id, name, path, environment_type, description)
+values (4, "image 4", "repo4/image-name4", "REMOTE_DESKTOP", "Another image");
+insert into image (id, name, path, environment_type, description)
+values (5, "image 5", "repo5/image-name5", "REMOTE_DESKTOP", "Image with no protocols");
 
 insert into image_protocol (id, port, image_id, protocol_id)
 values (1, 3389, 1, 1);

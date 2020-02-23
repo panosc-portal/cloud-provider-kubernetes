@@ -2,7 +2,7 @@ import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { createTestApplicationContext } from '../../helpers/context.helper';
 import { ImageService, ImageProtocolService, ImageVolumeService } from '../../../services';
-import { Image, ImageProtocol } from '../../../models';
+import { Image, ImageProtocol, EnvironmentType } from '../../../models';
 
 describe('ImageService', () => {
   let imageService: ImageService;
@@ -34,6 +34,7 @@ describe('ImageService', () => {
     const image = new Image({
       name: 'image 3',
       path: 'repo/image',
+      environmentType: EnvironmentType.REMOTE_DESKTOP,
       description: 'A new image'
     });
     await imageService.save(image);
@@ -119,6 +120,7 @@ describe('ImageService', () => {
     const image: Image = new Image({
       name: 'test',
       path: 'test',
+      environmentType: EnvironmentType.REMOTE_DESKTOP,
       protocols: [protocol1, protocol2]
     });
 

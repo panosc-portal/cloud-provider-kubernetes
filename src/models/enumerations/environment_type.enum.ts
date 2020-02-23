@@ -1,0 +1,4 @@
+export enum EnvironmentType {
+  JUPYTER_NOTEBOOK = 'JUPYTER_NOTEBOOK',
+  REMOTE_DESKTOP = 'REMOTE_DESKTOP'
+}
