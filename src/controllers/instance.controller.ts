@@ -7,6 +7,7 @@ import { InstanceStatus } from '../models';
 import { InstanceCommandDto } from './dto/instance-command-dto';
 import { BaseController } from './base.controller';
 import { InstanceUpdatorDto } from './dto/instance-updator-dto';
+import { InstanceNetworkDto } from './dto/instance-network-dto';
 
 export class InstanceController extends BaseController {
   constructor(
@@ -146,6 +147,29 @@ export class InstanceController extends BaseController {
     this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
 
     return instance.state;
+  }
+
+  @get('/instances/{id}/network', {
+    summary: 'Get the network of an instance by a given identifier',
+    responses: {
+      '200': {
+        description: 'Ok',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(InstanceNetworkDto)
+          }
+        }
+      }
+    }
+  })
+  async getNetwork(@param.path.string('id') id: number): Promise<InstanceNetworkDto> {
+    const instance = await this._instanceService.getById(id);
+    this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
+
+    return new InstanceNetworkDto({
+      hostname: instance.hostname,
+      protocols: instance.protocols
+    });
   }
 
   @del('/instances/{id}', {
