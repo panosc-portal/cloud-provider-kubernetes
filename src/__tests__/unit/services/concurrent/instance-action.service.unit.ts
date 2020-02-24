@@ -32,7 +32,7 @@ describe('InstanceActionService', () => {
     await context.instanceActionService.execute(command);
 
     instance = await context.instanceService.getById(1);
-    
+
     expect(instance.status).to.be.equal(InstanceStatus.ACTIVE);
     expect(instance.computeId || null).to.not.be.null();
 
@@ -58,11 +58,10 @@ describe('InstanceActionService', () => {
 
     await createPromise;
     instance = await context.instanceService.getById(1);
-    
+
     expect(instance.status).to.be.equal(InstanceStatus.ACTIVE);
     expect(instance.computeId || null).to.not.be.null();
   });
-
 
   it('Refuses a deplicated command', async () => {
     const instance = await context.instanceService.getById(1);
@@ -76,7 +75,6 @@ describe('InstanceActionService', () => {
     let isError = false;
     try {
       await context.instanceActionService.execute(command2);
-
     } catch (error) {
       isError = true;
     }
@@ -84,5 +82,4 @@ describe('InstanceActionService', () => {
     await promise1;
     expect(isError).to.be.true();
   });
-
 });

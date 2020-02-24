@@ -18,7 +18,7 @@ export class ImageProtocol {
   @property({
     type: 'number'
   })
-  @Column({nullable: true})
+  @Column({ nullable: true })
   port: number;
 
   @property({ type: Protocol, required: true })
@@ -26,7 +26,7 @@ export class ImageProtocol {
   @JoinColumn({ name: 'protocol_id' })
   protocol: Protocol;
 
-  @ManyToOne(type => Image, image => image.protocols, {onDelete: 'CASCADE', nullable: false})
+  @ManyToOne(type => Image, image => image.protocols, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
   image: Image;
 

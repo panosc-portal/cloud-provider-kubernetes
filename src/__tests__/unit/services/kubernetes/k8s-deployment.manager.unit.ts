@@ -1,6 +1,11 @@
 import { expect } from '@loopback/testlab';
 import { createTestApplicationContext } from '../../../helpers/context.helper';
-import { K8sDeploymentManager, K8sNamespaceManager, InstanceService, K8SRequestHelperService } from '../../../../services';
+import {
+  K8sDeploymentManager,
+  K8sNamespaceManager,
+  InstanceService,
+  K8SRequestHelperService
+} from '../../../../services';
 import { K8sDeploymentRequest } from '../../../../models';
 import { KubernetesMockServer } from '../../../mock/kubernetes-mock-server';
 import { givenInitialisedTestDatabase } from '../../../helpers/database.helper';
@@ -124,7 +129,10 @@ describe('K8sDeploymentManager', () => {
     expect(instance || null).to.not.be.null();
 
     await k8sDeploymentManager.create(instance, 'test', 'panosc-kubernetes-instances');
-    const deletedService = await k8sDeploymentManager.deleteWithComputeId('testdeployment', 'panosc-kubernetes-instances');
+    const deletedService = await k8sDeploymentManager.deleteWithComputeId(
+      'testdeployment',
+      'panosc-kubernetes-instances'
+    );
     expect(deletedService).to.be.not.null();
   });
 
@@ -239,7 +247,9 @@ describe('K8sDeploymentManager', () => {
     const instance = await instanceService.getById(1);
     await k8sDeploymentManager.create(instance, 'test', 'panosc-kubernetes-instances');
     const k8sDeployment = await k8sDeploymentManager.getWithComputeId('test', 'panosc-kubernetes-instances');
-    expect(k8sDeployment.containers[0].volumeMounts.filter(volumeMounts => volumeMounts.name == 'volume1') || null).to.not.be.null();
+    expect(
+      k8sDeployment.containers[0].volumeMounts.filter(volumeMounts => volumeMounts.name == 'volume1') || null
+    ).to.not.be.null();
   });
 
   it('creates kubernetes deployment with database and helper env vars', async () => {
@@ -279,7 +289,7 @@ describe('K8sDeploymentManager', () => {
       name: instance.computeId,
       image: instance.image,
       flavour: instance.flavour,
-      user: instance.user,
+      user: instance.user
     });
     expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
@@ -310,7 +320,9 @@ describe('K8sDeploymentManager', () => {
     expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
     expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext || null).to.not.be.null();
-    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(instance.user.uid);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(
+      instance.user.uid
+    );
   });
 
   it('creates kubernetes deployment with security context from database overriden by the request helper', async () => {
@@ -336,11 +348,12 @@ describe('K8sDeploymentManager', () => {
     expect(deploymentRequest.model.spec.template.spec.containers || null).to.not.be.null();
     expect(deploymentRequest.model.spec.template.spec.containers.length).to.equal(1);
     expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext || null).to.not.be.null();
-    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(instance.user.uid);
+    expect(deploymentRequest.model.spec.template.spec.containers[0].securityContext.runAsUser).to.equal(
+      instance.user.uid
+    );
   });
 
   it('creates kubernetes deployment request with protocols', async () => {
-
     const k8SRequestHelperService = new K8SRequestHelperService();
     const requestHelper = k8SRequestHelperService.getHelper();
     expect(requestHelper || null).to.not.be.null();
@@ -375,11 +388,10 @@ describe('K8sDeploymentManager', () => {
 
     let hasError = false;
     try {
-      await k8sDeploymentManager.create(instance,'test', 'panosc-kubernetes-instances');
+      await k8sDeploymentManager.create(instance, 'test', 'panosc-kubernetes-instances');
     } catch (error) {
       hasError = true;
     }
     expect(hasError).to.be.true();
-
   });
 });

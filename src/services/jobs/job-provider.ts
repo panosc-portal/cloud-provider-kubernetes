@@ -1,11 +1,10 @@
-
 export class JobClassDescriptor {
   class: any;
   dependencies: any = {};
 }
 
 class JobProvider {
-  private _jobClassDescriptors: Map<string, JobClassDescriptor> = new Map();;
+  private _jobClassDescriptors: Map<string, JobClassDescriptor> = new Map();
 
   public create(className: string) {
     const jobClassDescriptor = new JobClassDescriptor();
@@ -33,7 +32,7 @@ export function jobInject(injectionIdentifier: string) {
   return function(target: Object, propertyName: string) {
     const className = target.constructor.name;
     let jobClassDescriptor = JOB_PROVIDER.get(className);
-    jobClassDescriptor = jobClassDescriptor ||JOB_PROVIDER.create(className);
+    jobClassDescriptor = jobClassDescriptor || JOB_PROVIDER.create(className);
 
     jobClassDescriptor.dependencies[propertyName] = injectionIdentifier;
   };

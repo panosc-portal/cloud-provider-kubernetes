@@ -5,23 +5,20 @@ import { APPLICATION_CONFIG } from '../../application-config';
 import * as fs from 'fs';
 
 export class K8sSecretManager {
-
   private _secretConfigs: K8sSecretRequestConfig[] = [];
   private _secrets: Map<string, Array<K8sSecret>> = new Map();
 
   constructor(private _dataSource: KubernetesDataSource) {
     if (APPLICATION_CONFIG().kubernetes.secretsConfig != null) {
       const configFile = APPLICATION_CONFIG().kubernetes.secretsConfig;
-      if (fs.existsSync(configFile)) {
+      if (fs.existsSync(configFile)) {
         try {
           const data = fs.readFileSync(configFile);
-          
-          this._secretConfigs = JSON.parse(data.toString()) as K8sSecretRequestConfig[];
 
+          this._secretConfigs = JSON.parse(data.toString()) as K8sSecretRequestConfig[];
         } catch (error) {
           logger.error(`Unable to read secretes config file '${configFile}': ${error.message}`);
         }
-      
       } else {
         logger.warn(`No secretes config file has been provided`);
       }
@@ -34,12 +31,11 @@ export class K8sSecretManager {
     }
 
     const config = this._secretConfigs.find(config => config.repository === repository);
-    if  (config != null) {
+    if (config != null) {
       const secretRequest = new K8sSecretRequest(config);
       const secret = await this.createIfNotExist(secretRequest, namespace);
-      
-      return secret.name;
 
+      return secret.name;
     } else {
       logger.warn(`Could not find a secret config for repository '${repository}'`);
       return null;
@@ -50,25 +46,22 @@ export class K8sSecretManager {
     try {
       logger.debug(`Getting kubernetes secret '${name}' in namespace '${namespace}'`);
       const secret = await this._dataSource.getSecret(name, namespace);
-      
+
       const k8sSecret = new K8sSecret(name, secret);
 
       if (k8sSecret.isValid()) {
         logger.debug(`Got kubernetes secret '${name}' in namespace '${namespace}'`);
-        
+
         this._addSecretToStore(k8sSecret, namespace);
 
         return k8sSecret;
-      
       } else {
         throw new LoggedError(`Kubernetes secret with compute Id '${name}' is not valid`);
       }
-
     } catch (error) {
       if (error.statusCode === 404) {
         logger.debug(`Kubernetes secret '${name}' in namespace '${namespace}' does not exist`);
         return null;
-
       } else {
         throw new LoggedError(`Failed to get kubernetes secret with compute Id '${name}': ${error.message}`);
       }
@@ -77,22 +70,24 @@ export class K8sSecretManager {
 
   async create(secretRequest: K8sSecretRequest, namespace: string): Promise<K8sSecret> {
     try {
-      logger.debug(`Creating kubernetes secret '${secretRequest.name}' for repository '${secretRequest.config.repository}' in namespace '${namespace}'`);
+      logger.debug(
+        `Creating kubernetes secret '${secretRequest.name}' for repository '${secretRequest.config.repository}' in namespace '${namespace}'`
+      );
       const secret = await this._dataSource.createSecret(secretRequest, namespace);
 
       const k8sSecret = new K8sSecret(secretRequest.name, secret);
 
       if (k8sSecret.isValid()) {
-        logger.debug(`Secret '${k8sSecret.name}' for repository '${secretRequest.config.repository}' in namespace '${namespace}' has been created`);
+        logger.debug(
+          `Secret '${k8sSecret.name}' for repository '${secretRequest.config.repository}' in namespace '${namespace}' has been created`
+        );
 
         this._addSecretToStore(k8sSecret, namespace);
 
         return k8sSecret;
-
       } else {
         throw new LoggedError(`Kubernetes secret with name '${secretRequest.name}' is not valid`);
       }
-
     } catch (error) {
       throw new LoggedError(`Failed to create k8s secret with name '${secretRequest.name}': ${error.message}`);
     }
@@ -131,5 +126,4 @@ export class K8sSecretManager {
       namespaceSecrets.push(secret);
     }
   }
-
 }

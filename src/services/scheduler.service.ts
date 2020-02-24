@@ -1,33 +1,31 @@
-import { bind, BindingScope, Application, inject, CoreBindings, lifeCycleObserver } from "@loopback/core";
+import { bind, BindingScope, Application, inject, CoreBindings, lifeCycleObserver } from '@loopback/core';
 import * as fs from 'fs';
-import { logger } from "../utils";
-import { JOB_PROVIDER } from "./jobs/job-provider";
-import { CronJob } from "cron";
-import { Job } from "./jobs/job";
-import { APPLICATION_CONFIG } from "../application-config";
+import { logger } from '../utils';
+import { JOB_PROVIDER } from './jobs/job-provider';
+import { CronJob } from 'cron';
+import { Job } from './jobs/job';
+import { APPLICATION_CONFIG } from '../application-config';
 
 interface JobConfigInjection {
-  key: string,
-  className: string
+  key: string;
+  className: string;
 }
 
 interface JobConfig {
-  name: string,
-  jobClass: string,
-  cronExpression: string,
-  injections: JobConfigInjection[],
-  params: any,
-  enabled: boolean
+  name: string;
+  jobClass: string;
+  cronExpression: string;
+  injections: JobConfigInjection[];
+  params: any;
+  enabled: boolean;
 }
 
 @bind({ scope: BindingScope.SINGLETON })
 @lifeCycleObserver('server')
 export class SchedulerService {
-
   private _jobs: Map<string, CronJob> = new Map();
 
-  constructor(@inject(CoreBindings.APPLICATION_INSTANCE) private _application?: Application) {
-  }
+  constructor(@inject(CoreBindings.APPLICATION_INSTANCE) private _application?: Application) {}
 
   async start(): Promise<void> {
     return this.init();
@@ -46,41 +44,42 @@ export class SchedulerService {
         const jobConfigs = await this.readConfig();
 
         if (jobConfigs) {
-          jobConfigs.forEach(async (jobConfig) => {
+          jobConfigs.forEach(async jobConfig => {
             if (jobConfig.enabled) {
               // Instantiate job runner
               const jobClass = JOB_PROVIDER.get(jobConfig.jobClass);
               if (jobClass != null) {
                 const jobRunner = new jobClass.class() as Job;
                 let jobIsOk = true;
-      
+
                 // Inject dependencies
                 for (const dependency in jobClass.dependencies) {
                   const injectionIdentifier = jobClass.dependencies[dependency];
                   const injection = await this._application.get(injectionIdentifier);
                   if (injection != null) {
                     jobRunner[dependency] = injection;
-    
                   } else {
                     jobIsOk = false;
-                    logger.error(`Dependency '${injectionIdentifier}' in Job class '${jobConfig.jobClass}' could not be found`);
+                    logger.error(
+                      `Dependency '${injectionIdentifier}' in Job class '${jobConfig.jobClass}' could not be found`
+                    );
                   }
                 }
-        
+
                 if (jobIsOk) {
-                  const cronJob = new CronJob(jobConfig.cronExpression, () => jobRunner.run(jobConfig.name, jobConfig.params));
+                  const cronJob = new CronJob(jobConfig.cronExpression, () =>
+                    jobRunner.run(jobConfig.name, jobConfig.params)
+                  );
                   this._jobs.set(jobConfig.name, cronJob);
                   cronJob.start();
                 }
               }
-
             } else {
               logger.error(`Job class '${jobConfig.jobClass}' specified in scheduler config does not exist`);
             }
           });
         }
       }
-
     } catch (error) {
       throw error;
     }
@@ -89,20 +88,18 @@ export class SchedulerService {
   readConfig(): Promise<JobConfig[]> {
     return new Promise((resolve, reject) => {
       const configFile = APPLICATION_CONFIG().scheduler.config || 'resources/scheduler.config.json';
-      if (fs.existsSync(configFile)) {
+      if (fs.existsSync(configFile)) {
         fs.readFile(configFile, (err, data) => {
           if (err) {
             logger.error(`Unable to read scheduler config file '${configFile}': ${err.message}`);
             reject(err);
-    
           } else {
             const config = JSON.parse(data.toString());
             const jobConfigs = config.jobs as JobConfig[];
-    
+
             resolve(jobConfigs);
           }
         });
-      
       } else {
         logger.warn(`No scheduler config file has been provided`);
         resolve(null);

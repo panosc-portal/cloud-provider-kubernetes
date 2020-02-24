@@ -11,7 +11,8 @@ const getVolumes = function(image, user) {
           type: 'Directory'
         }
       }
-    }, {
+    },
+    {
       name: 'volume2',
       volume: {
         hostPath: {
@@ -19,7 +20,8 @@ const getVolumes = function(image, user) {
           type: 'Directory'
         }
       }
-    }, {
+    },
+    {
       name: 'volume3',
       volume: {
         hostPath: {
@@ -27,7 +29,8 @@ const getVolumes = function(image, user) {
           type: 'Directory'
         }
       }
-    }, {
+    },
+    {
       name: 'VOLUME4',
       volume: {
         hostPath: {
@@ -38,30 +41,23 @@ const getVolumes = function(image, user) {
     }
   ];
 
-    const volumeNames = image.volumes ? image.volumes.map(volume => volume.name) : [];
-    return volumes.filter(volume => volumeNames.includes(volume.name));
-  }
-;
-
+  const volumeNames = image.volumes ? image.volumes.map(volume => volume.name) : [];
+  return volumes.filter(volume => volumeNames.includes(volume.name));
+};
 const getEnvVars = function(image, user) {
   const allEnvVars = [
     {
       imageName: 'image 1',
-      data: [
-        { name: 'NB_UID', value: `${user.uid}` },
-        { name: 'NB_GID', value: `${user.gid}` }
-      ]
-    }, {
+      data: [{ name: 'NB_UID', value: `${user.uid}` }, { name: 'NB_GID', value: `${user.gid}` }]
+    },
+    {
       imageName: 'image 2',
-      data: [
-        { name: 'NB_UID', value: `${user.uid}` },
-        { name: 'NB_GID', value: `${user.gid}` }
-      ]
+      data: [{ name: 'NB_UID', value: `${user.uid}` }, { name: 'NB_GID', value: `${user.gid}` }]
     }
   ];
 
   const envVars = allEnvVars.find(envVars => envVars.imageName === image.name);
-  return envVars? envVars.data : null;
+  return envVars ? envVars.data : null;
 };
 
 const getRunAsUID = function(image, user) {
@@ -69,7 +65,8 @@ const getRunAsUID = function(image, user) {
     {
       imageName: 'image 2',
       runAsUID: user.uid
-    }, {
+    },
+    {
       imageName: 'image 3',
       runAsUID: user.uid
     }
@@ -84,6 +81,3 @@ module.exports = {
   getEnvVars: getEnvVars,
   getRunAsUID: getRunAsUID
 };
-;
-
-

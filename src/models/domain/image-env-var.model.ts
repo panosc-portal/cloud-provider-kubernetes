@@ -5,7 +5,6 @@ import { Image } from './image.model';
 @Entity()
 @model()
 export class ImageEnvVar {
-
   @property({
     type: 'number',
     id: true,
@@ -29,7 +28,7 @@ export class ImageEnvVar {
   @Column()
   value: string;
 
-  @ManyToOne(type => Image, image => image.envVars,{onDelete:'CASCADE'})
+  @ManyToOne(type => Image, image => image.envVars, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
   image: Image;
 

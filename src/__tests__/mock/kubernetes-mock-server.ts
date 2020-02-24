@@ -15,19 +15,22 @@ export class KubernetesMockServer {
   private _createdDeployments = new Map();
   private _createdServices = new Map();
   private _createdNamespaces = new Map();
-  private _nodes = [{
-    name: 'k8s-test-master-1',
-    master: true,
-    cpu: 2,
-    memory: '4039460Ki',
-    address: '10.0.0.1'
-  }, {
-    name: 'k8s-test-worker-1',
-    master: false,
-    cpu: 2,
-    memory: '4039460Ki',
-    address: '10.0.0.2'
-  }];
+  private _nodes = [
+    {
+      name: 'k8s-test-master-1',
+      master: true,
+      cpu: 2,
+      memory: '4039460Ki',
+      address: '10.0.0.1'
+    },
+    {
+      name: 'k8s-test-worker-1',
+      master: false,
+      cpu: 2,
+      memory: '4039460Ki',
+      address: '10.0.0.2'
+    }
+  ];
 
   start() {
     if (this._server != null) {
@@ -51,7 +54,7 @@ export class KubernetesMockServer {
     });
 
     app.get('/api/v1/namespaces/:namespace/pods', (req, res) => {
-      const labelSelector= req.query.labelSelector;
+      const labelSelector = req.query.labelSelector;
       const namespace = req.params.namespace;
       const label = labelSelector.split('=')[1];
       logger.info(`Getting pods with label ${labelSelector} from namespace ${namespace}`);
@@ -158,7 +161,7 @@ export class KubernetesMockServer {
       if (this._createdNamespaces.get(namespace) != null) {
         const deploymentExist = this._createdDeployments.get(`${namespace}.${deploymentName}`);
         if (deploymentExist == null) {
-          const response = k8sResponseCreator.getDeployment(req.body,this._error.type);
+          const response = k8sResponseCreator.getDeployment(req.body, this._error.type);
           this._createdDeployments.set(`${namespace}.${deploymentName}`, response);
           res.status(200).send(response);
         } else {
@@ -285,15 +288,12 @@ export class KubernetesMockServer {
     if (objectName.startsWith('pod-crash-loop')) {
       logger.info(`Running error pod crashLoop mode`);
       this._error = { state: true, type: 'pod-crash-loop' };
-    
     } else if (objectName.startsWith('pod-container-creating-timeout')) {
       logger.info(`Running error pod ContainerCreatingTimeout state mode`);
       this._error = { state: true, type: 'pod-container-creating-timeout' };
-    
     } else if (objectName.startsWith('pod-err-image-pull')) {
       logger.info(`Running error pod ErrImagePull state mode`);
       this._error = { state: true, type: 'pod-err-image-pull' };
-    
     } else if (objectName.startsWith('endpoint-error')) {
       logger.info(`Running error endpoint state mode`);
       this._error = { state: true, type: 'endpoint-error' };
@@ -334,5 +334,4 @@ export class KubernetesMockServer {
       }
     }
   }
-
 }

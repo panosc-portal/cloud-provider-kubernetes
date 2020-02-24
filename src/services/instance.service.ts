@@ -14,21 +14,18 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
     return this._repository.getAllWithStates(states);
   }
 
-  async getAllNamespaceComputeIds(): Promise<{ namespace: string, computeId: string }[]> {
+  async getAllNamespaceComputeIds(): Promise<{ namespace: string; computeId: string }[]> {
     return this._repository.getAllNamespaceComputeIds();
   }
 
   count(where?: Where): Promise<number> {
     if (where) {
       where = new WhereBuilder()
-      .eq('deleted', false)
-      .and(where)
-      .build();
-
+        .eq('deleted', false)
+        .and(where)
+        .build();
     } else {
-      where = new WhereBuilder()
-      .eq('deleted', false)
-      .build();
+      where = new WhereBuilder().eq('deleted', false).build();
     }
 
     return this._repository.count(where);

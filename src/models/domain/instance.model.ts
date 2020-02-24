@@ -1,7 +1,18 @@
 import { model, property } from '@loopback/repository';
 import { InstanceProtocol } from './instance-protocol.model';
 import { Flavour } from './flavour.model';
-import { Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  OneToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne
+} from 'typeorm';
 import { Image } from './image.model';
 import { InstanceStatus } from '../enumerations';
 import { InstanceState } from './instance-state.model';
@@ -33,7 +44,7 @@ export class Instance {
   @Column({ length: 2500, nullable: true })
   description?: string;
 
-  @Column({ length: 250,nullable: true })
+  @Column({ length: 250, nullable: true })
   namespace: string;
 
   @property({
@@ -47,13 +58,13 @@ export class Instance {
     type: 'string',
     required: true
   })
-  @Column({ length: 128, nullable: true,name: 'node_hostname' })
+  @Column({ length: 128, nullable: true, name: 'node_hostname' })
   nodeHostname: string;
 
   @property({
     type: 'string'
   })
-  @Column({ length: 50, nullable: true,name: 'compute_id' })
+  @Column({ length: 50, nullable: true, name: 'compute_id' })
   computeId: string;
 
   @property({
@@ -64,7 +75,7 @@ export class Instance {
   status: InstanceStatus;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
   @Column({ length: 2500, nullable: true, name: 'status_message' })
   statusMessage: string;
@@ -112,8 +123,8 @@ export class Instance {
   flavour: Flavour;
 
   @property({ type: Image })
-  @ManyToOne(type => Image, image=>image.instances, { eager: true, nullable: false,onDelete:'CASCADE' })
-  @JoinColumn({ name: 'image_id', })
+  @ManyToOne(type => Image, image => image.instances, { eager: true, nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'image_id' })
   image: Image;
 
   @property({ type: InstanceUser })

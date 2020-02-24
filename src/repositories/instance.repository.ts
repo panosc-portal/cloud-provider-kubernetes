@@ -22,11 +22,11 @@ export class InstanceRepository extends BaseRepository<Instance, number> {
     return super.find({ where: { deleted: false, nodeHostname: name }, order: { id: 'ASC' } });
   }
 
-  async getAllNamespaceComputeIds(): Promise<{namespace: string, computeId: string}[]> {
+  async getAllNamespaceComputeIds(): Promise<{ namespace: string; computeId: string }[]> {
     const repository = await this.init();
     const queryBuilder = repository.createQueryBuilder('instance');
 
-    const data = await queryBuilder.select(["instance.namespace", "instance.computeId"]).getMany();
-    return data.map(instance => ({namespace: instance.namespace, computeId: instance.computeId}));
+    const data = await queryBuilder.select(['instance.namespace', 'instance.computeId']).getMany();
+    return data.map(instance => ({ namespace: instance.namespace, computeId: instance.computeId }));
   }
 }

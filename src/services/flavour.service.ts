@@ -10,8 +10,7 @@ export class FlavourService extends BaseService<Flavour, FlavourRepository> {
     super(repo);
   }
 
-  getUsageCount(): Promise<{flavourId: number, flavourName: string, instanceCount: number}[]> {
+  getUsageCount(): Promise<{ flavourId: number; flavourName: string; instanceCount: number }[]> {
     return this._repository.getUsageCount();
   }
-  
 }

@@ -4,12 +4,12 @@ import { IK8SRequestHelper } from './k8s-request-helper.model';
 import { logger } from '../../utils';
 
 export interface K8sDeploymentRequestConfig {
-  name: string,
-  image: Image,
-  flavour: Flavour,
-  user: InstanceUser,
-  imagePullSecret?: string,
-  helper?: IK8SRequestHelper
+  name: string;
+  image: Image;
+  flavour: Flavour;
+  user: InstanceUser;
+  imagePullSecret?: string;
+  helper?: IK8SRequestHelper;
 }
 
 export class K8sDeploymentRequest {
@@ -53,7 +53,7 @@ export class K8sDeploymentRequest {
         i = 0;
         while (match && volumeMounts.length > i) {
           if (volumeMounts[i].name) {
-            match = volumes.find((volume) => volume.name == volumeMounts[i].name) != null;
+            match = volumes.find(volume => volume.name == volumeMounts[i].name) != null;
           } else {
             match = false;
           }
@@ -61,7 +61,7 @@ export class K8sDeploymentRequest {
         }
         if (!match) {
           logger.error(`Kubernetes deployment-request did not have a volume for volumeMount ${volumeMounts[i].name}`);
-          return false
+          return false;
         }
       } else {
         return false;
@@ -98,7 +98,9 @@ export class K8sDeploymentRequest {
             containers: [
               {
                 name: this._config.name,
-                image: this._config.image.repository ? `${this._config.image.repository}/${this._config.image.path}` : this._config.image.path,
+                image: this._config.image.repository
+                  ? `${this._config.image.repository}/${this._config.image.path}`
+                  : this._config.image.path,
                 ports: this._config.image.protocols.map(imageProtocol => {
                   return { name: imageProtocol.protocol.name.toLowerCase(), containerPort: imageProtocol.getPort() };
                 }),
@@ -136,13 +138,18 @@ export class K8sDeploymentRequest {
       }));
 
       if (this._config.helper && this._config.helper.getVolumes) {
-        this._config.helper.getVolumes(this._config.image, this._config.user)
+        this._config.helper
+          .getVolumes(this._config.image, this._config.user)
           .filter(volumeData => volumeData != null)
           .filter(volumeData => volumeData.volumeMount != null)
           .forEach(volumeData => {
             const volumeMount = volumeMounts.find(aVolumeMount => aVolumeMount.name === volumeData.name);
-            volumeMount.mountPath = volumeData.volumeMount.mountPath ? volumeData.volumeMount.mountPath : volumeMount.mountPath;
-            volumeMount.readOnly = volumeData.volumeMount.readOnly ? volumeData.volumeMount.readOnly : volumeMount.readOnly;
+            volumeMount.mountPath = volumeData.volumeMount.mountPath
+              ? volumeData.volumeMount.mountPath
+              : volumeMount.mountPath;
+            volumeMount.readOnly = volumeData.volumeMount.readOnly
+              ? volumeData.volumeMount.readOnly
+              : volumeMount.readOnly;
           });
       }
 
@@ -153,19 +160,20 @@ export class K8sDeploymentRequest {
   }
 
   private _getVolumes(): any {
-    return (this._config.helper && this._config.helper.getVolumes) ?
-      this._config.helper.getVolumes(this._config.image, this._config.user).map(volumeData => {
-        const volume = volumeData.volume;
-        volume.name = volumeData.name;
-        return volume;
-      }) : undefined;
+    return this._config.helper && this._config.helper.getVolumes
+      ? this._config.helper.getVolumes(this._config.image, this._config.user).map(volumeData => {
+          const volume = volumeData.volume;
+          volume.name = volumeData.name;
+          return volume;
+        })
+      : undefined;
   }
 
   private _getEnvVars(): any {
     const envVars = {};
     if (this._config.image.envVars) {
       // Get env vars from image
-      this._config.image.envVars.forEach(envVar => envVars[envVar.name] = envVar.value);
+      this._config.image.envVars.forEach(envVar => (envVars[envVar.name] = envVar.value));
     }
 
     if (this._config.helper && this._config.helper.getEnvVars) {
@@ -173,7 +181,7 @@ export class K8sDeploymentRequest {
       const helperEnvVars = this._config.helper.getEnvVars(this._config.image, this._config.user);
       if (helperEnvVars) {
         // Add or override env var
-        helperEnvVars.forEach(envVar => envVars[envVar.name] = envVar.value);
+        helperEnvVars.forEach(envVar => (envVars[envVar.name] = envVar.value));
       }
     }
 
@@ -182,13 +190,17 @@ export class K8sDeploymentRequest {
   }
 
   private _getSecurityContext(): any {
-    const helperRunAsUID = (this._config.helper && this._config.helper.getRunAsUID) ? this._config.helper.getRunAsUID(this._config.image, this._config.user) : null;
+    const helperRunAsUID =
+      this._config.helper && this._config.helper.getRunAsUID
+        ? this._config.helper.getRunAsUID(this._config.image, this._config.user)
+        : null;
     const imageRunAsUID = this._config.image.runAsUID;
 
     const runAsUID = helperRunAsUID ? helperRunAsUID : imageRunAsUID;
-    return (runAsUID != null) ? {
-      runAsUser: runAsUID
-    } : undefined;
+    return runAsUID != null
+      ? {
+          runAsUser: runAsUID
+        }
+      : undefined;
   }
-
 }

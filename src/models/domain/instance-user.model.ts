@@ -31,15 +31,15 @@ export class InstanceUser {
   username: string;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
-  @Column({ name: 'first_name',  length: 100, nullable: true })
+  @Column({ name: 'first_name', length: 100, nullable: true })
   firstName: string;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
-  @Column({ name: 'last_name',  length: 100, nullable: true })
+  @Column({ name: 'last_name', length: 100, nullable: true })
   lastName: string;
 
   @property({
@@ -66,9 +66,8 @@ export class InstanceUser {
   @OneToOne(type => Instance, instance => instance.user, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'instance_id' })
   instance: Instance;
-  
+
   constructor(data?: Partial<InstanceUser>) {
     Object.assign(this, data);
   }
-
 }

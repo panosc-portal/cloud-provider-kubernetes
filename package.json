@@ -30,6 +30,7 @@
     "migrate": "node ./dist/migrate",
     "prestart": "npm run build",
     "start": "node -r source-map-support/register .",
+    "dev": "nodemon -r source-map-support/register --inspect=0.0.0.0 .",
     "prepublishOnly": "npm run test",
     "client": "npm run build && node dist/cli/cli-client.js"
   },
@@ -88,6 +89,7 @@
     "source-map-support": "^0.5.13",
     "sqlite3": "^4.1.0",
     "ts-node": "^8.5.2",
-    "typescript": "~3.6.3"
+    "typescript": "~3.6.3",
+    "nodemon": "^2.0.2"
   }
 }

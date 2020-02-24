@@ -3,7 +3,7 @@ import { model, property } from '@loopback/repository';
 @model()
 export class ImageProtocolCreatorDto {
   @property({
-    type: 'number',
+    type: 'number'
   })
   port: number;
 

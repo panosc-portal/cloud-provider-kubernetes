@@ -26,7 +26,7 @@ export class Protocol {
     type: 'number',
     required: true
   })
-  @Column({name: 'default_port'})
+  @Column({ name: 'default_port' })
   defaultPort: number;
 
   constructor(data?: Partial<Protocol>) {

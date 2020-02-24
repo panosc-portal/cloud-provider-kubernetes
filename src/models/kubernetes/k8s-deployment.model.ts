@@ -7,7 +7,6 @@ export class K8sDeployment {
     return this.isValid() ? this._k8sDeploymentResponse.spec.template.spec.containers : null;
   }
 
-
   get ports() {
     if (this.isValid()) {
       const deploymentPorts = [];
@@ -40,24 +39,18 @@ export class K8sDeployment {
     return this.hasPods() ? this._k8sPodListResponse.items[0].metadata.creationTimestamp : null;
   }
 
-  get podNodeName(){
+  get podNodeName() {
     return this.hasPods() ? this._k8sPodListResponse.items[0].spec.nodeName : null;
   }
 
-  get podHostIP(){
+  get podHostIP() {
     return this.hasPods() ? this._k8sPodListResponse.items[0].status.hostIP : null;
   }
 
-
-  constructor(private _name: string, private _k8sDeploymentResponse: any, private _k8sPodListResponse: any) {
-  }
+  constructor(private _name: string, private _k8sDeploymentResponse: any, private _k8sPodListResponse: any) {}
 
   isValid() {
-    return (
-      this.isValidDeployment() &&
-      this.isValidPods()
-    );
-
+    return this.isValidDeployment() && this.isValidPods();
   }
 
   isValidDeployment() {
@@ -75,7 +68,6 @@ export class K8sDeployment {
       this._k8sDeploymentResponse.spec.template.metadata != null &&
       this._k8sDeploymentResponse.spec.template.metadata.labels != null &&
       this._k8sDeploymentResponse.status != null
-
     );
   }
 
@@ -91,5 +83,4 @@ export class K8sDeployment {
   hasPods(): boolean {
     return this._k8sPodListResponse.items.length > 0;
   }
-
 }

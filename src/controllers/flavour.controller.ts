@@ -88,7 +88,10 @@ export class FlavourController extends BaseController {
       }
     }
   })
-  async update(@param.path.number('id') id: number, @requestBody() flavourUpdator: FlavourUpdatorDto): Promise<Flavour> {
+  async update(
+    @param.path.number('id') id: number,
+    @requestBody() flavourUpdator: FlavourUpdatorDto
+  ): Promise<Flavour> {
     this.throwBadRequestIfNull(flavourUpdator, 'Flavour with given id does not exist');
     this.throwBadRequestIfNotEqual(id, flavourUpdator.id, 'Id in path is not the same as body id');
 

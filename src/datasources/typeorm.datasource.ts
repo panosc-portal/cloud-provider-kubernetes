@@ -52,7 +52,6 @@ export class TypeORMDataSource implements LifeCycleObserver {
       if (connection == null && this._connectionPromise == null) {
         this._connectionPromise = createConnection(this._config);
         connection = this._connection = await this._connectionPromise;
-
       } else if (connection == null && this._connectionPromise != null) {
         connection = await this._connectionPromise;
       }

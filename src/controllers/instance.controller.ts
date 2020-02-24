@@ -89,7 +89,7 @@ export class InstanceController extends BaseController {
         gid: instanceCreator.user.gid,
         homePath: instanceCreator.user.homePath,
         firstName: instanceCreator.user.firstName,
-        lastName: instanceCreator.user.lastName,
+        lastName: instanceCreator.user.lastName
       })
     });
 
@@ -114,7 +114,10 @@ export class InstanceController extends BaseController {
       }
     }
   })
-  async update(@param.path.number('id') id: number, @requestBody() instanceUpdatorDto: InstanceUpdatorDto): Promise<Instance> {
+  async update(
+    @param.path.number('id') id: number,
+    @requestBody() instanceUpdatorDto: InstanceUpdatorDto
+  ): Promise<Instance> {
     this.throwBadRequestIfNull(InstanceUpdatorDto, 'Invalid instance in request');
     this.throwBadRequestIfNotEqual(id, instanceUpdatorDto.id, 'Id in path is not the same as body id');
 
@@ -122,7 +125,7 @@ export class InstanceController extends BaseController {
     this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
 
     instance.name = instanceUpdatorDto.name;
-    instance.description = instanceUpdatorDto.description
+    instance.description = instanceUpdatorDto.description;
 
     return this._instanceService.save(instance);
   }
@@ -170,7 +173,10 @@ export class InstanceController extends BaseController {
       }
     }
   })
-  async executeAction(@param.path.string('id') id: number, @requestBody() command: InstanceCommandDto): Promise<Instance> {
+  async executeAction(
+    @param.path.string('id') id: number,
+    @requestBody() command: InstanceCommandDto
+  ): Promise<Instance> {
     const instance = await this._instanceService.getById(id);
     this.throwNotFoundIfNull(instance, 'Instance with given id does not exist');
 
@@ -181,15 +187,12 @@ export class InstanceController extends BaseController {
     if (instanceCommandType === InstanceCommandType.START) {
       instance.status = InstanceStatus.STARTING;
       instance.statusMessage = 'Instance starting';
-
     } else if (instanceCommandType === InstanceCommandType.REBOOT) {
       instance.status = InstanceStatus.REBOOTING;
       instance.statusMessage = 'Instance rebooting';
-
     } else if (instanceCommandType === InstanceCommandType.SHUTDOWN) {
       instance.status = InstanceStatus.STOPPING;
       instance.statusMessage = 'Instance stopping';
-
     } else if (instanceCommandType === InstanceCommandType.DELETE) {
       instance.status = InstanceStatus.DELETING;
       instance.statusMessage = 'Instance deleting';

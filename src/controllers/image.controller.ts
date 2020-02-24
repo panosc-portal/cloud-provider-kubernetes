@@ -85,7 +85,9 @@ export class ImageController extends BaseController {
     this.throwBadRequestIfNull(imageCreator.protocols, 'Image must have protocols specified');
     this.throwBadRequestIfEmpty(imageCreator.protocols, 'Image must have protocols specified');
 
-    const protocols = await this._imageService.getProtocolByIds(imageCreator.protocols.map(imageProtocol => imageProtocol.protocolId));
+    const protocols = await this._imageService.getProtocolByIds(
+      imageCreator.protocols.map(imageProtocol => imageProtocol.protocolId)
+    );
     if (protocols.find(protocol => protocol == null) != null) {
       throw new HttpErrors.BadRequest('A specified protocol does not exist');
     }
@@ -98,9 +100,20 @@ export class ImageController extends BaseController {
       command: imageCreator.command,
       args: imageCreator.args,
       runAsUID: imageCreator.runAsUID,
-      protocols: imageCreator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)})),
-      volumes: imageCreator.volumes.map(imageVolume => new ImageVolume({name: imageVolume.name, path: imageVolume.path, readOnly: imageVolume.readOnly})),
-      envVars: imageCreator.envVars.map(imageEnvVar => new ImageEnvVar({name: imageEnvVar.name, value: imageEnvVar.value}))
+      protocols: imageCreator.protocols.map(
+        imageProtocol =>
+          new ImageProtocol({
+            port: imageProtocol.port,
+            protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)
+          })
+      ),
+      volumes: imageCreator.volumes.map(
+        imageVolume =>
+          new ImageVolume({ name: imageVolume.name, path: imageVolume.path, readOnly: imageVolume.readOnly })
+      ),
+      envVars: imageCreator.envVars.map(
+        imageEnvVar => new ImageEnvVar({ name: imageEnvVar.name, value: imageEnvVar.value })
+      )
     });
 
     const persistedImage = await this._imageService.save(image);
@@ -128,7 +141,9 @@ export class ImageController extends BaseController {
     const image = await this._imageService.getById(id);
     this.throwNotFoundIfNull(image, 'Image with given id does not exist');
 
-    const protocols = await this._imageService.getProtocolByIds(imageUpdator.protocols.map(imageProtocol => imageProtocol.protocolId));
+    const protocols = await this._imageService.getProtocolByIds(
+      imageUpdator.protocols.map(imageProtocol => imageProtocol.protocolId)
+    );
     if (protocols.find(protocol => protocol == null) != null) {
       throw new HttpErrors.BadRequest('A specified protocol does not exist');
     }
@@ -140,9 +155,27 @@ export class ImageController extends BaseController {
     image.command = imageUpdator.command ? imageUpdator.command : image.command;
     image.args = imageUpdator.args ? imageUpdator.args : image.args;
     image.runAsUID = imageUpdator.runAsUID ? imageUpdator.runAsUID : image.runAsUID;
-    image.protocols = (imageUpdator.protocols && imageUpdator.protocols.length > 0) ? imageUpdator.protocols.map(imageProtocol => new ImageProtocol({port: imageProtocol.port, protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)})) : image.protocols;
-    image.volumes = (imageUpdator.volumes && imageUpdator.volumes.length > 0) ? imageUpdator.volumes.map(imageVolume => new ImageVolume({name: imageVolume.name, path: imageVolume.path, readOnly: imageVolume.readOnly})) : image.volumes;
-    image.envVars = (imageUpdator.envVars && imageUpdator.envVars.length > 0) ? imageUpdator.envVars.map(imageEnvVar => new ImageEnvVar({name: imageEnvVar.name, value: imageEnvVar.value})) : image.envVars;
+    image.protocols =
+      imageUpdator.protocols && imageUpdator.protocols.length > 0
+        ? imageUpdator.protocols.map(
+            imageProtocol =>
+              new ImageProtocol({
+                port: imageProtocol.port,
+                protocol: protocols.find(protocol => protocol.id === imageProtocol.protocolId)
+              })
+          )
+        : image.protocols;
+    image.volumes =
+      imageUpdator.volumes && imageUpdator.volumes.length > 0
+        ? imageUpdator.volumes.map(
+            imageVolume =>
+              new ImageVolume({ name: imageVolume.name, path: imageVolume.path, readOnly: imageVolume.readOnly })
+          )
+        : image.volumes;
+    image.envVars =
+      imageUpdator.envVars && imageUpdator.envVars.length > 0
+        ? imageUpdator.envVars.map(imageEnvVar => new ImageEnvVar({ name: imageEnvVar.name, value: imageEnvVar.value }))
+        : image.envVars;
 
     return this._imageService.save(image);
   }
@@ -161,5 +194,4 @@ export class ImageController extends BaseController {
 
     return this._imageService.delete(image);
   }
-
 }

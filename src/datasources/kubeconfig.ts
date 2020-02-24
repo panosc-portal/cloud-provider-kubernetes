@@ -20,39 +20,40 @@ export class K8SConfigCreator {
         try {
           const data = fs.readFileSync(certificatesFile);
           this._certificateConfig = JSON.parse(data.toString());
-
-
         } catch (error) {
           logger.error(`Unable to read certificates config file '${certificatesFile}': ${error.message}`);
         }
-
       } else {
         logger.warn(`No certificates config file has been provided`);
       }
     }
-
   }
 
   getConfig(): any {
-
     const config = {
       apiVersion: 'v1',
       clusters: [
         {
           name: APPLICATION_CONFIG().kubernetes.clusterName,
           cluster: {
-            server: `${APPLICATION_CONFIG().kubernetes.protocol}://${APPLICATION_CONFIG().kubernetes.host}:${APPLICATION_CONFIG().kubernetes.port}`,
-            'certificate-authority-data': this._certificateConfig ? this._certificateConfig.certificateAuthority : undefined
+            server: `${APPLICATION_CONFIG().kubernetes.protocol}://${APPLICATION_CONFIG().kubernetes.host}:${
+              APPLICATION_CONFIG().kubernetes.port
+            }`,
+            'certificate-authority-data': this._certificateConfig
+              ? this._certificateConfig.certificateAuthority
+              : undefined
           }
         }
       ],
       users: [
         {
           name: APPLICATION_CONFIG().kubernetes.userName,
-          user: this._certificateConfig ? {
-            'client-certificate-data': this._certificateConfig.clientCertificate,
-            'client-key-data': this._certificateConfig.clientKey
-          } : undefined
+          user: this._certificateConfig
+            ? {
+                'client-certificate-data': this._certificateConfig.clientCertificate,
+                'client-key-data': this._certificateConfig.clientKey
+              }
+            : undefined
         }
       ],
       contexts: [
@@ -69,5 +70,4 @@ export class K8SConfigCreator {
 
     return config;
   }
-
 }

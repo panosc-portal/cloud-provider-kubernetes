@@ -7,10 +7,10 @@ import { ImageEnvVarCreatorDto } from './image-env-var-creator-dto';
 export class ImageUpdatorDto {
   @property({
     type: 'number',
-    required: true,
+    required: true
   })
   id: number;
-  
+
   @property({
     type: 'string',
     required: true
@@ -30,17 +30,17 @@ export class ImageUpdatorDto {
   path: string;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
   command?: string;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
   args?: string;
 
   @property({
-    type: 'number',
+    type: 'number'
   })
   runAsUID?: number;
 

@@ -5,7 +5,6 @@ import { K8sProtocol } from './k8s-protocol.model';
 import { K8sInstanceStatusHelper } from './k8s-instance-status.helper';
 
 export class K8sInstance {
-
   private readonly _state: K8sInstanceState;
 
   get deployment(): K8sDeployment {
@@ -29,7 +28,7 @@ export class K8sInstance {
   }
 
   get nodeName(): string {
-    return this._deployment.podNodeName
+    return this._deployment.podNodeName;
   }
 
   get currentCpu(): number {
@@ -52,12 +51,17 @@ export class K8sInstance {
     return protocols;
   }
 
-
   get hostname(): string {
     return this._hostname;
   }
 
-  constructor(private _deployment: K8sDeployment, private _service: K8sService, private _computeId: string, private _namespace: string, private _hostname: string) {
+  constructor(
+    private _deployment: K8sDeployment,
+    private _service: K8sService,
+    private _computeId: string,
+    private _namespace: string,
+    private _hostname: string
+  ) {
     this._state = K8sInstanceStatusHelper.getK8sInstanceState(this._deployment, this._service);
   }
 }

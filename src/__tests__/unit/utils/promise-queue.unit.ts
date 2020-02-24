@@ -2,7 +2,6 @@ import { expect } from '@loopback/testlab';
 import { PromiseQueue, logger } from '../../../utils';
 
 describe('PromiseQueue', () => {
-
   it('sets up defaults correctly', async () => {
     const queue = new PromiseQueue();
 
@@ -19,10 +18,10 @@ describe('PromiseQueue', () => {
         expect(queue.queueLength).to.equal(0);
         expect(queue.pendingLength).to.equal(1);
         logger.info('executing task 1');
-        setTimeout(function () {
+        setTimeout(function() {
           logger.info('executed task 1');
           resolve(1);
-        }, 200)
+        }, 200);
       });
     });
 
@@ -37,10 +36,10 @@ describe('PromiseQueue', () => {
         expect(queue.queueLength).to.equal(0);
         expect(queue.pendingLength).to.equal(1);
         logger.info('executing task 1');
-        setTimeout(function () {
+        setTimeout(function() {
           logger.info('executed task 1');
           resolve(1);
-        }, 200)
+        }, 200);
       });
     });
 
@@ -49,10 +48,10 @@ describe('PromiseQueue', () => {
         expect(queue.queueLength).to.equal(0);
         expect(queue.pendingLength).to.equal(1);
         logger.info('executing task 2');
-        setTimeout(function () {
+        setTimeout(function() {
           logger.info('executed task 2');
           resolve(2);
-        }, 200)
+        }, 200);
       });
     });
 
@@ -68,16 +67,16 @@ describe('PromiseQueue', () => {
   });
 
   it('executes promises in parallel', async () => {
-    const queue = new PromiseQueue({maxPendingPromises: 2});
+    const queue = new PromiseQueue({ maxPendingPromises: 2 });
     const promise1 = queue.add(() => {
       return new Promise((resolve, reject) => {
         expect(queue.queueLength).to.equal(0);
         expect(queue.pendingLength).to.equal(1);
         logger.info('executing task 1');
-        setTimeout(function () {
+        setTimeout(function() {
           logger.info('executed task 1');
           resolve(1);
-        }, 200)
+        }, 200);
       });
     });
 
@@ -86,10 +85,10 @@ describe('PromiseQueue', () => {
         expect(queue.queueLength).to.equal(0);
         expect(queue.pendingLength).to.equal(2);
         logger.info('executing task 2');
-        setTimeout(function () {
+        setTimeout(function() {
           logger.info('executed task 2');
           resolve(2);
-        }, 100)
+        }, 100);
       });
     });
 
@@ -107,26 +106,28 @@ describe('PromiseQueue', () => {
 
   it('calls back when empty', async () => {
     let callbackValue = 0;
-    const queue = new PromiseQueue({onEmpty: function() {
-      callbackValue = 1;
-    }});
+    const queue = new PromiseQueue({
+      onEmpty: function() {
+        callbackValue = 1;
+      }
+    });
     const promise1 = queue.add(() => {
       return new Promise((resolve, reject) => {
         logger.info('executing task 1');
-        setTimeout(function () {
+        setTimeout(function() {
           logger.info('executed task 1');
           resolve(1);
-        }, 200)
+        }, 200);
       });
     });
 
     const promise2 = queue.add(() => {
       return new Promise((resolve, reject) => {
         logger.info('executing task 2');
-        setTimeout(function () {
+        setTimeout(function() {
           logger.info('executed task 2');
           resolve(2);
-        }, 200)
+        }, 200);
       });
     });
 
@@ -136,5 +137,4 @@ describe('PromiseQueue', () => {
     await promise2;
     expect(callbackValue).to.equal(1);
   });
-
 });

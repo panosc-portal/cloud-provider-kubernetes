@@ -16,7 +16,6 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
   constructor() {
     try {
-
       if (APPLICATION_CONFIG().kubernetes.host) {
         logger.info('Using defined variables for kubernetes configuration');
         const kubeconfig = new KubeConfig();
@@ -25,13 +24,11 @@ export class KubernetesDataSource implements LifeCycleObserver {
         kubeconfig.loadFromString(JSON.stringify(k8Sconfig));
         const backend = new Request({ kubeconfig });
         this._k8sClient = new Client({ backend, version: '1.13' });
-
       } else if (process.env.KUBERNETES_SERVICE_HOST) {
         logger.info('Using kubernetes cluster configuration');
-        this._k8sClient = new Client({version: '1.13' });
-
-      }else {
-        throw new LoggedError('Did not manage to define configuration')
+        this._k8sClient = new Client({ version: '1.13' });
+      } else {
+        throw new LoggedError('Did not manage to define configuration');
       }
     } catch (error) {
       logger.error(`Failed to create Kubernetes Client: ${error.message}`);
@@ -60,11 +57,9 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
       if (namespace.body != null) {
         return namespace.body;
-
       } else {
         throw new Error(`k8s namespace response with name '${namespaceName}' does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -76,11 +71,9 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
       if (namespace.body != null) {
         return namespace.body;
-
       } else {
         throw new Error(`k8s namespace response with name '${namespaceRequest.name}' does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -89,7 +82,6 @@ export class KubernetesDataSource implements LifeCycleObserver {
   async deleteNamespace(namespaceName: string): Promise<any> {
     if (this._k8sClient != null) {
       await this._k8sClient.api.v1.namespaces(namespaceName).delete();
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -97,15 +89,16 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
   async getDeployment(computeId: string, namespace: string): Promise<any> {
     if (this._k8sClient != null) {
-      const deployment = await this._k8sClient.apis.apps.v1.namespace(namespace).deployments(computeId).get();
+      const deployment = await this._k8sClient.apis.apps.v1
+        .namespace(namespace)
+        .deployments(computeId)
+        .get();
 
       if (deployment.body != null) {
         return deployment.body;
-
       } else {
         throw new Error(`k8s deployment response for instance with compute Id '${computeId}' does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -117,11 +110,9 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
       if (deployments.body != null) {
         return deployments.body.items;
-
       } else {
         throw new Error(`k8s deployments response for label selector '${labelSelector}' does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -129,14 +120,16 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
   async createDeployment(deploymentRequest: K8sDeploymentRequest, namespace: string): Promise<any> {
     if (this._k8sClient != null) {
-      const deployment = await this._k8sClient.apis.apps.v1.namespaces(namespace).deployments.post({ body: deploymentRequest.model });
+      const deployment = await this._k8sClient.apis.apps.v1
+        .namespaces(namespace)
+        .deployments.post({ body: deploymentRequest.model });
       if (deployment.body != null) {
         return deployment.body;
-
       } else {
-        throw new Error(`k8s deployment response for instance with compute Id '${deploymentRequest.name}' does not have a body`);
+        throw new Error(
+          `k8s deployment response for instance with compute Id '${deploymentRequest.name}' does not have a body`
+        );
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -144,8 +137,10 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
   async deleteDeployment(computeId: string, namespace: string): Promise<any> {
     if (this._k8sClient != null) {
-      await this._k8sClient.apis.apps.v1.namespaces(namespace).deployments(computeId).delete();
-
+      await this._k8sClient.apis.apps.v1
+        .namespaces(namespace)
+        .deployments(computeId)
+        .delete();
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -153,31 +148,31 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
   async getPodsForDeployment(computeId: string, namespace: string): Promise<any> {
     if (this._k8sClient != null) {
-      const podList = await this._k8sClient.api.v1.namespaces(namespace).pods.get({ qs: { labelSelector: `app=${computeId}` } });
+      const podList = await this._k8sClient.api.v1
+        .namespaces(namespace)
+        .pods.get({ qs: { labelSelector: `app=${computeId}` } });
       if (podList.body != null) {
         return podList.body;
-
       } else {
         throw new Error(`k8s pods response for instance with compute Id '${computeId}' does not have a body`);
       }
-
     } else {
       throw new Error('Kubernetes client has not been created');
     }
   }
 
-
   async getService(computeId: string, namespace: string): Promise<any> {
     if (this._k8sClient != null) {
-      const service = await this._k8sClient.api.v1.namespaces(namespace).services(computeId).get();
+      const service = await this._k8sClient.api.v1
+        .namespaces(namespace)
+        .services(computeId)
+        .get();
 
       if (service.body != null) {
         return service.body;
-
       } else {
         throw new Error(`k8s service response for instance with compute Id '${computeId}' does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -189,11 +184,9 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
       if (services.body != null) {
         return services.body.items;
-
       } else {
         throw new Error(`k8s services response for label selector '${labelSelector}' does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -205,11 +198,11 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
       if (service.body != null) {
         return service.body;
-
       } else {
-        throw new Error(`k8s service response for instance with compute Id '${serviceRequest.name}' does not have a body`);
+        throw new Error(
+          `k8s service response for instance with compute Id '${serviceRequest.name}' does not have a body`
+        );
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -217,8 +210,10 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
   async deleteService(computeId: string, namespace: string): Promise<any> {
     if (this._k8sClient != null) {
-      await this._k8sClient.api.v1.namespaces(namespace).services(computeId).delete();
-
+      await this._k8sClient.api.v1
+        .namespaces(namespace)
+        .services(computeId)
+        .delete();
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -226,15 +221,18 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
   async getEndpoints(computeId: string, namespace: string): Promise<any> {
     if (this._k8sClient != null) {
-      const serviceEndpoints = await this._k8sClient.api.v1.namespaces(namespace).endpoint(computeId).get();
+      const serviceEndpoints = await this._k8sClient.api.v1
+        .namespaces(namespace)
+        .endpoint(computeId)
+        .get();
 
       if (serviceEndpoints.body != null) {
         return serviceEndpoints.body;
-
       } else {
-        throw new Error(`k8s service endpoints response for instance with compute Id '${computeId}' does not have a body`);
+        throw new Error(
+          `k8s service endpoints response for instance with compute Id '${computeId}' does not have a body`
+        );
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -246,11 +244,9 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
       if (node.body != null) {
         return node.body;
-
       } else {
         throw new Error(`k8s node response for node with name '${nodeName}' does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -262,11 +258,9 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
       if (response.body != null) {
         return response.body.items;
-
       } else {
         throw new Error(`k8s response for geting all nodes does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -274,15 +268,16 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
   async getSecret(secretName: string, namespace: string): Promise<any> {
     if (this._k8sClient != null) {
-      const secret = await this._k8sClient.api.v1.namespace(namespace).secrets(secretName).get();
+      const secret = await this._k8sClient.api.v1
+        .namespace(namespace)
+        .secrets(secretName)
+        .get();
 
       if (secret.body != null) {
         return secret.body;
-
       } else {
         throw new Error(`k8s secret response for secret with name '${secretName}' does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
@@ -294,14 +289,11 @@ export class KubernetesDataSource implements LifeCycleObserver {
 
       if (secret.body != null) {
         return secret.body;
-
       } else {
         throw new Error(`k8s secret response for secret with name '${secretRequest.name}' does not have a body`);
       }
-
     } else {
       throw new Error('k8s client has not been created');
     }
   }
-
 }

@@ -1,7 +1,13 @@
 import { expect } from '@loopback/testlab';
 import { givenInitialisedTestDatabase } from '../../helpers/database.helper';
 import { createTestApplicationContext } from '../../helpers/context.helper';
-import { InstanceService, ImageService, FlavourService, InstanceUserService, InstanceProtocolService } from '../../../services';
+import {
+  InstanceService,
+  ImageService,
+  FlavourService,
+  InstanceUserService,
+  InstanceProtocolService
+} from '../../../services';
 import { Instance, Protocol, ProtocolName, InstanceStatus, InstanceProtocol, InstanceUser } from '../../../models';
 
 describe('InstanceService', () => {
@@ -47,7 +53,13 @@ describe('InstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
-    const user = new InstanceUser({accountId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const user = new InstanceUser({
+      accountId: 1,
+      username: 'testuser',
+      uid: 1000,
+      gid: 1000,
+      homePath: '/home/testuser'
+    });
 
     const instance = new Instance({
       name: 'instance 3',
@@ -85,7 +97,13 @@ describe('InstanceService', () => {
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
-    const user = new InstanceUser({accountId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const user = new InstanceUser({
+      accountId: 1,
+      username: 'testuser',
+      uid: 1000,
+      gid: 1000,
+      homePath: '/home/testuser'
+    });
 
     const instance = new Instance({
       name: 'instance 3',
@@ -118,14 +136,19 @@ describe('InstanceService', () => {
     });
   });
 
-
   it('saves a user with an instance', async () => {
     const instances = await instanceService.getAll();
     expect(instances.length).to.equal(7);
 
     const image = await imageService.getById(1);
     const flavour = await flavourService.getById(2);
-    const user = new InstanceUser({accountId: 1, username: 'testuser', uid: 1000, gid: 1000, homePath: '/home/testuser'});
+    const user = new InstanceUser({
+      accountId: 1,
+      username: 'testuser',
+      uid: 1000,
+      gid: 1000,
+      homePath: '/home/testuser'
+    });
 
     const instance = new Instance({
       name: 'instance 3',

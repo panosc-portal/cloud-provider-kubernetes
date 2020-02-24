@@ -3,5 +3,5 @@ export enum ProtocolName {
   RDP = 'RDP',
   GUACD = 'GUACD',
   HTTP = 'HTTP',
-  HTTPS = 'HTTPS',
+  HTTPS = 'HTTPS'
 }

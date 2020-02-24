@@ -20,14 +20,14 @@ describe('SchedulerService', () => {
   it('instantiates a class from a className', async () => {
     const className = 'InstanceStateJob';
 
-    const instanceStateJob = new (JOB_PROVIDER.get(className).class)();
+    const instanceStateJob = new (JOB_PROVIDER.get(className)).class();
     expect(instanceStateJob || null).to.not.be.null();
   });
 
   it('Refreshes the state of all instances', async () => {
     const className = 'InstanceStateJob';
 
-    const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
+    const instanceStateJob = new (JOB_PROVIDER.get(className)).class() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
     expect(instanceStateJob || null).to.not.be.null();
@@ -39,12 +39,12 @@ describe('SchedulerService', () => {
   it('Refreshes the state of all building instances', async () => {
     const className = 'InstanceStateJob';
 
-    const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
+    const instanceStateJob = new (JOB_PROVIDER.get(className)).class() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
     expect(instanceStateJob || null).to.not.be.null();
 
-    const updatedInstances = await instanceStateJob.run('InstanceStateJob', {states: [InstanceStatus.BUILDING]});
+    const updatedInstances = await instanceStateJob.run('InstanceStateJob', { states: [InstanceStatus.BUILDING] });
     expect(updatedInstances).to.equal(3);
   });
 
@@ -59,7 +59,7 @@ describe('SchedulerService', () => {
     expect(numberOfInstances2).to.equal(numberOfInstances1 + 1);
 
     const className = 'InstanceStateJob';
-    const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
+    const instanceStateJob = new (JOB_PROVIDER.get(className)).class() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
     expect(instanceStateJob || null).to.not.be.null();
@@ -73,7 +73,7 @@ describe('SchedulerService', () => {
   it('Will not run parallel identical jobs', async () => {
     const className = 'InstanceStateJob';
 
-    const instanceStateJob = new (JOB_PROVIDER.get(className).class)() as InstanceStateJob;
+    const instanceStateJob = new (JOB_PROVIDER.get(className)).class() as InstanceStateJob;
     instanceStateJob['_instanceService'] = instanceService;
     instanceStateJob['_instanceActionService'] = instanceActionService;
     expect(instanceStateJob || null).to.not.be.null();

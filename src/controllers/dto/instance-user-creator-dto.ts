@@ -15,12 +15,12 @@ export class InstanceUserCreatorDto {
   username: string;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
   firstName: string;
 
   @property({
-    type: 'string',
+    type: 'string'
   })
   lastName: string;
 
@@ -41,7 +41,7 @@ export class InstanceUserCreatorDto {
     required: true
   })
   homePath: string;
-  
+
   constructor(data?: Partial<InstanceUserCreatorDto>) {
     Object.assign(this, data);
   }

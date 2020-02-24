@@ -1,7 +1,5 @@
 export class K8sNode {
-
-  constructor(private _k8sResponse: any) {
-  }
+  constructor(private _k8sResponse: any) {}
 
   isValid() {
     return (
@@ -16,22 +14,18 @@ export class K8sNode {
       this._k8sResponse.status.allocatable.memory &&
       this._k8sResponse.status.capacity.cpu &&
       this._k8sResponse.status.allocatable.cpu
-
-
     );
   }
 
   isMaster() {
     return (
-      this._k8sResponse.metadata.labels != null &&
-      'node-role.kubernetes.io/master' in this._k8sResponse.metadata.labels
+      this._k8sResponse.metadata.labels != null && 'node-role.kubernetes.io/master' in this._k8sResponse.metadata.labels
     );
   }
 
   get name() {
     return this.isValid() ? this._k8sResponse.metadata.name : null;
   }
-
 
   get hostname() {
     return this.isValid() ? this._k8sResponse.status.addresses[0].address : null;
