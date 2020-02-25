@@ -11,7 +11,8 @@ const getVolumes = function(image, account) {
           type: 'Directory'
         }
       }
-    }, {
+    },
+    {
       name: 'volume2',
       volume: {
         hostPath: {
@@ -19,7 +20,8 @@ const getVolumes = function(image, account) {
           type: 'Directory'
         }
       }
-    }, {
+    },
+    {
       name: 'volume3',
       volume: {
         hostPath: {
@@ -27,7 +29,8 @@ const getVolumes = function(image, account) {
           type: 'Directory'
         }
       }
-    }, {
+    },
+    {
       name: 'VOLUME4',
       volume: {
         hostPath: {
@@ -84,6 +87,3 @@ module.exports = {
   getEnvVars: getEnvVars,
   getRunAsUID: getRunAsUID
 };
-;
-
-
