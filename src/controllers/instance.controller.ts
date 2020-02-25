@@ -114,10 +114,7 @@ export class InstanceController extends BaseController {
       }
     }
   })
-  async update(
-    @param.path.number('id') id: number,
-    @requestBody() instanceUpdatorDto: InstanceUpdatorDto
-  ): Promise<Instance> {
+  async update(@param.path.number('id') id: number, @requestBody() instanceUpdatorDto: InstanceUpdatorDto): Promise<Instance> {
     this.throwBadRequestIfNull(InstanceUpdatorDto, 'Invalid instance in request');
     this.throwBadRequestIfNotEqual(id, instanceUpdatorDto.id, 'Id in path is not the same as body id');
 

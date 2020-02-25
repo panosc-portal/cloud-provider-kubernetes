@@ -135,7 +135,7 @@ export class ImageController extends BaseController {
     }
   })
   async updateById(@param.path.number('id') id: number, @requestBody() imageUpdator: ImageUpdatorDto): Promise<Image> {
-    this.throwBadRequestIfNull(imageUpdator, 'Image with given id does not exist');
+    this.throwBadRequestIfNull(imageUpdator, 'Invalid image in request');
     this.throwBadRequestIfNotEqual(id, imageUpdator.id, 'Id in path is not the same as body id');
 
     const image = await this._imageService.getById(id);
