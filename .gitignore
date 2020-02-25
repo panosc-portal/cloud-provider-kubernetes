@@ -74,3 +74,4 @@ pgdata
 helpers
 
 /helpers/
+/docker-repo-secrets.json
