@@ -8,26 +8,22 @@ export const buildLogger = function(prefix?: string, fgColor?: number) {
     level: APPLICATION_CONFIG().logging.level,
     transports: [
       new transports.Console({
-        format: fgColor
-          ? format.combine(
-              format.timestamp({
-                format: 'YYYY-MM-DD HH:mm:ss'
-              }),
-              format.printf(info => {
-                return `${escStart}${info.timestamp} ${info.level}: ${prefix ? prefix + ' ' : ''}${
-                  info.message
-                }${escEnd}`;
-              })
-            )
-          : format.combine(
-              format.colorize(),
-              format.timestamp({
-                format: 'YYYY-MM-DD HH:mm:ss'
-              }),
-              format.printf(info => {
-                return `${info.timestamp} ${info.level}: ${prefix ? prefix + ' ' : ''}${info.message}`;
-              })
-            )
+        format: fgColor ? format.combine(
+          format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
+          }),
+          format.printf(info => {
+            return `${escStart}${info.timestamp} ${info.level}: ${prefix ? prefix + ' ' : ''}${info.message}${escEnd}`;
+          })
+        ) : format.combine(
+          format.colorize(),
+          format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
+          }),
+          format.printf(info => {
+            return `${info.timestamp} ${info.level}: ${prefix ? prefix + ' ' : ''}${info.message}`;
+          })
+        )
       })
     ]
   });

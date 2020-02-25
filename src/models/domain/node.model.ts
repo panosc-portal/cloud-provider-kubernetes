@@ -4,7 +4,7 @@ import { ResourceMonitor } from './resource-monitor.model';
 @model()
 export class Node {
   @property({
-    type: 'string'
+    type: 'string',
   })
   hostname: string;
 

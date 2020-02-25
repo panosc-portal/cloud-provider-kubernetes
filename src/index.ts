@@ -4,9 +4,11 @@ import { ApplicationConfig } from '@loopback/core';
 dotenv.config();
 import { logger } from './utils';
 
+
 export { CloudProviderKubernetesApplication };
 
 export async function main(options: ApplicationConfig = {}) {
+
   const app = new CloudProviderKubernetesApplication(options);
   await app.boot();
   await app.start();

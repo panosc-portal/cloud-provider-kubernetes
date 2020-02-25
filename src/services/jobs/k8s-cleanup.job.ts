@@ -1,11 +1,12 @@
-import { Job } from './job';
-import { job, jobInject } from './job-provider';
-import { InstanceService } from '../instance.service';
-import { logger } from '../../utils';
-import { K8sInstanceService } from '../kubernetes';
+import { Job } from "./job";
+import { job, jobInject } from "./job-provider";
+import { InstanceService } from "../instance.service";
+import { logger } from "../../utils";
+import { K8sInstanceService } from "../kubernetes";
 
 @job()
 export class K8sCleanupJob extends Job {
+
   @jobInject('services.K8sInstanceService')
   private _k8sInstanceService: K8sInstanceService;
 

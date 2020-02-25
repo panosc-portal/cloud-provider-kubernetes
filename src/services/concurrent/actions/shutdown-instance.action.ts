@@ -5,12 +5,7 @@ import { K8sInstanceService } from '../../kubernetes/k8s-instance.service';
 import { logger } from '../../../utils';
 
 export class ShutdownInstanceAction extends InstanceAction {
-  constructor(
-    instanceCommand: InstanceCommand,
-    instanceService: InstanceService,
-    k8sInstanceService: K8sInstanceService,
-    listener: InstanceActionListener
-  ) {
+  constructor(instanceCommand: InstanceCommand, instanceService: InstanceService, k8sInstanceService: K8sInstanceService, listener: InstanceActionListener) {
     super(instanceCommand, instanceService, k8sInstanceService, listener);
   }
 
@@ -26,22 +21,20 @@ export class ShutdownInstanceAction extends InstanceAction {
           logger.info(`Shutting down instance ${instance.id}: deleting current k8s instance`);
           await this._deleteK8sInstance(computeId, namespace);
 
-          instance.state = new InstanceState({
-            status: InstanceStatus.STOPPED,
-            message: 'Instance stopped',
-            cpu: 0,
-            memory: 0
-          });
+          instance.state = new InstanceState({ status: InstanceStatus.STOPPED, message: 'Instance stopped', cpu: 0, memory: 0 });
           instance.computeId = null;
           instance.namespace = null;
 
           await this.instanceService.save(instance);
+
         } else {
           logger.info(`Could not find k8s instance with ${computeId}`);
         }
+      
       } else {
         logger.info(`Instance with id ${instance.id} does not have an associated compute Id. Ignoring shutdown action`);
       }
+
     } catch (error) {
       logger.error(`Error shutting down instance with Id ${instance.id}: ${error.message}`);
       throw error;

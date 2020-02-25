@@ -6,12 +6,7 @@ import { logger } from '../../../utils';
 import * as isPortReachable from 'is-port-reachable';
 
 export class StateInstanceAction extends InstanceAction {
-  constructor(
-    instanceCommand: InstanceCommand,
-    instanceService: InstanceService,
-    k8sInstanceService: K8sInstanceService,
-    listener: InstanceActionListener
-  ) {
+  constructor(instanceCommand: InstanceCommand, instanceService: InstanceService, k8sInstanceService: K8sInstanceService, listener: InstanceActionListener) {
     super(instanceCommand, instanceService, k8sInstanceService, listener);
   }
 
@@ -33,9 +28,11 @@ export class StateInstanceAction extends InstanceAction {
             cpu: 0,
             memory: 0
           });
+
         } else {
           return;
         }
+
       } else {
         const k8sInstance = await this.k8sInstanceService.get(computeId, namespace);
         if (k8sInstance == null) {
@@ -49,6 +46,7 @@ export class StateInstanceAction extends InstanceAction {
             cpu: 0,
             memory: 0
           });
+
         } else {
           nextInstanceState = new InstanceState({
             status: this._convertStatus(currentInstanceStatus, k8sInstance.state.status),
@@ -61,28 +59,20 @@ export class StateInstanceAction extends InstanceAction {
           logger.debug(`Instance ${computeId} state: ${nextInstanceState.status} ${nextInstanceState.message}`);
         }
 
-        if (
-          currentInstanceStatus === InstanceStatus.REBOOTING &&
-          (nextInstanceState.status === InstanceStatus.BUILDING || nextInstanceState.status === InstanceStatus.DELETED)
-        ) {
+        if (currentInstanceStatus === InstanceStatus.REBOOTING &&
+          (nextInstanceState.status === InstanceStatus.BUILDING || nextInstanceState.status === InstanceStatus.DELETED)) {
           nextInstanceState.status = InstanceStatus.REBOOTING;
           nextInstanceState.message = 'Instance rebooting';
-        } else if (
-          currentInstanceStatus === InstanceStatus.STARTING &&
-          nextInstanceState.status === InstanceStatus.BUILDING
-        ) {
+
+        } else if (currentInstanceStatus === InstanceStatus.STARTING && nextInstanceState.status === InstanceStatus.BUILDING) {
           nextInstanceState.status = InstanceStatus.STARTING;
           nextInstanceState.message = 'Instance starting';
-        } else if (
-          currentInstanceStatus === InstanceStatus.DELETING &&
-          nextInstanceState.status === InstanceStatus.ACTIVE
-        ) {
+
+        } else if (currentInstanceStatus === InstanceStatus.DELETING && nextInstanceState.status === InstanceStatus.ACTIVE) {
           nextInstanceState.status = InstanceStatus.DELETING;
           nextInstanceState.message = 'Instance deleting';
-        } else if (
-          currentInstanceStatus === InstanceStatus.BUILDING &&
-          nextInstanceState.status === InstanceStatus.ACTIVE
-        ) {
+
+        } else if (currentInstanceStatus === InstanceStatus.BUILDING && nextInstanceState.status === InstanceStatus.ACTIVE) {
           // Check ports are open
           const portsOpenPromises = [];
           instance.protocols.forEach(protocol => {
@@ -96,7 +86,10 @@ export class StateInstanceAction extends InstanceAction {
         }
       }
 
+
       await this._updateInstanceState(nextInstanceState, nodeName);
+
+
     } catch (error) {
       logger.error(`Error getting state instance with Id ${instance.id}: ${error.message}`);
       throw error;

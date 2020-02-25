@@ -5,10 +5,8 @@ import { InstanceService, NodeService } from '../services';
 import { BaseController } from './base.controller';
 
 export class NodeController extends BaseController {
-  constructor(
-    @inject('services.NodeService') private _nodeService: NodeService,
-    @inject('services.InstanceService') private _instanceService: InstanceService
-  ) {
+  constructor(@inject('services.NodeService') private _nodeService: NodeService,
+              @inject('services.InstanceService') private _instanceService: InstanceService) {
     super();
   }
 
@@ -62,6 +60,7 @@ export class NodeController extends BaseController {
     }
   })
   async getInstancesByNodeId(@param.path.string('name') name: string): Promise<Instance[]> {
+
     const instances = await this._instanceService.getInstancesByNodeHostname(name);
     this.throwNotFoundIfNull(instances, 'Node with given name does not exist');
 

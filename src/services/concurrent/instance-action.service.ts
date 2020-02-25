@@ -1,14 +1,5 @@
 import { bind, BindingScope, inject } from '@loopback/core';
-import {
-  InstanceAction,
-  InstanceActionListener,
-  CreateInstanceAction,
-  StateInstanceAction,
-  StartInstanceAction,
-  ShutdownInstanceAction,
-  RebootInstanceAction,
-  DeleteInstanceAction
-} from './actions';
+import { InstanceAction, InstanceActionListener, CreateInstanceAction, StateInstanceAction, StartInstanceAction, ShutdownInstanceAction, RebootInstanceAction, DeleteInstanceAction } from './actions';
 import { InstanceService } from '../instance.service';
 import { K8sInstanceService } from '../kubernetes';
 import { InstanceActionPromiseQueue } from './instance-action-promise-queue';
@@ -21,21 +12,25 @@ export class InstanceActionService implements InstanceActionListener {
 
   constructor(
     @inject('services.InstanceService') private _instanceService: InstanceService,
-    @inject('services.K8sInstanceService') private _k8sInstanceService: K8sInstanceService
-  ) {}
+    @inject('services.K8sInstanceService') private _k8sInstanceService: K8sInstanceService) {}
 
   execute(instanceCommand: InstanceCommand): Promise<void> {
     let action: InstanceAction = null;
     if (instanceCommand.type === InstanceCommandType.CREATE) {
       action = new CreateInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
+
     } else if (instanceCommand.type === InstanceCommandType.STATE) {
       action = new StateInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
+
     } else if (instanceCommand.type === InstanceCommandType.START) {
       action = new StartInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
+
     } else if (instanceCommand.type === InstanceCommandType.SHUTDOWN) {
       action = new ShutdownInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
+
     } else if (instanceCommand.type === InstanceCommandType.REBOOT) {
       action = new RebootInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
+
     } else if (instanceCommand.type === InstanceCommandType.DELETE) {
       action = new DeleteInstanceAction(instanceCommand, this._instanceService, this._k8sInstanceService, this);
     }
@@ -64,5 +59,6 @@ export class InstanceActionService implements InstanceActionListener {
 
   onError(instanceAction: InstanceAction, error: any) {
     logger.error(`Action ${instanceAction.type} failed to run on instance ${instanceAction.instanceId}: ${error}`);
-  }
+  };
+
 }

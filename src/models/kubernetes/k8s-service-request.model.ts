@@ -1,10 +1,10 @@
-import { Image } from '../domain';
-import { logger } from '../../utils';
-import { APPLICATION_CONFIG } from '../../application-config';
+import { Image } from "../domain";
+import { logger } from "../../utils";
+import { APPLICATION_CONFIG } from "../../application-config";
 
 export interface K8sServiceRequestConfig {
-  name: string;
-  image: Image;
+  name: string,
+  image: Image,
 }
 
 export class K8sServiceRequest {
@@ -34,9 +34,7 @@ export class K8sServiceRequest {
       },
       spec: {
         type: 'NodePort',
-        ports: _config.image.protocols.map(imageProtocol => {
-          return { name: imageProtocol.protocol.name.toLowerCase(), port: imageProtocol.getPort() };
-        }),
+        ports: _config.image.protocols.map(imageProtocol => { return {name: imageProtocol.protocol.name.toLowerCase(), port: imageProtocol.getPort()}}),
         selector: {
           app: this._config.name
         }

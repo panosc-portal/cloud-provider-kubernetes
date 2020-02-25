@@ -13,7 +13,7 @@ export class ImageRepository extends BaseRepository<Image, number> {
     return super.find({ order: { id: 'ASC' } });
   }
 
-  async getUsageCount(): Promise<{ imageId: number; imageName: string; instanceCount: number }[]> {
+  async getUsageCount(): Promise<{imageId: number, imageName: string, instanceCount: number}[]> {
     try {
       const command = `
         select im.id::integer as image_id, im.name as image_name, count(i.id)::integer as instance_count
@@ -24,13 +24,11 @@ export class ImageRepository extends BaseRepository<Image, number> {
       `;
       const rows = await this.execute(command);
 
-      return rows.map((row: any) => ({
-        imageId: row.image_id,
-        imageName: row.image_name,
-        instanceCount: row.instance_count
-      }));
+      return rows.map((row: any) => ({imageId: row.image_id, imageName: row.image_name, instanceCount: row.instance_count}));
+
     } catch (error) {
       throw new LoggedError(`Failed to get image usage count from database: ${error.message}`);
     }
   }
+
 }

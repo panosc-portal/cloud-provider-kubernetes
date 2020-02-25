@@ -4,10 +4,10 @@ import { model, property } from '@loopback/repository';
 export class InstanceUpdatorDto {
   @property({
     type: 'number',
-    required: true
+    required: true,
   })
   id: number;
-
+  
   @property({
     type: 'string',
     required: true

@@ -3,12 +3,12 @@ import { model, property } from '@loopback/repository';
 @model()
 export class ImageEnvVarCreatorDto {
   @property({
-    type: 'string'
+    type: 'string',
   })
   name: string;
 
   @property({
-    type: 'string'
+    type: 'string',
   })
   value: string;
 

@@ -5,6 +5,7 @@ import { logger } from '../../../../utils';
 import { InstanceCommandType, Instance } from '../../../../models';
 
 class DummyInstanceAction extends InstanceAction {
+
   private _output: number;
 
   get output(): number {
@@ -19,13 +20,7 @@ class DummyInstanceAction extends InstanceAction {
     return this._id;
   }
 
-  constructor(
-    private _id: number,
-    private _durationMS: number,
-    private _input: number,
-    private _type: InstanceCommandType,
-    listener: InstanceActionListener
-  ) {
+  constructor(private _id: number, private _durationMS: number, private _input: number, private _type: InstanceCommandType, listener: InstanceActionListener) {
     super(null, null, null, listener);
   }
 
@@ -38,10 +33,12 @@ class DummyInstanceAction extends InstanceAction {
         resolve();
       }, this._durationMS);
     });
-  }
+  }   
 }
 
+
 describe('InstanceActionPromiseQueue', () => {
+
   it('executes an action', async () => {
     const queue = new InstanceActionPromiseQueue();
     const action = new DummyInstanceAction(1, 200, 10, InstanceCommandType.CREATE, null);
@@ -83,13 +80,14 @@ describe('InstanceActionPromiseQueue', () => {
     const promise1 = queue.add(action1);
     try {
       await queue.add(action2);
+  
     } catch (error) {
       expect(error || null).to.not.be.null();
     }
 
     expect(queue.queueLength).to.equal(0);
     expect(queue.isActive).to.equal(true);
-
+    
     await promise1;
   });
 

@@ -1,7 +1,7 @@
 export interface K8sSecretRequestConfig {
-  repository: string;
-  username: string;
-  password: string;
+  repository: string,
+  username: string,
+  password: string
 }
 
 export class K8sSecretRequest {
@@ -21,24 +21,25 @@ export class K8sSecretRequest {
   }
 
   constructor(private _config: K8sSecretRequestConfig) {
-    this._name = `${this._config.repository.replace(/\./g, '-')}-secret`;
+    this._name = `${this._config.repository.replace(/\./g,'-')}-secret`
 
     // Fabricate an equivalent .dockerconfig file
     const dockerConfig = {
-      auths: {}
+      auths: {
+      }
     };
     dockerConfig.auths[this._config.repository] = {
       username: this._config.username,
       password: this._config.password,
       auth: Buffer.from(`${this._config.username}:${this._config.password}`).toString('base64')
-    };
+    }
     const dockerConfigBase64 = Buffer.from(JSON.stringify(dockerConfig)).toString('base64');
 
     this._model = {
       apiVersion: 'v1',
       kind: 'Secret',
       metadata: {
-        name: this._name
+        name: this._name,
       },
       type: 'kubernetes.io/dockerconfigjson',
       data: {

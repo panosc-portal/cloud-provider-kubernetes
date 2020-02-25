@@ -14,6 +14,7 @@ export default class K8SResponseCreator {
     }
   }
 
+
   getService(name, namespace, ports, selector) {
     for (const port of ports) {
       port['nodePort'] = this.chooseRandomNodePort();
@@ -36,31 +37,22 @@ export default class K8SResponseCreator {
     let conditions;
 
     if (status && status.startsWith('pod')) {
-      conditions = [
-        {
-          type: 'Available',
-          status: 'False',
-          message: 'Deployment does not have minimum availability.'
-        },
-        {
-          type: 'Progressing',
-          status: 'True',
-          message: 'ReplicaSet in progress'
-        }
-      ];
+      conditions = [{
+        type: 'Available',
+        status: 'False', message: 'Deployment does not have minimum availability.'
+      }, {
+        type: 'Progressing',
+        status: 'True', message: 'ReplicaSet in progress'
+      }];
     } else {
-      conditions = [
-        {
-          type: 'Available',
-          status: 'True',
-          message: 'Test deployment was successful'
-        },
-        {
-          type: 'Progressing',
-          status: 'True',
-          message: 'ReplicaSet has successfully progressed'
-        }
-      ];
+      conditions = [{
+        type: 'Available',
+        status: 'True',
+        message: 'Test deployment was successful'
+      }, {
+        type: 'Progressing',
+        status: 'True', message: 'ReplicaSet has successfully progressed'
+      }];
     }
 
     return {
@@ -152,7 +144,7 @@ export default class K8SResponseCreator {
       apiVersion: 'v1',
       items: nodeListItems
     };
-  }
+  };
 
   getEndpoint(service: any, status: string) {
     if (status === 'endpoint-error') {
@@ -170,18 +162,16 @@ export default class K8SResponseCreator {
         metadata: {
           name: service.metadata.name
         },
-        subsets: [
-          {
-            addresses: [
-              {
-                ip: '192.168.140.1'
-              }
-            ],
-            ports: service.spec.ports.map(port => {
-              return { name: port.name, port: port.port };
-            })
-          }
-        ]
+        subsets: [{
+          addresses: [
+            {
+              ip: '192.168.140.1'
+            }
+          ],
+          ports: service.spec.ports.map(port => {
+            return { name: port.name, port: port.port };
+          })
+        }]
       };
     }
   }
@@ -200,15 +190,13 @@ export default class K8SResponseCreator {
     let statusContent;
     if (status === 'pod-crash-loop') {
       statusContent = {
-        phase: 'Running',
-        conditions: [
+        phase: 'Running', conditions: [
           {},
           {
             type: 'Ready',
             status: 'False'
           }
-        ],
-        containerStatuses: [
+        ], containerStatuses: [
           {
             state: {
               waiting: {
@@ -217,20 +205,17 @@ export default class K8SResponseCreator {
               }
             },
             ready: false
-          }
-        ]
+          }]
       };
     } else if (status === 'pod-container-creating-timeout') {
       statusContent = {
-        phase: 'Pending',
-        conditions: [
+        phase: 'Pending', conditions: [
           {},
           {
             type: 'Ready',
             status: 'False'
           }
-        ],
-        containerStatuses: [
+        ], containerStatuses: [
           {
             state: {
               waiting: {
@@ -238,20 +223,17 @@ export default class K8SResponseCreator {
               }
             },
             ready: false
-          }
-        ]
+          }]
       };
     } else if (status === 'pod-err-image-pull') {
       statusContent = {
-        phase: 'Pending',
-        conditions: [
+        phase: 'Pending', conditions: [
           {},
           {
             type: 'Ready',
             status: 'False'
           }
-        ],
-        containerStatuses: [
+        ], containerStatuses: [
           {
             state: {
               waiting: {
@@ -260,13 +242,11 @@ export default class K8SResponseCreator {
               }
             },
             ready: false
-          }
-        ]
+          }]
       };
     } else {
       statusContent = {
-        phase: 'Running',
-        conditions: [
+        phase: 'Running', conditions: [
           {},
           {
             type: 'Ready',
@@ -279,24 +259,22 @@ export default class K8SResponseCreator {
               running: {}
             },
             ready: true
-          }
-        ],
+          }],
         hostIP: '192.168.1.25'
       };
     }
     return {
       kind: 'PodList',
-      items: [
-        {
-          metadata: { name: `${deployment.metadata.name}-12DD-46FV`, creationTimestamp: '2019-12-13T11:40:52Z' },
-          status: statusContent,
-          spec: {
-            nodeName: 'k8s-test-worker-1',
-            volumes: deployment.spec.template.spec.volumes,
-            containers: deployment.spec.template.spec.containers
-          }
+      items: [{
+        metadata: { name: `${deployment.metadata.name}-12DD-46FV`, creationTimestamp: '2019-12-13T11:40:52Z' },
+        status: statusContent,
+        spec: {
+          nodeName: 'k8s-test-worker-1',
+          volumes: deployment.spec.template.spec.volumes,
+          containers: deployment.spec.template.spec.containers
         }
-      ]
+      }]
     };
   }
+
 }

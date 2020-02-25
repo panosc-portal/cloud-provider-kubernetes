@@ -4,6 +4,7 @@ import { Image, ImageVolume, InstanceUser } from '../../../../models';
 import { K8SRequestHelperService } from '../../../../services';
 
 describe('K8SRequestHelperService', () => {
+
   it('returns null when no loader is specified', async () => {
     APPLICATION_CONFIG().kubernetes.requestHelper = undefined;
 
@@ -13,7 +14,7 @@ describe('K8SRequestHelperService', () => {
   });
 
   it('returns a helper with a relative path', async () => {
-    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
+    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js'
 
     const k8SRequestHelperService = new K8SRequestHelperService();
     const requestHelper = k8SRequestHelperService.getHelper();
@@ -21,7 +22,7 @@ describe('K8SRequestHelperService', () => {
   });
 
   it('returns a helper with a absolute path', async () => {
-    APPLICATION_CONFIG().kubernetes.requestHelper = `${__dirname}/../../../../../resources/__tests__/k8s-test-request-helper.js`;
+    APPLICATION_CONFIG().kubernetes.requestHelper = `${__dirname}/../../../../../resources/__tests__/k8s-test-request-helper.js`
 
     const k8SRequestHelperService = new K8SRequestHelperService();
     const requestHelper = k8SRequestHelperService.getHelper();
@@ -29,17 +30,14 @@ describe('K8SRequestHelperService', () => {
   });
 
   it('gets a volume from a request helper', async () => {
-    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js';
+    APPLICATION_CONFIG().kubernetes.requestHelper = 'resources/__tests__/k8s-test-request-helper.js'
 
     const k8SRequestHelperService = new K8SRequestHelperService();
     const requestHelper = k8SRequestHelperService.getHelper();
     expect(requestHelper || null).to.not.be.null();
 
-    const image = new Image({
-      name: 'test',
-      volumes: [new ImageVolume({ name: 'volume1' }), new ImageVolume({ name: 'volume2' })]
-    });
-    const user = new InstanceUser({ username: 'testuser', homePath: '/home/testuser' });
+    const image = new Image({name: 'test', volumes: [new ImageVolume({name: 'volume1'}), new ImageVolume({name: 'volume2'})], });
+    const user = new InstanceUser({username: 'testuser', homePath: '/home/testuser'});
 
     const volumes = requestHelper.getVolumes(image, user);
     expect(volumes || null).to.not.be.null();
@@ -53,4 +51,5 @@ describe('K8SRequestHelperService', () => {
     expect(volumes[1].volume.hostPath.path || null).to.not.be.null();
     expect(volumes[1].volume.hostPath.path).to.equal('test');
   });
+
 });

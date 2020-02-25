@@ -102,6 +102,7 @@ describe('K8sInstanceService', () => {
 
     expect(k8sInstance).not.to.be.null();
     expect(k8sInstance.state.status).to.be.equal('ERROR');
+
   });
 
   it('create instance with deployment error pod ContainerCreating timeout', async () => {
@@ -140,6 +141,7 @@ describe('K8sInstanceService', () => {
 
     expect(k8sInstance).not.to.be.null();
     expect(k8sInstance.state.status).to.be.equal('ERROR');
+
   });
 
   it('create instance with ssh and rdp protocols and check service and deployment response', async () => {
@@ -177,5 +179,6 @@ describe('K8sInstanceService', () => {
     }
     expect(caughtError).to.not.be.null();
     expect(caughtError.message).to.endWith('image does not contain any protocols');
+
   });
 });

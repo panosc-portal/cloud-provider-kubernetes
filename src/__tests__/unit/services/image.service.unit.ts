@@ -113,8 +113,8 @@ describe('ImageService', () => {
 
   it('Saves a protocol with an image', async () => {
     const protocols = await imageService.getProtocolByIds([1, 2]);
-    const protocol1 = new ImageProtocol({ port: 1000, protocol: protocols[0] });
-    const protocol2 = new ImageProtocol({ protocol: protocols[1] });
+    const protocol1 = new ImageProtocol({port: 1000, protocol: protocols[0]});
+    const protocol2 = new ImageProtocol({protocol: protocols[1]});
 
     const image: Image = new Image({
       name: 'test',
@@ -127,16 +127,13 @@ describe('ImageService', () => {
     expect(persistedImage.protocols || null).to.not.be.null();
     expect(persistedImage.protocols.length).to.equal(2);
 
-    const persistedProtocol1 = persistedImage.protocols.find(
-      protocol => protocol.protocol.id === protocol1.protocol.id
-    );
-    const persistedProtocol2 = persistedImage.protocols.find(
-      protocol => protocol.protocol.id === protocol2.protocol.id
-    );
+    const persistedProtocol1 = persistedImage.protocols.find(protocol => protocol.protocol.id === protocol1.protocol.id);
+    const persistedProtocol2 = persistedImage.protocols.find(protocol => protocol.protocol.id === protocol2.protocol.id);
 
     expect(persistedProtocol1).to.not.be.null();
     expect(persistedProtocol2).to.not.be.null();
     expect(persistedProtocol1.port).to.equal(1000);
     expect(persistedProtocol2.port).to.be.null();
   });
+
 });

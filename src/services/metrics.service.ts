@@ -9,11 +9,10 @@ import { NodeService } from './node.service';
 @bind({ scope: BindingScope.SINGLETON })
 export class MetricsService {
   constructor(
-    @inject('services.InstanceService') private _instanceService: InstanceService,
-    @inject('services.ImageService') private _imageService: ImageService,
-    @inject('services.FlavourService') private _flavourService: FlavourService,
-    @inject('services.NodeService') private _nodeService: NodeService
-  ) {}
+    @inject('services.InstanceService') private _instanceService: InstanceService, 
+    @inject('services.ImageService') private _imageService: ImageService, 
+    @inject('services.FlavourService') private _flavourService: FlavourService, 
+    @inject('services.NodeService') private _nodeService: NodeService) {}
 
   async getMetrics(): Promise<Metrics> {
     const allInstanceCount = await this._instanceService.count();
@@ -31,10 +30,10 @@ export class MetricsService {
     const flavourMetrics = await this._flavourService.getUsageCount();
 
     const allNodes = await this._nodeService.getAll();
-    const totalMemory = allNodes.reduce((previous: number, node: Node) => previous + node.memory.total, 0);
-    const availableMemory = allNodes.reduce((previous: number, node: Node) => previous + node.memory.available, 0);
-    const totalCPU = allNodes.reduce((previous: number, node: Node) => previous + node.cpus.total, 0);
-    const availableCPU = allNodes.reduce((previous: number, node: Node) => previous + node.cpus.available, 0);
+    const totalMemory = allNodes.reduce((previous: number, node: Node) => previous + node.memory.total, 0)
+    const availableMemory = allNodes.reduce((previous: number, node: Node) => previous + node.memory.available, 0)
+    const totalCPU = allNodes.reduce((previous: number, node: Node) => previous + node.cpus.total, 0)
+    const availableCPU = allNodes.reduce((previous: number, node: Node) => previous + node.cpus.available, 0)
 
     return new Metrics({
       instances: {

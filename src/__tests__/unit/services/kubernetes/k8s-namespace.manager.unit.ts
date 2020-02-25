@@ -43,7 +43,8 @@ describe('K8sNamespaceManager', () => {
     let k8sNamespace2 = null;
     try {
       k8sNamespace2 = await k8sNamespaceManager.create('testnamespace');
-    } catch (error) {}
+    } catch (error) {
+    }
     expect(k8sNamespace2 || null).to.be.null();
   });
 

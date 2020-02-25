@@ -8,12 +8,10 @@ export class InfoService {
 
   getInfo(): Promise<Info> {
     return new Promise<Info>(function(resolve, reject) {
-      resolve(
-        new Info({
-          name: packageJson.name,
-          version: packageJson.version
-        })
-      );
+      resolve(new Info({
+        name: packageJson. name,
+        version: packageJson.version
+      }));
     });
   }
 }

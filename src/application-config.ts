@@ -1,39 +1,39 @@
 export class ApplicationConfig {
   database: {
-    type: string;
-    host: string;
-    port: string;
-    userName: string;
-    password: string;
-    name: string;
-    schema: string;
-    synchronize: boolean;
-    logging: boolean;
-  };
+    type: string,
+    host: string,
+    port: string,
+    userName: string,
+    password: string,
+    name: string,
+    schema: string,
+    synchronize: boolean,
+    logging: boolean
+  }
 
   kubernetes: {
-    clusterName: string;
-    userName: string;
-    contextName: string;
-    protocol: string;
-    host: string;
-    port: string;
-    defaultNamespace: string;
-    creationTimeoutS: number;
-    unschedulableTimeoutS: number;
-    ownerLabel: string;
-    secretsConfig: string;
-    certificatesConfig: string;
-    requestHelper: string;
-  };
+    clusterName: string,
+    userName: string,
+    contextName: string,
+    protocol: string,
+    host: string,
+    port: string,
+    defaultNamespace: string,
+    creationTimeoutS: number,
+    unschedulableTimeoutS: number,
+    ownerLabel: string,
+    secretsConfig: string,
+    certificatesConfig:string,
+    requestHelper: string
+  }
   logging: {
-    level: string;
-  };
+    level: string
+  }
 
   scheduler: {
-    enabled: boolean;
-    config: string;
-  };
+    enabled: boolean,
+    config: string
+  }
 
   constructor(data?: Partial<ApplicationConfig>) {
     Object.assign(this, data);
@@ -63,28 +63,22 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
         protocol: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_PROTOCOL,
         host: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_HOST,
         port: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_PORT,
-        defaultNamespace:
-          process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE != null
-            ? process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE
-            : 'panosc-kubernetes-instances',
+        defaultNamespace: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE != null ? process.env.CLOUD_PROVIDER_K8S_KUBERNETES_DEFAULT_NAMESPACE : 'panosc-kubernetes-instances',
         creationTimeoutS: 600,
         unschedulableTimeoutS: 60,
         ownerLabel: 'cloud-provider',
         secretsConfig: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_SECRETS_CONFIG,
-        certificatesConfig: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_CERTIFICATES_CONFIG,
-        requestHelper: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_REQUEST_HELPER
+        certificatesConfig:process.env.CLOUD_PROVIDER_K8S_KUBERNETES_CERTIFICATES_CONFIG,
+        requestHelper: process.env.CLOUD_PROVIDER_K8S_KUBERNETES_REQUEST_HELPER,
       },
       logging: {
         level: process.env.CLOUD_PROVIDER_K8S_LOG_LEVEL
       },
       scheduler: {
-        enabled:
-          process.env.CLOUD_PROVIDER_K8S_SCHEDULER_ENABLED != null
-            ? process.env.CLOUD_PROVIDER_K8S_SCHEDULER_CONFIG === 'true'
-            : true,
+        enabled: process.env.CLOUD_PROVIDER_K8S_SCHEDULER_ENABLED != null ? (process.env.CLOUD_PROVIDER_K8S_SCHEDULER_CONFIG === 'true') : true,
         config: process.env.CLOUD_PROVIDER_K8S_SCHEDULER_CONFIG
       }
-    };
+    }
   }
 
   return applicationConfig;

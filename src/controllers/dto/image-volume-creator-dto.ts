@@ -3,17 +3,17 @@ import { model, property } from '@loopback/repository';
 @model()
 export class ImageVolumeCreatorDto {
   @property({
-    type: 'string'
+    type: 'string',
   })
   name: string;
 
   @property({
-    type: 'string'
+    type: 'string',
   })
   path: string;
 
   @property({
-    type: 'boolean'
+    type: 'boolean',
   })
   readOnly: boolean;
 

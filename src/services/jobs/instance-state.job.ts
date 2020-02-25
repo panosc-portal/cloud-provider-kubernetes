@@ -1,13 +1,14 @@
-import { Job } from './job';
-import { InstanceActionService } from '../concurrent';
-import { job, jobInject } from './job-provider';
-import { InstanceService } from '../instance.service';
-import { logger } from '../../utils';
-import { Instance, InstanceStatus, InstanceCommand, InstanceCommandType } from '../../models';
-import filterAsync from 'node-filter-async';
+import { Job } from "./job";
+import { InstanceActionService } from "../concurrent";
+import { job, jobInject } from "./job-provider";
+import { InstanceService } from "../instance.service";
+import { logger } from "../../utils";
+import { Instance, InstanceStatus, InstanceCommand, InstanceCommandType } from "../../models";
+import filterAsync from "node-filter-async";
 
 @job()
 export class InstanceStateJob extends Job {
+
   @jobInject('services.InstanceActionService')
   private _instanceActionService: InstanceActionService;
 
@@ -21,6 +22,7 @@ export class InstanceStateJob extends Job {
       if (instances.length > 0) {
         logger.info(`Running job to update all instance which have states ${params.states} (${instances.length})`);
       }
+
     } else {
       instances = await this._instanceService.getAll();
       if (instances.length > 0) {
@@ -36,6 +38,7 @@ export class InstanceStateJob extends Job {
           await this._instanceService.save(instance);
           logger.info(`Instance ${instance.id} has DELETED state: deleting it`);
           return false;
+        
         } else {
           return true;
         }
@@ -44,12 +47,11 @@ export class InstanceStateJob extends Job {
       // Create a state action for all running instances and wait for them to run
       if (runningInstances.length > 0) {
         try {
-          await Promise.all(
-            runningInstances.map(instance => {
-              const command = new InstanceCommand(instance, InstanceCommandType.STATE);
-              return this._instanceActionService.execute(command);
-            })
-          );
+          await Promise.all(runningInstances.map(instance => {
+            const command = new InstanceCommand(instance, InstanceCommandType.STATE);
+            return this._instanceActionService.execute(command);
+          }));
+  
         } catch (error) {
           // Ignore errors such as action already queued
         }
@@ -58,6 +60,7 @@ export class InstanceStateJob extends Job {
       }
 
       return runningInstances.length;
+    
     } else {
       return 0;
     }

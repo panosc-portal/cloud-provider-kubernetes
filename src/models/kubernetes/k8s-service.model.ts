@@ -11,10 +11,14 @@ export class K8sService {
     return this.isServiceValid() ? this._k8sServiceResponse.spec.selector : null;
   }
 
-  constructor(private _name: string, private _k8sServiceResponse: any, private _k8sEndpointResponse: any) {}
+  constructor(private _name: string, private _k8sServiceResponse: any, private _k8sEndpointResponse: any) {
+  }
 
   isValid() {
-    return this.isEndpointValid() && this._k8sEndpointResponse == null ? true : this.isServiceValid();
+    return (
+      this.isEndpointValid() &&
+      this._k8sEndpointResponse == null ? true : this.isServiceValid()
+    );
   }
 
   isServiceValid() {
@@ -60,4 +64,6 @@ export class K8sService {
   get endpoint(): any {
     return this.isEndpointValid() ? this._k8sEndpointResponse.subsets : null;
   }
+
+
 }

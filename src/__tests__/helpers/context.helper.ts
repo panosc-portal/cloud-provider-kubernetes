@@ -1,24 +1,5 @@
-import {
-  FlavourRepository,
-  ImageRepository,
-  InstanceRepository,
-  InstanceUserRepository,
-  InstanceProtocolRepository,
-  ImageProtocolRepository,
-  ImageVolumeRepository
-} from '../../repositories';
-import {
-  FlavourService,
-  ImageService,
-  InstanceService,
-  K8sInstanceService,
-  K8sNodeService,
-  InstanceActionService,
-  InstanceUserService,
-  InstanceProtocolService,
-  ImageProtocolService,
-  ImageVolumeService
-} from '../../services';
+import { FlavourRepository, ImageRepository, InstanceRepository, InstanceUserRepository, InstanceProtocolRepository, ImageProtocolRepository, ImageVolumeRepository } from '../../repositories';
+import { FlavourService, ImageService, InstanceService, K8sInstanceService, K8sNodeService, InstanceActionService, InstanceUserService, InstanceProtocolService, ImageProtocolService, ImageVolumeService } from '../../services';
 import { testDataSource } from '../fixtures/datasources/testdb.datasource';
 import { KubernetesDataSource } from '../../datasources';
 import { ProtocolRepository } from '../../repositories/protocol.repository';

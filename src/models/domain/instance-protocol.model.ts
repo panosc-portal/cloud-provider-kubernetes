@@ -29,7 +29,7 @@ export class InstanceProtocol {
   @Column()
   port: number;
 
-  @ManyToOne(type => Instance, instance => instance.protocols, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(type => Instance, instance => instance.protocols, {onDelete: 'CASCADE', nullable: false})
   @JoinColumn({ name: 'instance_id' })
   instance: Instance;
 

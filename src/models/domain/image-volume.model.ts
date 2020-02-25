@@ -5,6 +5,7 @@ import { Image } from './image.model';
 @Entity()
 @model()
 export class ImageVolume {
+
   @property({
     type: 'number',
     id: true,
@@ -35,7 +36,7 @@ export class ImageVolume {
   @Column({ name: 'read_only' })
   readOnly: boolean;
 
-  @ManyToOne(type => Image, image => image.volumes, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(type => Image, image => image.volumes, {onDelete: 'CASCADE', nullable: false})
   @JoinColumn({ name: 'image_id', referencedColumnName: 'id' })
   image: Image;
 
@@ -43,3 +44,4 @@ export class ImageVolume {
     Object.assign(this, data);
   }
 }
+

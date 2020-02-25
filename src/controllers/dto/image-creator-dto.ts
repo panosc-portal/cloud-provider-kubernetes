@@ -12,7 +12,7 @@ export class ImageCreatorDto {
   name: string;
 
   @property({
-    type: 'string'
+    type: 'string',
   })
   repository?: string;
 
@@ -23,17 +23,17 @@ export class ImageCreatorDto {
   path: string;
 
   @property({
-    type: 'string'
+    type: 'string',
   })
   command?: string;
 
   @property({
-    type: 'string'
+    type: 'string',
   })
   args?: string;
 
   @property({
-    type: 'number'
+    type: 'number',
   })
   runAsUID?: number;
 

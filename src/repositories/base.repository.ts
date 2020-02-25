@@ -1,14 +1,6 @@
 import { TypeORMDataSource } from '../datasources';
 import { Repository, ObjectType, OrderByCondition, SelectQueryBuilder, FindManyOptions } from 'typeorm';
-import {
-  Filter,
-  Where,
-  Command,
-  NamedParameters,
-  PositionalParameters,
-  WhereBuilder,
-  AnyObject
-} from '@loopback/repository';
+import { Filter, Where, Command, NamedParameters, PositionalParameters, WhereBuilder, AnyObject } from '@loopback/repository';
 
 interface ParamterizedClause {
   clause: string;
@@ -123,10 +115,10 @@ export class BaseRepository<T, ID> {
           Object.assign(parameters, pc.parameters);
         });
       }
-
+  
       for (const key in where) {
         if (key === 'and' || key === 'or') continue;
-
+  
         let clause;
         const condition = where[key];
         if (condition.eq) {
@@ -159,10 +151,10 @@ export class BaseRepository<T, ID> {
             const parameterValue = condition.inq[i];
             const parameterName = getNextParameterName(parameters);
             parameters[parameterName] = parameterValue;
-
+  
             vals += i > 0 ? `, :${parameterName}` : `:${parameterName}`;
           }
-
+  
           clause = `${key} IN (${vals})`;
         } else if (condition.nin) {
           let vals = '';
@@ -170,10 +162,10 @@ export class BaseRepository<T, ID> {
             const parameterValue = condition.nin[i];
             const parameterName = getNextParameterName(parameters);
             parameters[parameterName] = parameterValue;
-
+  
             vals += i > 0 ? `, :${parameterName}` : `:${parameterName}`;
           }
-
+  
           clause = `${key} NOT IN (${vals})`;
         } else if (condition.between) {
           const p1Name = getNextParameterName(parameters);
@@ -197,4 +189,5 @@ export class BaseRepository<T, ID> {
       isComposite: where ? where.and != null || where.or != null || clauses.length > 1 : false
     };
   }
+
 }

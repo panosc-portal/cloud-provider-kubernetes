@@ -10,10 +10,10 @@ export class FlavourRepository extends BaseRepository<Flavour, number> {
   }
 
   find(): Promise<Flavour[]> {
-    return super.find({ order: { cpu: 'ASC', memory: 'ASC' } });
+    return super.find({order: {cpu: 'ASC', memory: 'ASC'}});
   }
 
-  async getUsageCount(): Promise<{ flavourId: number; flavourName: string; instanceCount: number }[]> {
+  async getUsageCount(): Promise<{flavourId: number, flavourName: string, instanceCount: number}[]> {
     try {
       const command = `
         select im.id::integer as flavour_id, im.name as flavour_name, count(i.id)::integer as instance_count
@@ -24,11 +24,8 @@ export class FlavourRepository extends BaseRepository<Flavour, number> {
       `;
       const rows = await this.execute(command);
 
-      return rows.map((row: any) => ({
-        flavourId: row.flavour_id,
-        flavourName: row.flavour_name,
-        instanceCount: row.instance_count
-      }));
+      return rows.map((row: any) => ({flavourId: row.flavour_id, flavourName: row.flavour_name, instanceCount: row.instance_count}));
+
     } catch (error) {
       throw new LoggedError(`Failed to get flavour usage count from database: ${error.message}`);
     }
