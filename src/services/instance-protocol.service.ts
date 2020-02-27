@@ -1,5 +1,5 @@
 import { bind, BindingScope } from '@loopback/core';
-import { InstanceProtocol } from '../models';
+import { InstanceProtocol, Instance } from '../models';
 import { InstanceProtocolRepository } from '../repositories';
 import { repository } from '@loopback/repository';
 import { BaseService } from './base.service';
@@ -8,5 +8,9 @@ import { BaseService } from './base.service';
 export class InstanceProtocolService extends BaseService<InstanceProtocol, InstanceProtocolRepository> {
   constructor(@repository(InstanceProtocolRepository) repo: InstanceProtocolRepository) {
     super(repo);
+  }
+
+  deleteForInstance(instance: Instance): Promise<boolean> {
+    return this._repository.deleteForInstance(instance);
   }
 }

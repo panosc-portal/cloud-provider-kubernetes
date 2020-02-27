@@ -19,13 +19,9 @@ export class ShutdownInstanceAction extends InstanceAction {
         const k8sInstance = await this.k8sInstanceService.get(computeId, namespace);
         if (k8sInstance != null) {
           logger.info(`Shutting down instance ${instance.id}: deleting current k8s instance`);
-          await this._deleteK8sInstance(computeId, namespace);
+          await this._deleteK8sInstance();
 
-          instance.state = new InstanceState({ status: InstanceStatus.STOPPED, message: 'Instance stopped', cpu: 0, memory: 0 });
-          instance.computeId = null;
-          instance.namespace = null;
-
-          await this.instanceService.save(instance);
+          await this._updateInstanceState(new InstanceState({ status: InstanceStatus.STOPPED, message: 'Instance stopped', cpu: 0, memory: 0 }));
 
         } else {
           logger.info(`Could not find k8s instance with ${computeId}`);

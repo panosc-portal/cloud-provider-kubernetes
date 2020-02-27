@@ -19,7 +19,7 @@ export class RebootInstanceAction extends InstanceAction {
         const k8sInstance = await this.k8sInstanceService.get(computeId, namespace);
         if (k8sInstance != null) {
           logger.info(`Rebooting instance ${instance.id}: deleting current k8s instance`);
-          await this._deleteK8sInstance(computeId, namespace);
+          await this._deleteK8sInstance();
 
           logger.info(`Rebooting instance ${instance.id}: creating new k8s instance`);
           await this._createK8sInstance(new InstanceState({status: InstanceStatus.REBOOTING, message: 'Instance rebooting'}));

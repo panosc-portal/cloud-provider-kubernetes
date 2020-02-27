@@ -123,6 +123,7 @@ export class Instance {
   })
   account: InstanceAccount;
 
+  @property({ type: InstanceState })
   get state(): InstanceState {
     return new InstanceState({
       status: this.status,

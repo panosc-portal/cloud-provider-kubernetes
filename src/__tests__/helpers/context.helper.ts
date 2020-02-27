@@ -34,8 +34,8 @@ export function createTestApplicationContext(): TestApplicationContext {
 
   const flavourService: FlavourService = new FlavourService(flavourRepository);
   const imageService: ImageService = new ImageService(imageRepository, protocolRepository);
-  const instanceService: InstanceService = new InstanceService(instanceRepository);
   const instanceProtocolService: InstanceProtocolService = new InstanceProtocolService(instanceProtocolRepository);
+  const instanceService: InstanceService = new InstanceService(instanceRepository, instanceProtocolService);
   const imageProtocolService: ImageProtocolService = new ImageProtocolService(imageProtocolRepository);
   const imageVolumeService: ImageVolumeService = new ImageVolumeService(imageVolumeRepository);
   const instanceAccountService: InstanceAccountService = new InstanceAccountService(instanceAccountRepository);

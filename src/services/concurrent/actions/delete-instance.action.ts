@@ -19,7 +19,7 @@ export class DeleteInstanceAction extends InstanceAction {
         const k8sInstance = await this.k8sInstanceService.get(computeId, namespace);
         if (k8sInstance != null) {
           logger.info(`Deleting instance ${instance.id}`)
-          await this._deleteK8sInstance(computeId, namespace);
+          await this._deleteK8sInstance();
 
           await this._updateInstanceState(new InstanceState({status: InstanceStatus.DELETED, message: 'Instance deleted', cpu: 0, memory: 0}));
 

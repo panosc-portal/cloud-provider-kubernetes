@@ -75,7 +75,7 @@ export abstract class InstanceAction {
     });
 
     instance.state = state;
-    instance.nodeHostname = nodeName;
+    instance.nodeHostname = nodeName != null ? nodeName : instance.nodeHostname;
 
     await this.instanceService.save(instance);
   }
@@ -129,8 +129,20 @@ export abstract class InstanceAction {
     return k8sInstance;
   }
 
-  protected async _deleteK8sInstance(computeId: string, namespace: string) {
-    await this.k8sInstanceService.delete(computeId, namespace);
+  protected async _deleteK8sInstance() {
+    const instance = await this.getInstance();
+
+    if (instance.computeId != null && instance.namespace != null) {
+      await this.k8sInstanceService.delete(instance.computeId, instance.namespace);
+
+      await this.instanceService.deleteProtocols(instance);
+      instance.hostname = null;
+      instance.computeId = null;
+      instance.namespace = null;
+      instance.nodeHostname = null;
+
+      await this.instanceService.save(instance);
+    }
   }
 
 

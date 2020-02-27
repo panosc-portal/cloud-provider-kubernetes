@@ -1,5 +1,5 @@
 import { TypeORMDataSource } from '../datasources';
-import { Repository, ObjectType, OrderByCondition, SelectQueryBuilder, FindManyOptions } from 'typeorm';
+import { Repository, ObjectType, OrderByCondition, SelectQueryBuilder, FindManyOptions, FindConditions } from 'typeorm';
 import { Filter, Where, Command, NamedParameters, PositionalParameters, WhereBuilder, AnyObject } from '@loopback/repository';
 
 interface ParamterizedClause {
@@ -16,7 +16,7 @@ export interface QueryOptions {
  * Some implementation details from https://github.com/raymondfeng/loopback4-extension-repository-typeorm
  */
 export class BaseRepository<T, ID> {
-  private _repository: Repository<T>;
+  protected _repository: Repository<T>;
 
   constructor(private _dataSource: TypeORMDataSource, private _entityClass: ObjectType<T>) {}
 
@@ -50,6 +50,13 @@ export class BaseRepository<T, ID> {
     await this.init();
 
     await this._repository.delete(id);
+    return true;
+  }
+
+  async deleteWhere(findConditions: FindConditions<T>): Promise<boolean> {
+    await this.init();
+
+    await this._repository.delete(findConditions);
     return true;
   }
 

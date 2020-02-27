@@ -1,12 +1,13 @@
-import { bind, BindingScope } from '@loopback/core';
+import { bind, BindingScope, inject } from '@loopback/core';
 import { Instance, InstanceStatus } from '../models';
 import { InstanceRepository } from '../repositories';
 import { repository, WhereBuilder, Where } from '@loopback/repository';
 import { BaseService } from './base.service';
+import { InstanceProtocolService } from './instance-protocol.service';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class InstanceService extends BaseService<Instance, InstanceRepository> {
-  constructor(@repository(InstanceRepository) repo: InstanceRepository) {
+  constructor(@repository(InstanceRepository) repo: InstanceRepository, @inject('services.InstanceProtocolService') private _instanceProtocolService: InstanceProtocolService) {
     super(repo);
   }
 
@@ -36,5 +37,14 @@ export class InstanceService extends BaseService<Instance, InstanceRepository> {
 
   getInstancesByNodeHostname(name: string): Promise<Instance[]> {
     return this._repository.getInstancesByNodeHostname(name);
+  }
+
+  async deleteProtocols(instance: Instance): Promise<boolean> {
+    const didDelete = this._instanceProtocolService.deleteForInstance(instance);
+    if (didDelete) {
+      instance.protocols = [];
+    }
+
+    return didDelete;
   }
 }
