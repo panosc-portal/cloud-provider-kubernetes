@@ -63,7 +63,7 @@ export abstract class InstanceAction {
     return await this._instanceService.getById(this._instanceCommand.instance.id);
   }
 
-  protected async _updateInstanceState(nextState: InstanceState, nodeName?: string) {
+  protected async _updateInstance(nextState: InstanceState, hostname?: string, nodeName?: string) {
     const instance = await this.getInstance();
     const currentState = instance.state;
 
@@ -75,6 +75,7 @@ export abstract class InstanceAction {
     });
 
     instance.state = state;
+    instance.hostname = hostname != null ? hostname : instance.hostname;
     instance.nodeHostname = nodeName != null ? nodeName : instance.nodeHostname;
 
     await this.instanceService.save(instance);

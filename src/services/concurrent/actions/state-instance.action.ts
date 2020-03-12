@@ -20,6 +20,7 @@ export class StateInstanceAction extends InstanceAction {
 
       let nextInstanceState: InstanceState;
       let nodeName: string = null;
+      let hostname: string = null;
       if (computeId == null || namespace == null) {
         if (currentInstanceStatus === InstanceStatus.DELETING) {
           nextInstanceState = new InstanceState({
@@ -55,6 +56,7 @@ export class StateInstanceAction extends InstanceAction {
             memory: k8sInstance.currentMemory
           });
           nodeName = k8sInstance.nodeName;
+          hostname = k8sInstance.hostname;
 
           logger.debug(`Instance ${computeId} state: ${nextInstanceState.status} ${nextInstanceState.message}`);
         }
@@ -72,23 +74,22 @@ export class StateInstanceAction extends InstanceAction {
           nextInstanceState.status = InstanceStatus.DELETING;
           nextInstanceState.message = 'Instance deleting';
 
-        } else if (currentInstanceStatus === InstanceStatus.BUILDING && nextInstanceState.status === InstanceStatus.ACTIVE) {
+        } else if ((currentInstanceStatus === InstanceStatus.BUILDING || currentInstanceStatus === InstanceStatus.REBOOTING || currentInstanceStatus === InstanceStatus.STARTING) && nextInstanceState.status === InstanceStatus.ACTIVE) {
           // Check ports are open
           const portsOpenPromises = [];
           instance.protocols.forEach(protocol => {
-            portsOpenPromises.push(isPortReachable(protocol.port, { host: instance.hostname }));
+            portsOpenPromises.push(isPortReachable(protocol.port, { host: hostname }));
           });
 
           const portsOpen = await Promise.all(portsOpenPromises);
           if (portsOpen.find(isOpen => !isOpen) != null) {
+            logger.debug(`K8S Instance with Id ${computeId} is active but ports are not reachable`);
             nextInstanceState.status = InstanceStatus.STARTING;
           }
         }
       }
 
-
-      await this._updateInstanceState(nextInstanceState, nodeName);
-
+      await this._updateInstance(nextInstanceState, hostname, nodeName);
 
     } catch (error) {
       logger.error(`Error getting state instance with Id ${instance.id}: ${error.message}`);

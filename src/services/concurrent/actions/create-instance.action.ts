@@ -16,7 +16,7 @@ export class CreateInstanceAction extends InstanceAction {
       logger.info(`Creating kubernetes instance ${instance.id}`)
 
       // Update instance state
-      await this._updateInstanceState(new InstanceState({status: InstanceStatus.BUILDING, message: '', cpu: 0, memory: 0}));
+      await this._updateInstance(new InstanceState({status: InstanceStatus.BUILDING, message: '', cpu: 0, memory: 0}));
 
       await this._createK8sInstance();
 

@@ -21,7 +21,7 @@ export class ShutdownInstanceAction extends InstanceAction {
           logger.info(`Shutting down instance ${instance.id}: deleting current k8s instance`);
           await this._deleteK8sInstance();
 
-          await this._updateInstanceState(new InstanceState({ status: InstanceStatus.STOPPED, message: 'Instance stopped', cpu: 0, memory: 0 }));
+          await this._updateInstance(new InstanceState({ status: InstanceStatus.STOPPED, message: 'Instance stopped', cpu: 0, memory: 0 }));
 
         } else {
           logger.info(`Could not find k8s instance with ${computeId}`);
