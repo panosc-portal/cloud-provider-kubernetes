@@ -5,6 +5,7 @@ import { KubeConfig } from '@kubernetes/client-node';
 import { LoggedError, logger } from '../utils';
 import { K8sDeploymentRequest, K8sNamespaceRequest, K8sSecretRequest, K8sServiceRequest } from '../models';
 import { APPLICATION_CONFIG } from '../application-config';
+
 const Request = require('kubernetes-client/backends/request');
 const Client = require('kubernetes-client').Client;
 
@@ -17,7 +18,11 @@ export class KubernetesDataSource implements LifeCycleObserver {
   constructor() {
     try {
 
-      if (APPLICATION_CONFIG().kubernetes.host) {
+      if (process.env.KUBERNETES_SERVICE_HOST) {
+        logger.info('Using kubernetes cluster configuration');
+        this._k8sClient = new Client({ version: '1.13' });
+
+      } else if (APPLICATION_CONFIG().kubernetes.host) {
         logger.info('Using defined variables for kubernetes configuration');
         const kubeconfig = new KubeConfig();
         const k8Sconfig = new K8SConfigCreator().getConfig();
@@ -26,12 +31,8 @@ export class KubernetesDataSource implements LifeCycleObserver {
         const backend = new Request({ kubeconfig });
         this._k8sClient = new Client({ backend, version: '1.13' });
 
-      } else if (process.env.KUBERNETES_SERVICE_HOST) {
-        logger.info('Using kubernetes cluster configuration');
-        this._k8sClient = new Client({version: '1.13' });
-
       } else {
-        throw new LoggedError('Did not manage to define kubernetes configuration')
+        throw new LoggedError('Did not manage to define kubernetes configuration');
       }
     } catch (error) {
       logger.error(`Failed to create Kubernetes Client: ${error.message}`);
@@ -42,13 +43,15 @@ export class KubernetesDataSource implements LifeCycleObserver {
   /**
    * Start the datasource when application is started
    */
-  start(): ValueOrPromise<void> {}
+  start(): ValueOrPromise<void> {
+  }
 
   /**
    * Disconnect the datasource when application is stopped. This allows the
    * application to be shut down gracefully.
    */
-  stop(): ValueOrPromise<void> {}
+  stop(): ValueOrPromise<void> {
+  }
 
   isConnected(): boolean {
     return this._k8sClient != null;
