@@ -31,18 +31,6 @@ export class InstanceAccount {
   username: string;
 
   @property({
-    type: 'string',
-  })
-  @Column({ name: 'first_name',  length: 100, nullable: true })
-  firstName: string;
-
-  @property({
-    type: 'string',
-  })
-  @Column({ name: 'last_name',  length: 100, nullable: true })
-  lastName: string;
-
-  @property({
     type: 'number',
     required: true
   })

@@ -91,8 +91,6 @@ export class InstanceController extends BaseController {
         uid: instanceCreator.account.uid,
         gid: instanceCreator.account.gid,
         homePath: instanceCreator.account.homePath,
-        firstName: instanceCreator.account.firstName,
-        lastName: instanceCreator.account.lastName,
         email: instanceCreator.account.email,
       })
     });

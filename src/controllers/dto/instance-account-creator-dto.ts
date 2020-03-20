@@ -15,16 +15,6 @@ export class InstanceAccountCreatorDto {
   username: string;
 
   @property({
-    type: 'string',
-  })
-  firstName: string;
-
-  @property({
-    type: 'string',
-  })
-  lastName: string;
-
-  @property({
     type: 'number',
     required: true
   })
