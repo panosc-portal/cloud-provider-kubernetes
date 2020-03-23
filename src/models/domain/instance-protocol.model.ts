@@ -29,6 +29,13 @@ export class InstanceProtocol {
   @Column()
   port: number;
 
+  @property({
+    type: 'number',
+    required: true
+  })
+  @Column({ name: 'internal_port', nullable: false, default: 0 })
+  internalPort: number;
+
   @ManyToOne(type => Instance, instance => instance.protocols, {onDelete: 'CASCADE', nullable: false})
   @JoinColumn({ name: 'instance_id' })
   instance: Instance;

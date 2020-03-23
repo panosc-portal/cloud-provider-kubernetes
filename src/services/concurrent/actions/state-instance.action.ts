@@ -61,6 +61,7 @@ export class StateInstanceAction extends InstanceAction {
           logger.debug(`Instance ${computeId} state: ${nextInstanceState.status} ${nextInstanceState.message}`);
         }
 
+        // Handle mapping of states
         if (currentInstanceStatus === InstanceStatus.REBOOTING &&
           (nextInstanceState.status === InstanceStatus.BUILDING || nextInstanceState.status === InstanceStatus.DELETED)) {
           nextInstanceState.status = InstanceStatus.REBOOTING;
@@ -87,6 +88,18 @@ export class StateInstanceAction extends InstanceAction {
             nextInstanceState.status = InstanceStatus.STARTING;
           }
         }
+
+        // Update ports if they have changed or haven't been set
+        instance.protocols.forEach(async (protocol) => {
+          if (protocol.internalPort === 0) {
+            const k8sProtocol = k8sInstance.protocols.find(aK8sProtocol => aK8sProtocol.name.toUpperCase() === protocol.name);
+            if (k8sProtocol && (k8sProtocol.externalPort != protocol.port || k8sProtocol.internalPort != protocol.internalPort)) {
+              protocol.port = k8sProtocol.externalPort;
+              protocol.internalPort = k8sProtocol.internalPort;
+              await this.instanceService.instanceProtocolService.save(protocol);
+            }
+          }
+        });
       }
 
       await this._updateInstance(nextInstanceState, hostname, nodeName);

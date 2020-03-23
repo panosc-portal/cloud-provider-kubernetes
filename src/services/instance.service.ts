@@ -7,6 +7,11 @@ import { InstanceProtocolService } from './instance-protocol.service';
 
 @bind({ scope: BindingScope.SINGLETON })
 export class InstanceService extends BaseService<Instance, InstanceRepository> {
+
+  get instanceProtocolService(): InstanceProtocolService {
+    return this._instanceProtocolService;
+  }
+
   constructor(@repository(InstanceRepository) repo: InstanceRepository, @inject('services.InstanceProtocolService') private _instanceProtocolService: InstanceProtocolService) {
     super(repo);
   }

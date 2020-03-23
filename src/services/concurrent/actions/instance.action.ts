@@ -110,7 +110,8 @@ export abstract class InstanceAction {
       instance.protocols = k8sInstance.protocols.map(k8sProtocol => {
         const protocol = new InstanceProtocol({
           name: ProtocolName[k8sProtocol.name.toUpperCase()],
-          port: k8sProtocol.externalPort
+          port: k8sProtocol.externalPort,
+          internalPort: k8sProtocol.internalPort
         });
         if (protocol.name != null) {
           return protocol;
