@@ -32,7 +32,8 @@
     "start": "node -r source-map-support/register .",
     "debug": "nodemon -r source-map-support/register --inspect=0.0.0.0 .",
     "prepublishOnly": "npm run test",
-    "client": "npm run build && node dist/cli/cli-client.js"
+    "client": "npm run build && node dist/cli/cli-client.js",
+    "preinstall": "npx npm-force-resolutions"
   },
   "repository": {
     "type": "git"
@@ -91,5 +92,8 @@
     "ts-node": "^8.5.2",
     "typescript": "~3.6.3",
     "nodemon": "^2.0.2"
+  },
+  "resolutions": {
+    "minimist": ">=1.2.2"
   }
 }
