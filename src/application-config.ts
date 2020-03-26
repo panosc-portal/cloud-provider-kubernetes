@@ -75,7 +75,7 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
         level: process.env.CLOUD_PROVIDER_K8S_LOG_LEVEL
       },
       scheduler: {
-        enabled: process.env.CLOUD_PROVIDER_K8S_SCHEDULER_ENABLED != null ? (process.env.CLOUD_PROVIDER_K8S_SCHEDULER_CONFIG === 'true') : true,
+        enabled: process.env.CLOUD_PROVIDER_K8S_SCHEDULER_ENABLED != null ? (process.env.CLOUD_PROVIDER_K8S_SCHEDULER_ENABLED === 'true') : true,
         config: process.env.CLOUD_PROVIDER_K8S_SCHEDULER_CONFIG
       }
     }
