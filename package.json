@@ -33,7 +33,7 @@
     "debug": "nodemon -r source-map-support/register --inspect=0.0.0.0 .",
     "prepublishOnly": "npm run test",
     "preinstall": "npx npm-force-resolutions",
-    "client": "npm run build && node dist/cli/cli-client.js",
+    "client": "npm run build && node dist/cli/cli-client.js"
   },
   "repository": {
     "type": "git"
