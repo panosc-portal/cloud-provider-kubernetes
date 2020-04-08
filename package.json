@@ -32,6 +32,7 @@
     "start": "node -r source-map-support/register .",
     "debug": "nodemon -r source-map-support/register --inspect=0.0.0.0 .",
     "prepublishOnly": "npm run test",
+    "preinstall": "npx npm-force-resolutions",
     "client": "npm run build && node dist/cli/cli-client.js",
     "preinstall": "npx npm-force-resolutions"
   },
@@ -94,6 +95,7 @@
     "nodemon": "^2.0.2"
   },
   "resolutions": {
+    "kind-of": ">=6.0.3"
     "minimist": ">=1.2.2"
   }
 }
