@@ -34,7 +34,6 @@
     "prepublishOnly": "npm run test",
     "preinstall": "npx npm-force-resolutions",
     "client": "npm run build && node dist/cli/cli-client.js",
-    "preinstall": "npx npm-force-resolutions"
   },
   "repository": {
     "type": "git"
@@ -95,7 +94,7 @@
     "nodemon": "^2.0.2"
   },
   "resolutions": {
-    "kind-of": ">=6.0.3"
+    "kind-of": ">=6.0.3",
     "minimist": ">=1.2.2"
   }
 }
