@@ -18,11 +18,7 @@ export class KubernetesDataSource implements LifeCycleObserver {
   constructor() {
     try {
 
-      if (process.env.KUBERNETES_SERVICE_HOST) {
-        logger.info('Using kubernetes cluster configuration');
-        this._k8sClient = new Client({ version: '1.13' });
-
-      } else if (APPLICATION_CONFIG().kubernetes.host) {
+      if (APPLICATION_CONFIG().kubernetes.host) {
         logger.info('Using defined variables for kubernetes configuration');
         const kubeconfig = new KubeConfig();
         const k8Sconfig = new K8SConfigCreator().getConfig();
@@ -30,6 +26,10 @@ export class KubernetesDataSource implements LifeCycleObserver {
         kubeconfig.loadFromString(JSON.stringify(k8Sconfig));
         const backend = new Request({ kubeconfig });
         this._k8sClient = new Client({ backend, version: '1.13' });
+
+      } else if (process.env.KUBERNETES_SERVICE_HOST) {
+        logger.info('Using kubernetes cluster configuration');
+        this._k8sClient = new Client({ version: '1.13' });
 
       } else {
         throw new LoggedError('Did not manage to define kubernetes configuration');
