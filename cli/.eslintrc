@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "oclif",
+    "oclif-typescript"
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/member-naming": [
+      "error",
+      {
+        "private": "^_",
+        "protected": "^_"
+      }
+    ],
+    "lines-between-class-members":  "off",
+    "semi": "off",
+    "no-trailing-spaces": "off",
+    "no-negated-condition": "off",
+    "no-eq-null": "off",
+    "object-curly-spacing": "off",
+    "comma-dangle": "off",
+    "quotes": "off",
+    "eqeqeq": "off",
+    "no-console": "off"
+  }
+}
